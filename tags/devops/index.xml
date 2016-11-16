@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/devops/index.xml</link>
+    <language>en-us</language>
+    <author>Svett Ralchev</author>
+    
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+    
+    <item>
+      <title>SSH tunneling in Golang</title>
+      <link>http://blog.ralch.com/tutorial/golang-ssh-tunneling/</link>
+      <pubDate>Sun, 26 Jul 2015 08:00:00 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-ssh-tunneling/</guid>
+      <description>
+
+&lt;p&gt;In my &lt;a href=&#34;http://blog.ralch.com/tutorial/golang-ssh-connection&#34;&gt;previous post&lt;/a&gt;, I illustrated the basic usage of &lt;a href=&#34;https://godoc.org/golang.org/x/crypto/ssh&#34;&gt;ssh&lt;/a&gt; package. In this article
+I will demonstrate how we should use it to implement &lt;code&gt;SSH tunneling&lt;/code&gt;. We will
+forward connection to &lt;code&gt;localhost:9000&lt;/code&gt; through &lt;code&gt;example.com:22&lt;/code&gt; to &lt;code&gt;localhost:8080&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The tunneling protocol allows a network user to access or provide a network
+service that the underlying network does not support or provide directly.&lt;/p&gt;
+
+&lt;p&gt;We have four actors in this scenario:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;client&lt;/code&gt; - the client that needs resource from &lt;code&gt;remote server&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;local server&lt;/code&gt; - a server accessible by the client&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;intermediate server&lt;/code&gt; - a server accessible by the local server and &lt;code&gt;remote/target&lt;/code&gt; server&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;remote/target server&lt;/code&gt; - a server running behind the &lt;code&gt;intermediate server&lt;/code&gt; network&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Each of this server endpoints can be represented by the following struct:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Endpoint struct {
+  // Server host address
+	Host string
+	// Server port
+	Port int
+}
+
+func (endpoint *Endpoint) String() string {
+	return fmt.Sprintf(&amp;quot;%s:%d&amp;quot;, endpoint.Host, endpoint.Port)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Lets instanciate the each endpoint for these servers:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;localEndpoint := &amp;amp;Endpoint{
+	Host: &amp;quot;localhost&amp;quot;,
+	Port: 9000,
+}
+
+serverEndpoint := &amp;amp;Endpoint{
+	Host: &amp;quot;example.com&amp;quot;,
+	Port: 22,
+}
+
+remoteEndpoint := &amp;amp;Endpoint{
+	Host: &amp;quot;localhost&amp;quot;,
+	Port: 8080,
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;client&lt;/code&gt; is connecting to &lt;code&gt;local endpoint&lt;/code&gt;. Then the &lt;code&gt;server endpoint&lt;/code&gt;
+mediates between &lt;code&gt;local endpoint&lt;/code&gt; and &lt;code&gt;remote endpoint&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The algorithms is encapsulated in &lt;code&gt;SSHTunnel&lt;/code&gt; struct:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type SSHTunnel struct {
+	Local  *Endpoint
+	Server *Endpoint
+	Remote *Endpoint
+
+	Config *ssh.ClientConfig
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We should establish our own &lt;code&gt;local server&lt;/code&gt; by using &lt;a href=&#34;http://golang.org/pkg/net/&#34;&gt;net&lt;/a&gt;
+package and &lt;code&gt;net.Listen&lt;/code&gt; function. For any client accepted by the listener,
+we are forwarding its request to the intermediate server via &lt;code&gt;forward&lt;/code&gt; go routine function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func (tunnel *SSHTunnel) Start() error {
+	listener, err := net.Listen(&amp;quot;tcp&amp;quot;, tunnel.Local.String())
+	if err != nil {
+		return err
+	}
+	defer listener.Close()
+
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			return err
+		}
+		go tunnel.forward(conn)
+	}
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Port forwarding is processed by establishing an &lt;code&gt;SSH&lt;/code&gt; connection to the intermediate
+server. When we are connected to the intermediate server, we are able to acces the target server.
+The data tansfer between the &lt;code&gt;client&lt;/code&gt; and the &lt;code&gt;remote server&lt;/code&gt; is processed by &lt;code&gt;io.Copy&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func (tunnel *SSHTunnel) forward(localConn net.Conn) {
+	serverConn, err := ssh.Dial(&amp;quot;tcp&amp;quot;, tunnel.Server.String(), tunnel.Config)
+	if err != nil {
+		fmt.Printf(&amp;quot;Server dial error: %s\n&amp;quot;, err)
+		return
+	}
+
+	remoteConn, err := serverConn.Dial(&amp;quot;tcp&amp;quot;, tunnel.Remote.String())
+	if err != nil {
+		fmt.Printf(&amp;quot;Remote dial error: %s\n&amp;quot;, err)
+		return
+	}
+
+	copyConn:=func(writer, reader net.Conn) {
+		_, err:= io.Copy(writer, reader)
+		if err != nil {
+			fmt.Printf(&amp;quot;io.Copy error: %s&amp;quot;, err)
+		}
+	}
+
+	go copyConn(localConn, remoteConn)
+	go copyConn(remoteConn, localConn)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;usage&#34;&gt;Usage&lt;/h3&gt;
+
+&lt;p&gt;You can start the tunneling server in the following way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;tunnel := &amp;amp;SSHTunnel{
+		Config: sshConfig,
+		Local:  localEndpoint,
+		Server: serverEndpoint,
+		Remote: remoteEndpoint,
+	}
+
+tunnel.Start()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;em&gt;Note &lt;code&gt;tunnel.Start&lt;/code&gt; function is blocking. if you want to enable tunneling for
+your client application, you should start the function as a go routine.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;You can simple establish an connection to your local server &lt;code&gt;localhost:9000&lt;/code&gt; in
+the following manner:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;conn, err := net.Dial(&amp;quot;tcp&amp;quot;, &amp;quot;localhost:9000&amp;quot;)
+if err != nil {
+	// handle error
+}
+reader := bufio.NewReader(conn)
+// ...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can download the example source code from &lt;a href=&#34;https://gist.github.com/svett/5d695dcc4cc6ad5dd275&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

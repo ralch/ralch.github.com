@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="description" content="">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+
+<meta name="keywords" content="go, prototype, creational design patterns, ">
+
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:description" content=""/>
+<meta property="og:title" content="Design Patterns in Golang: Prototype : blog.ralch.com"/>
+<meta property="og:site_name" content="Svett Ralchev"/>
+<meta property="og:image" content="" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="" />
+<meta property="og:image:height" content="" />
+<meta property="og:url" content="http://blog.ralch.com/tutorial/design-patterns/golang-prototype/">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-02-06"/>
+<meta property="article:modified_time" content="2016-02-06"/>
+
+
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="prototype">
+<meta property="article:tag" content="creational design patterns">
+
+
+
+  <title> Design Patterns in Golang: Prototype &middot; Software adventures and thoughts </title>
+
+  
+  <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
+
+  
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+  
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+
+<body>
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
+      <p class="lead">
+       Software adventures and thoughts 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a></li>
+      <li><a href="/tutorial">Tutorials</a></li>
+      
+      <li><a href="/about/">About </a></li>
+      
+    </ul>
+      <a href="http://uk.linkedin.com/in/svettralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
+      <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+      
+      <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
+      
+      <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
+
+    <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
+      &copy; 2016 Svett Ralchev. All rights reserved.</p>
+    
+  </div>
+</div>
+
+  <div class="content container">
+  <div class="post">
+    <h1 class="post-title">Design Patterns in Golang: Prototype</h1>
+    <span class="post-date">Sat, Feb 6, 2016</span>
+    
+
+<div class="post-categories">
+    
+    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
+    
+    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
+    
+</div>
+
+
+
+    
+
+<h4 id="preface">Preface</h4>
+
+<p><code>The Prototype Pattern</code> creates duplicate objects while keeping performance
+in mind. It&rsquo;s a part of the creational patterns and provides one of the best
+ways to create an object.</p>
+
+<p>In the mainstream languages (like C# and JAVA), it requires implementing a
+prototype interface which tells to create a clone of the current object. It is
+used when creation of object directly is costly.</p>
+
+<p>For instance, an object is to be created after a costly database operation. We
+can cache the object, returns its clone on next request and update the database
+as and when needed thus reducing database calls.</p>
+
+<h4 id="purpose">Purpose</h4>
+
+<ul>
+<li>Specify the kind of objects to create using a prototypical instance, and
+create new objects by copying this prototype.</li>
+</ul>
+
+<h4 id="design-pattern-diagram">Design Pattern Diagram</h4>
+
+
+<figure >
+    
+        <img src="/media/golang/design-patterns/prototype.gif" alt="Prototype Class Diagram" />
+    
+    
+</figure>
+
+
+<ul>
+<li><code>Prototype</code> declares an interface for cloning itself</li>
+<li><code>ConcretePrototype</code> implements an operation for cloning itself</li>
+<li><code>Client</code> creates a new object by asking a prototype to clone itself</li>
+</ul>
+
+<h4 id="implementation">Implementation</h4>
+
+<p>In Golang, the pattern is applicable only in situation that we want to
+customize how the object is cloned. We will explore two examples regarding
+both situations.</p>
+
+<p>Lets build a system that generates a different configuration files depending on
+our needs. In first place, we have a struct <code>Config</code> that looks like:</p>
+
+<pre><code class="language-Golang">package configurer
+
+// Config provides a configuration of microservice
+type Config struct {
+	workDir string
+	user    string
+}
+
+// NewConfig create a new config
+func NewConfig(user string, workDir string) Config {
+	return Config{
+		user:    user,
+		workDir: workDir,
+	}
+}
+
+// WithWorkDir creates a copy of Config with the provided working directory
+func (c Config) WithWorkDir(dir string) Config {
+	c.workDir = dir
+	return c
+}
+
+// WithUser creates a copy of Config with the provided user
+func (c Config) WithUser(user string) Config {
+	c.user = user
+	return c
+}
+</code></pre>
+
+<p>We want to be able to mutate the object without affecting its initial instance.
+The goal is to be able to generate different configuration files without loosing
+the flexibility of customizing them without mutation of the initial default
+configuration.</p>
+
+<p>As you can see the functions <code>WithWorkDir</code>, <code>WithUser</code> are declared for the
+struct <code>Config</code> (not for <code>*Config</code>). At the time, when they are called the
+object is copied by the <code>Golang</code> runtime. This allows us to modify it
+without affecting the original object.</p>
+
+<p>Lets see it&rsquo;s usage in action:</p>
+
+<pre><code class="language-Golang">config := configurer.NewConfig(&quot;guest&quot;, &quot;/home/guest&quot;)
+rootConfig := config.WithUser(&quot;root&quot;).WithWorkDir(&quot;/root&quot;)
+
+fmt.Println(&quot;Guest Config&quot;, config)
+fmt.Println(&quot;Root Config&quot;, rootConfig)
+</code></pre>
+
+<p>Now lets explore the classic implementation of <code>The Prototype Design Pattern</code>.
+We will assume that we are developing again document object model for a custom
+document format. The core object is an <code>Element</code> structure which has parent and
+children.</p>
+
+<pre><code class="language-Golang">// Element represents an element in document object model
+type Element struct {
+	text     string
+	parent   Node
+	children []Node
+}
+
+// NewElement makes a new element
+func NewElement(text string) *Element {
+	return &amp;Element{
+		text:     text,
+		parent:   nil,
+		children: make([]Node, 0),
+	}
+}
+
+// Parent returns the element parent
+func (e *Element) Parent() Node {
+	return e.parent
+}
+
+// SetParent sets the element parent
+func (e *Element) SetParent(node Node) {
+	e.parent = node
+}
+
+// Children returns the element children elements
+func (e *Element) Children() []Node {
+	return e.children
+}
+
+// AddChild adds a child element
+func (e *Element) AddChild(child Node) {
+	copy := child.Clone()
+	copy.SetParent(e)
+	e.children = append(e.children, copy)
+}
+
+// Clone makes a copy of particular element. Note that the element becomes a
+// root of new orphan tree
+func (e *Element) Clone() Node {
+	copy := &amp;Element{
+		text:     e.text,
+		parent:   nil,
+		children: make([]Node, 0),
+	}
+	for _, child := range e.children {
+		copy.AddChild(child)
+	}
+	return copy
+}
+
+// String returns string representation of element
+func (e *Element) String() string {
+	buffer := bytes.NewBufferString(e.text)
+
+	for _, c := range e.Children() {
+		text := c.String()
+		fmt.Fprintf(buffer, &quot;\n %s&quot;, text)
+	}
+
+	return buffer.String()
+}
+</code></pre>
+
+<p>The contract that exposes the <code>Clone</code> funcion is the <code>Node</code> interface:</p>
+
+<pre><code class="language-Golang">// Node a document object model node
+type Node interface {
+	// Strings returns nodes text representation
+	String() string
+	// Parent returns the node parent
+	Parent() Node
+	// SetParent sets the node parent
+	SetParent(node Node)
+	// Children returns the node children nodes
+	Children() []Node
+	// AddChild adds a child node
+	AddChild(child Node)
+	// Clone clones a node
+	Clone() Node
+}
+</code></pre>
+
+<p>We want to extract a particular subtree of concrete element hierary. We want to
+use it as independent document object model. In order to do that, we should use
+the clone function:</p>
+
+<pre><code class="language-Golang">directorNode := dom.NewElement(&quot;Director of Engineering&quot;)
+
+engManagerNode := dom.NewElement(&quot;Engineering Manager&quot;)
+engManagerNode.AddChild(dom.NewElement(&quot;Lead Software Engineer&quot;))
+
+directorNode.AddChild(engManagerNode)
+directorNode.AddChild(engManagerNode)
+
+officeManagerNode := dom.NewElement(&quot;Office Manager&quot;)
+directorNode.AddChild(officeManagerNode)
+
+fmt.Println(&quot;&quot;)
+fmt.Println(&quot;# Company Hierarchy&quot;)
+fmt.Print(directorNode)
+fmt.Println(&quot;&quot;)
+fmt.Println(&quot;# Team Hiearachy&quot;)
+fmt.Print(engManagerNode.Clone())
+</code></pre>
+
+<p>The sample above creates a tree from the subtree pointed by <code>engManagerNode</code>
+variable.</p>
+
+<p>You can get the full source code from
+<a href="https://github.com/svett/golang-design-patterns/tree/master/creational-patterns/prototype">github</a>.</p>
+
+<h4 id="verdict">Verdict</h4>
+
+<p>One of the disadvantages of this pattern is that the process of copying an object
+can be complicated. In addition, structs that have circular references to other
+classes are difficult to clone. Its overuse could affect performance, as the
+prototype object itself would need to be instantiated if you use a registry of
+prototypes.</p>
+
+<p>In the context of <code>Golang</code>, I don&rsquo;t see any particular reason to adopt it.
+<code>Golang</code> already provides builtin mechanism for cloning objects.</p>
+
+    
+<div class="social-sharing">
+	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-prototype%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
+	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-prototype%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
+	<a class="share-button-linkedin" onClick="return popupShare(this.href);" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-prototype%2f&title=Design%20Patterns%20in%20Golang%3a%20Prototype&summary=Preface%20The%20Prototype%20Pattern%20creates%20duplicate%20objects%20while%20keeping%20performance%20in%20mind.%20It%26rsquo%3bs%20a%20part%20of%20the%20creational%20patterns%20and%20provides%20one%20of%20the%20best%20ways%20to%20create%20an%20object.%0aIn%20the%20mainstream%20languages%20%28like%20C%23%20and%20JAVA%29%2c%20it%20requires%20implementing%20a%20prototype%20interface%20which%20tells%20to%20create%20a%20clone%20of%20the%20current%20object.%20It%20is%20used%20when%20creation%20of%20object%20directly%20is%20costly.%0aFor%20instance%2c%20an%20object%20is%20to%20be%20created%20after%20a%20costly%20database%20operation.}&source=Software%20adventures%20and%20thoughts" target="_blank"><i class="fa fa-linkedin"><span>Share on LinkedIn</span></i></a>
+	<a class="share-button-twitter" onClick="return popupShare(this.href);" href="http://twitter.com/share?text=Design%20Patterns%20in%20Golang%3a%20Prototype&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-prototype%2f" target="_blank"><i class="fa fa-twitter"><span>Tweet</span></i></a>	
+</div>
+<script type="text/javascript">
+    function popupShare(url) {
+        window.open(url, '_blank', 'scrollbars,resizable,height=525,width=600');
+        return false;
+    }
+</script>
+
+
+    
+
+<div class="tags-list">
+    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
+    
+    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
+    
+    <a class="post-tag post-tag-prototype" href="http://blog.ralch.com/tags/prototype">prototype</a>,
+    
+    <a class="post-tag post-tag-creational-design-patterns" href="http://blog.ralch.com/tags/creational-design-patterns">creational design patterns</a>,
+    
+</div>
+
+
+
+    
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost") 
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+  </div>
+  </div>
+  </body>
+</html>

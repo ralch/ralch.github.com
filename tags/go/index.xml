@@ -1,0 +1,2958 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/go/index.xml</link>
+    <language>en-us</language>
+    <author>Svett Ralchev</author>
+    
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Design Patterns in Golang: Decorator</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-decorator/</link>
+      <pubDate>Sun, 17 Apr 2016 18:33:52 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-decorator/</guid>
+      <description>
+
+&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
+
+&lt;p&gt;The Decorator pattern adds new functionality to an existing object
+without altering its structure. It is a structural pattern as this pattern acts
+as a wrapper to existing class.&lt;/p&gt;
+
+&lt;p&gt;The instanciate a decorator struct which decorates (wraps) the original object
+and provides additional functionality keeping its methods signature intact.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Attach additional responsibilities to an object dynamically.&lt;/li&gt;
+&lt;li&gt;Decorators provide a flexible alternative to inheritance for extending
+functionality.&lt;/li&gt;
+&lt;li&gt;Wrapping a present, putting it in a box, and wrapping the box.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+&lt;p&gt;The Decorator Pattern has the following entities:&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/decorator.gif&#34; alt=&#34;Decorator Class Diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Component&lt;/code&gt; defines the interface for objects that can have responsibilities added to them dynamically.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ConcreteComponent&lt;/code&gt; defines an object to which additional responsibilities can be attached.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Decorator&lt;/code&gt; maintains a reference to a Component object and defines an interface that conforms to Component&amp;rsquo;s interface.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ConcreteDecorator&lt;/code&gt; adds responsibilities to the component.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;We are explore the use of decorator pattern via following example in
+which we will extend an existing object that fetches a data from web service.
+We will decorate it by adding circuit breaker capabilities without changing the
+struct interface.&lt;/p&gt;
+
+&lt;p&gt;Lets have a &lt;code&gt;Fetcher&lt;/code&gt; interface that defines a contract for fetching some data
+from different sources.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Args of fetching function
+type Args map[string]string
+
+// Data returned by fetch
+type Data map[string]string
+
+// Fetcher fetches a data from remote endpoint
+type Fetcher interface {
+	// Fetch fetches the data
+	Fetch(args Args) (Data, error)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A concrete implementation of the &lt;code&gt;Fetcher&lt;/code&gt; interface is the &lt;code&gt;Repository&lt;/code&gt; struct
+which provides some dummy data if the provided arguments are not empty, otherwise
+returns an error. The &lt;code&gt;Repository&lt;/code&gt; struct is a concrete component in the context
+of The Decorator Pattern.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Repository of data
+type Repository struct{}
+
+// Fetch fetches data
+func (r *Repository) Fetch(args Args) (Data, error) {
+	if len(args) == 0 {
+		return Data{}, fmt.Errorf(&amp;quot;No arguments are provided&amp;quot;)
+	}
+
+	data := Data{
+		&amp;quot;user&amp;quot;:     &amp;quot;root&amp;quot;,
+		&amp;quot;password&amp;quot;: &amp;quot;swordfish&amp;quot;,
+	}
+	fmt.Printf(&amp;quot;Repository fetched data successfully: %v\n&amp;quot;, data)
+	return data, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A &lt;code&gt;Retrier&lt;/code&gt; struct is the decorator that adds circuit breaker capabilities to
+any component that implements the &lt;code&gt;Fetcher&lt;/code&gt; interface. The &lt;code&gt;Retrier&lt;/code&gt; has a few
+properties that allow that. The &lt;code&gt;RetryCount&lt;/code&gt; property defines the number of times
+that the retrier should try to fetch if there is an error. The &lt;code&gt;WaitInterval&lt;/code&gt;
+property defines the interval between every retry. The &lt;code&gt;Fetcher&lt;/code&gt; property is
+points to the object that is decorated. The &lt;code&gt;Retrier&lt;/code&gt; calls the &lt;code&gt;Fetch&lt;/code&gt;
+function of the decorated object until it succeeds or exceed the retry policy.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Retrier retries multiple times
+type Retrier struct {
+	RetryCount   int
+	WaitInterval time.Duration
+	Fetcher      Fetcher
+}
+
+// Fetch fetches data
+func (r *Retrier) Fetch(args Args) (Data, error) {
+	for retry := 1; retry &amp;lt;= r.RetryCount; retry++ {
+		fmt.Printf(&amp;quot;Retrier retries to fetch for %d\n&amp;quot;, retry)
+		if data, err := r.Fetcher.Fetch(args); err == nil {
+			fmt.Printf(&amp;quot;Retrier fetched for %d\n&amp;quot;, retry)
+			return data, nil
+		} else if retry == r.RetryCount {
+			fmt.Printf(&amp;quot;Retrier failed to fetch for %d times\n&amp;quot;, retry)
+			return Data{}, err
+		}
+		fmt.Printf(&amp;quot;Retrier is waiting after error fetch for %v\n&amp;quot;, r.WaitInterval)
+		time.Sleep(r.WaitInterval)
+	}
+
+	return Data{}, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we can add the new retry capabilities by wrapping the &lt;code&gt;Repository&lt;/code&gt; instance
+with the &lt;code&gt;Retrier&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;repository := &amp;amp;cbreaker.Repository{}
+retrier := &amp;amp;cbreaker.Retrier{
+	RetryCount:   5,
+	WaitInterval: time.Second,
+	Fetcher:      repository,
+}
+
+data, err := repository.Fetch(cbreaker.Args{&amp;quot;id&amp;quot;: &amp;quot;1&amp;quot;})
+fmt.Printf(&amp;quot;#1 repository.Fetch: %v\n&amp;quot;, data)
+
+data, err = retrier.Fetch(cbreaker.Args{})
+fmt.Printf(&amp;quot;#2 retrier.Fetch error: %v\n&amp;quot;, err)
+
+data, err = retrier.Fetch(cbreaker.Args{&amp;quot;id&amp;quot;: &amp;quot;1&amp;quot;})
+fmt.Printf(&amp;quot;#3 retrier.Fetch: %v\n&amp;quot;, data)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;The Decorator Pattern is more convenient for adding functionalities to objects
+instead of entire structs at runtime. With decoration it is also possible to
+remove the added functionalities dynamically.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Design Patterns in Golang: Composite</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-composite/</link>
+      <pubDate>Thu, 31 Mar 2016 09:00:27 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-composite/</guid>
+      <description>
+
+&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
+
+&lt;p&gt;A Composite Design Pattern is a structural pattern that uses to employ
+composition when implementing an interface rather than using multiple
+inheritance. It composes objects into tree structures and lets
+clients treat individual objects and compositions uniformly.&lt;/p&gt;
+
+&lt;p&gt;There are situations when clients ignore the difference between
+compositions of objects and individual objects. If dealing with multiple
+objects in the same way as handle each of deam is identical, the Composite
+Design pattern is a good choice to decrease the complexity and treat them as
+homogeneous.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The intent of this pattern is to compose objects into tree structures to
+represent part-whole hierarchies.&lt;/li&gt;
+&lt;li&gt;Composite lets clients treat individual objects and compositions of objects
+uniformly.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+&lt;p&gt;The Composite Pattern provides the following units: Component, Leaf and
+Composite.&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/composite.gif&#34; alt=&#34;Composite Class Diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Component&lt;/code&gt; is an interface for all components, including composite ones. It declares the interface for objects in the composition&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Leaf&lt;/code&gt; represents leaf objects in the composition implements all &lt;code&gt;Component&lt;/code&gt; methods&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Composite&lt;/code&gt; represents a composite &lt;code&gt;Component&lt;/code&gt; that has children. Usually
+implements all Componenet methods and methods to manipulate children.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;The Composite Design Pattern is very common approach for implementing a
+document object model hierarchy. Such an example are image editors, which
+compose different shapes and layers into hierarchy.&lt;/p&gt;
+
+&lt;p&gt;Lets implement a basic architecture of such an editor. Lets use the following
+interface:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// VisualElement that is drawn on the screen
+type VisualElement interface {
+	// Draw draws the visual element
+	Draw(drawer *Drawer) error
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The editor supports two kind of shapes (circle and square). Each of the structs
+that represents the coresponding shape obeys the &lt;code&gt;VisualElement&lt;/code&gt; interface by
+implementing a &lt;code&gt;Draw&lt;/code&gt; function that has exactly the same signiture exposed in
+the interface. The following code snippet illustrate the implementation of
+thoes components:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Square represents a square
+type Square struct {
+	// Location of the square
+	Location Point
+	// Side size
+	Side float64
+}
+
+// Draw draws a square
+func (square *Square) Draw(drawer *Drawer) error {
+	return drawer.DrawRect(Rect{
+		Location: square.Location,
+		Size: Size{
+			Height: square.Side,
+			Width:  square.Side,
+		},
+	})
+}
+
+// Circle represents a circle shape
+type Circle struct {
+	// Center of the circle
+	Center Point
+	// Radius of the circle
+	Radius float64
+}
+
+// Draw draws a circle
+func (circle *Circle) Draw(drawer *Drawer) error {
+	rect := Rect{
+		Location: Point{
+			X: circle.Center.X - circle.Radius,
+			Y: circle.Center.Y - circle.Radius,
+		},
+		Size: Size{
+			Width:  2 * circle.Radius,
+			Height: 2 * circle.Radius,
+		},
+	}
+
+	return drawer.DrawEllipseInRect(rect)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In order to allow composition and drawing of multiple shapes on the screen, a
+&lt;code&gt;Layer&lt;/code&gt; compose thoes object. It contains an array of &lt;code&gt;VisualElement&lt;/code&gt;. It is
+responsible to interate over the elements and draw each of them. As you can see
+the actual struct uses the &lt;code&gt;VisualElement&lt;/code&gt; interface as a contract to support
+different shapes no matter what is their type.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Layer contains composition of visual elements
+type Layer struct {
+	// Elements of visual elements
+	Elements []VisualElement
+}
+
+// Draw draws a layer
+func (layer *Layer) Draw(drawer *Drawer) error {
+	for _, element := range layer.Elements {
+		if err := element.Draw(drawer); err != nil {
+			return err
+		}
+		fmt.Println()
+	}
+
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The object can be composed as it is shown in the following code snippet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;circle := &amp;amp;photoshop.Circle{
+	Center: photoshop.Point{X: 100, Y: 100},
+	Radius: 50,
+}
+
+square := &amp;amp;photoshop.Square{
+	Location: photoshop.Point{X: 50, Y: 50},
+	Side:     20,
+}
+
+layer := &amp;amp;photoshop.Layer{
+	Elements: []photoshop.VisualElement{
+		circle,
+		square,
+	},
+}
+
+layer.Draw(&amp;amp;photoshop.Drawer{})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;Dealing with Tree-structured data makes code more complex, and therefore,
+error prone. The Composite Design Patterns provides a solution that allows
+treating complex and primitive objects uniformly. The operations you can
+perform on all the composite objects often have a least common relationship
+that allows handling a set of object as a single unit.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Desing Patterns in Golang: Bridge</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-bridge/</link>
+      <pubDate>Thu, 17 Mar 2016 17:26:46 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-bridge/</guid>
+      <description>
+
+&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
+
+&lt;p&gt;The Bridge Pattern is a creational design pattern used to decouple an
+abstraction from its implementation. The bridge uses encapsulation,
+aggregation, and can use inheritance to separate responsibilities into
+different classes.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Decouple an abstraction from its implementation that allows both to vary independently.&lt;/li&gt;
+&lt;li&gt;Publish interface in an inheritance hierarchy, and bury implementation in its own inheritance hierarchy.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+&lt;p&gt;The objects participating in this pattern are presented on the following diagram:&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/bridge.gif&#34; alt=&#34;Bridge Class Diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Abstraction&lt;/code&gt; defines the abstraction&amp;rsquo;s interface and maintains a reference to an object of type &lt;code&gt;Implementor&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;RefinedAbstraction&lt;/code&gt; extends the interface defined by &lt;code&gt;Abstraction&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Implementor&lt;/code&gt; defines the interface for implementation objects&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ConcreteImplementor&lt;/code&gt; implements the &lt;code&gt;Implementor&lt;/code&gt; interface and defines its concrete implementation&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;Consider building an UI package that supports drawing different shapes on the
+screen by supporting &lt;code&gt;OpenGL&lt;/code&gt; and &lt;code&gt;Direct2D&lt;/code&gt; rendering technologies. In our
+particular example should be able to draw a circle by supporting both rendering
+systems.&lt;/p&gt;
+
+&lt;p&gt;In order to do that we should separate the &lt;code&gt;Circle&lt;/code&gt; struct from its drawing
+implementation:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Circle represents a circle shape
+type Circle struct {
+	// DrawingContext for this circle
+	DrawingContext Drawer
+	// Center of the circle
+	Center Point
+	// Radius of the circle
+	Radius float64
+}
+
+// Draw draws a circle
+func (circle *Circle) Draw() error {
+	rect := Rect{
+		Location: Point{
+			X: circle.Center.X - circle.Radius,
+			Y: circle.Center.Y - circle.Radius,
+		},
+		Size: Size{
+			Width:  2 * circle.Radius,
+			Height: 2 * circle.Radius,
+		},
+	}
+
+	return circle.DrawingContext.DrawEllipseInRect(rect)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Drawer&lt;/code&gt; defines the contract between the &lt;code&gt;Circle&lt;/code&gt; abstraction and its
+implementation:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Drawer draws on the underlying graphics device
+type Drawer interface {
+	// DrawEllipseInRect draws an ellipse in rectanlge
+	DrawEllipseInRect(Rect) error
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For every of the supported rendering technologies we should implement a struct
+that obeys the &lt;code&gt;Drawer&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;p&gt;This is a sample implementation of &lt;code&gt;OpenGL&lt;/code&gt; drawer:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// OpenGL drawer
+type OpenGL struct{}
+
+// DrawEllipseInRect draws an ellipse in rectangle
+func (gl *OpenGL) DrawEllipseInRect(r Rect) error {
+	fmt.Printf(&amp;quot;OpenGL is drawing ellipse in rect %v&amp;quot;, r)
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is a sample implementation of &lt;code&gt;Direct2D&lt;/code&gt; drawer:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Direct2D drawer
+type Direct2D struct{}
+
+// DrawEllipseInRect draws an ellipse in rectangle
+func (d2d *Direct2D) DrawEllipseInRect(r Rect) error {
+	fmt.Printf(&amp;quot;Direct2D is drawing ellipse in rect %v&amp;quot;, r)
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we can easily render a circle by using the desired drawing system. We should
+just change the implementation by setting &lt;code&gt;DrawingContext&lt;/code&gt; field:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;openGL := &amp;amp;uikit.OpenGL{}
+direct2D := &amp;amp;uikit.Direct2D{}
+
+circle := &amp;amp;uikit.Circle{
+	Center: uikit.Point{X: 100, Y: 100},
+	Radius: 50,
+}
+
+circle.DrawingContext = openGL
+circle.Draw()
+
+circle.DrawingContext = direct2D
+circle.Draw()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;The Bridge Pattern is designed up-front to let the abstraction and the
+implementation vary independently. That allows us to independently change the
+implementation from its abstraction.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Errors handling in Golang</title>
+      <link>http://blog.ralch.com/tutorial/golang-handling-errors/</link>
+      <pubDate>Thu, 10 Mar 2016 08:52:29 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-handling-errors/</guid>
+      <description>
+
+&lt;p&gt;&lt;code&gt;Go&lt;/code&gt; does not have an &lt;code&gt;Exception&lt;/code&gt; handling model as most of the main stream
+languages. However, it uses the error interface type as the return type for any
+error that is going to be returned from a function or method:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type error interface {
+    Error() string
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It is an interface type. An error variable represents any value
+that can describe itself as a string. The most commonly-used error
+implementation is in the &lt;a href=&#34;https://golang.org/pkg/errors/&#34;&gt;errors&lt;/a&gt; package.&lt;/p&gt;
+
+&lt;p&gt;It can be instaciated in the following way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;func DivideBy(divider float64) (float64, error) {
+    if divider &amp;lt;= 0 {
+        return 0, errors.New(&amp;quot;Divider cannot be zero or negative number.&amp;quot;)
+    }
+    // implementation
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;errors.New&lt;/code&gt; functions constructs an exported type &lt;code&gt;errorString&lt;/code&gt; that
+implements the &lt;code&gt;Error&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Copyright 2011 The Go Authors.  All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package errors implements functions to manipulate errors.
+package errors
+
+// New returns an error that formats as the given text.
+func New(text string) error {
+	return &amp;amp;errorString{text}
+}
+
+// errorString is a trivial implementation of error.
+type errorString struct {
+	s string
+}
+
+func (e *errorString) Error() string {
+	return e.s
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It is pretty straighforward to implement your own error type that has additional
+data.&lt;/p&gt;
+
+&lt;p&gt;The error model in &lt;code&gt;Golang&lt;/code&gt; does not provide a way to find out, which function
+returned the error. We should be aware and log the errors very carefully in
+order to understand where this error occurred.&lt;/p&gt;
+
+&lt;p&gt;Fortunately, the &lt;code&gt;Golang&lt;/code&gt; runtime provides a set of functions that we can use to
+generate a stacktrace that we can trace down easily.&lt;/p&gt;
+
+&lt;p&gt;In the following paragraphs, we will explore the Planatir
+&lt;a href=&#34;https://github.com/palantir/stacktrace&#34;&gt;stacktrace&lt;/a&gt; package that does this for
+us.&lt;/p&gt;
+
+&lt;h3 id=&#34;getting-started&#34;&gt;Getting Started&lt;/h3&gt;
+
+&lt;p&gt;The package captures a strategic places along the call stack and attaches relevant
+contextual information like messages and variables. It is keeping stack traces
+compact and maximally useful.&lt;/p&gt;
+
+&lt;h3 id=&#34;installation&#34;&gt;Installation&lt;/h3&gt;
+
+&lt;p&gt;In order to use the package, we should install it first by using the well known
+&lt;code&gt;go get&lt;/code&gt; command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Bash&#34;&gt;$ go get github.com/palantir/stacktrace
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;usage&#34;&gt;Usage&lt;/h3&gt;
+
+&lt;p&gt;The package provides a various functions to propagate and generate that
+contextual information.&lt;/p&gt;
+
+&lt;h5 id=&#34;error-propagation&#34;&gt;Error propagation&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;stacktrace.Propagate&lt;/code&gt; function replaces the usage of &lt;code&gt;fmt.Errorf&lt;/code&gt; function. It
+wraps an error to include line number information. This is going to be your
+most common stacktrace call.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;db, err := sql.Open(&amp;quot;postgres&amp;quot;, conninfo)
+if err != nil {
+   return stacktrace.Propagate(err, &amp;quot;Failed to connect %v&amp;quot;, conninfo)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;creating-errors&#34;&gt;Creating errors&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;stacktrace.NewError&lt;/code&gt; creates a new error that includes line number information:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;if amount &amp;lt;= 0 {
+    return stacktrace.NewError(&amp;quot;Expected amount %v to be positive number&amp;quot;, arg)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;error-codes&#34;&gt;Error Codes&lt;/h5&gt;
+
+&lt;p&gt;Sometimes it&amp;rsquo;s useful to propagate an error code while unwinding the
+stack. For instance, a RESTful API may use the error code to set the HTTP status
+code. The type &lt;code&gt;stacktrace.ErrorCode&lt;/code&gt; is used to name the set of error codes
+relevant to your application:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;const (
+    ConnectionTimeout = stacktrace.ErrorCode(iota)
+		ConnectionLost
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The value &lt;code&gt;stacktrace.NoCode&lt;/code&gt; is equal to &lt;code&gt;math.MaxUint16&lt;/code&gt;, so avoid using
+that. &lt;code&gt;NoCode&lt;/code&gt; is the default value of errors that does not have explicitly set
+error code.&lt;/p&gt;
+
+&lt;p&gt;You can use &lt;code&gt;stacktrace.PropagateWithCode&lt;/code&gt; and &lt;code&gt;stacktrace.NewErrorWithCode&lt;/code&gt; to
+instaciated an error that has specific code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;db, err := sql.Open(&amp;quot;postgres&amp;quot;, conninfo)
+if err != nil {
+   return stacktrace.PropagateWithCode(err, ConnectionTimeout, &amp;quot;Failed to connect %v&amp;quot;, conninfo)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can extract the error code from the error by using &lt;code&gt;stacktrace.GetCode&lt;/code&gt;
+function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;data, err := fetch()
+if err != nil {
+  code := stacktrace.GetCode(err)
+	if code == ConnectionTimeout {
+	   return nil
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;verdict&#34;&gt;Verdict&lt;/h3&gt;
+
+&lt;p&gt;The &lt;code&gt;stacktrace&lt;/code&gt; package is very pleasant and easy to use. It comforms the Golang
+idiomatic way of handling errors and provides us with additional contextual information
+about the file and the line where the error occurred.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Design Patterns in Golang: Adapter</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-adapter/</link>
+      <pubDate>Mon, 22 Feb 2016 08:42:38 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-adapter/</guid>
+      <description>
+
+&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;The Adapter Pattern&lt;/code&gt; is responsible for adaptation of two incompatible
+interfaces. It is a structural pattern that is responsible to join
+functionalities of independent or incompatible interfaces without modifing
+their implementation.&lt;/p&gt;
+
+&lt;p&gt;Interfaces may be incompatible but the inner functionality should suit the
+need. It allows otherwise incompatible objects to work together by converting
+the interface of each struct into an interface expected by the clients.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Impedance match an old component to a new system&lt;/li&gt;
+&lt;li&gt;Wrap the interface of a object into another interface clients expect.&lt;/li&gt;
+&lt;li&gt;Adapter lets objects work together, that could not otherwise because of incompatible interfaces.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+&lt;p&gt;The structs/objects that are participating in adapter pattern are illustrated
+in the following diagram:&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/adapter.gif&#34; alt=&#34;Adapter Class Diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Target&lt;/code&gt; is the domain-specific interface that Client wants to use.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Adapter&lt;/code&gt; adapts the interface &lt;code&gt;Adaptee&lt;/code&gt; to the &lt;code&gt;Target&lt;/code&gt; interface. It
+implements the &lt;code&gt;Target&lt;/code&gt; interface in terms of the Adaptee.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Adaptee&lt;/code&gt; defines an existing interface that needs adapting.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Client&lt;/code&gt; collaborates with objects conforming to the &lt;code&gt;Target&lt;/code&gt; interface.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The &lt;code&gt;Target&lt;/code&gt; interface enables objects of adaptee types to be interchangeable
+with any other objects that might implement the same interface. However, the
+adaptees might not conform to the &lt;code&gt;Target&lt;/code&gt;. The interface alone is not a
+sufficiently powerful mechanism. We need the Adapter pattern. An &lt;code&gt;Adaptee&lt;/code&gt;
+offers similar functionality to the client, but under a different name and with
+possibly different parameters. The &lt;code&gt;Adaptee&lt;/code&gt; is completely independent of the
+other classes and is oblivious to any naming conventions or signatures that
+they have.&lt;/p&gt;
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;Lets explore how we should use the Adapter Design Pattern to adopt two
+incompatible payment systems and make them available for our customers. Assume
+that we are building system that should support &lt;code&gt;PayPal&lt;/code&gt; and &lt;code&gt;Bank&lt;/code&gt; payments.
+In addition, we are consuming two external libraries that handles each of this
+payment methods.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;package paypal
+
+import (
+	&amp;quot;errors&amp;quot;
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;regexp&amp;quot;
+)
+
+var mailRegexp = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+
+// Money of PayPal transactions
+type Money struct {
+	// Amount
+	Amount float64
+	// Currency for that amount
+	Currency string
+}
+
+// Payment in PayPal
+type Payment struct {
+	// APIKey is the PayPal API key
+	APIKey string
+}
+
+// Send money
+func (*Payment) Send(senderEmail, recipientEmail string, money *Money) error {
+	if !mailRegexp.MatchString(senderEmail) {
+		return errors.New(&amp;quot;Invalid sender email address&amp;quot;)
+	}
+
+	if !mailRegexp.MatchString(recipientEmail) {
+		return errors.New(&amp;quot;Invalid recipient email address&amp;quot;)
+	}
+
+	if money == nil {
+		return errors.New(&amp;quot;The money must be provided&amp;quot;)
+	}
+
+	if money.Amount &amp;lt;= 0 {
+		return errors.New(&amp;quot;The amount cannot be negative&amp;quot;)
+	}
+
+	if money.Currency == &amp;quot;&amp;quot; {
+		return errors.New(&amp;quot;The currency must be provided&amp;quot;)
+	}
+
+	fmt.Printf(&amp;quot;Send %f %s from %s to %s&amp;quot;, money.Amount, money.Currency, senderEmail, recipientEmail)
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;package bank
+
+import (
+	&amp;quot;errors&amp;quot;
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;time&amp;quot;
+)
+
+// AccountType determines the type of bank account
+type AccountType uint8
+
+const (
+	// AccountTypeCurrent is a current bank account
+	AccountTypeCurrent AccountType = iota
+	// AccountTypeSaving is a saving bank account
+	AccountTypeSaving
+)
+
+// Account is a bank account
+type Account struct {
+	// Owner is the bank account owner
+	Owner string
+	// Email of the owner
+	Email string
+	// Balance is the bank account balance
+	Balance float64
+	// Currency of the account
+	Currency string
+}
+
+// Transaction is the bank transaction
+type Transaction struct {
+	FromAccount *Account
+	ToAccount   *Account
+	Amount      float64
+	Date        time.Time
+	Reason      string
+}
+
+// Gateway for the Bank
+type Gateway struct {
+	// Token Key
+	Token string
+	// Accounts
+	Accounts []*Account
+}
+
+// FindAccountByEmail finds a bank account
+func (g *Gateway) FindAccountByEmail(email string) (*Account, error) {
+	for _, account := range g.Accounts {
+		if account.Email == email {
+			return account, nil
+		}
+	}
+	return nil, errors.New(&amp;quot;Account Not Found&amp;quot;)
+}
+
+// ProcessTransaction processes a bank transaction
+func (g *Gateway) ProcessTransaction(t *Transaction) error {
+	if t.FromAccount == nil {
+		return errors.New(&amp;quot;FromAccount is missing&amp;quot;)
+	}
+	if t.ToAccount == nil {
+		return errors.New(&amp;quot;ToAccount is missing&amp;quot;)
+	}
+
+	if t.Reason == &amp;quot;&amp;quot; {
+		return errors.New(&amp;quot;Reason is not provided&amp;quot;)
+	}
+
+	if t.Amount &amp;lt;= 0 {
+		return errors.New(&amp;quot;Invalid amount&amp;quot;)
+	}
+
+	if t.Amount &amp;gt; t.FromAccount.Balance {
+		return errors.New(&amp;quot;Insufficient funds&amp;quot;)
+	}
+
+	fmt.Printf(&amp;quot;Transfered %f %s from %s to %s at %v&amp;quot;, t.Amount,
+		t.FromAccount.Currency, t.FromAccount.Owner, t.ToAccount.Owner, t.Date)
+
+	t.FromAccount.Balance -= t.Amount
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We are developing a shopping card that should work with different payment methods:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Checkouter checkouts order
+type Payment interface {
+	// Pay from email to email this amount
+	Pay(fromEmail, toEmail string, amount float64) error
+}
+
+// Item in the shopping card
+type Item struct {
+	// Name of the item
+	Name string
+	// Price of the item
+	Price float64
+}
+
+// ShoppingCard in online store
+type ShoppingCard struct {
+	// Items im the ShoppingCard
+	Items []*Item
+	// PaymentMethod selected
+	PaymentMethod Payment
+	// ShopEmailAddress address of the shop
+	ShopEmailAddress string
+}
+
+// Checkout checkouts a shopping card
+func (c *ShoppingCard) Checkout(payeeEmail string) error {
+	var total float64
+
+	for _, item := range c.Items {
+		total += item.Price
+	}
+
+	return c.PaymentMethod.Pay(payeeEmail, c.ShopEmailAddress, total)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you might see, the Bank API and PayPal API cannot be used as different
+payment options in the &lt;code&gt;ShoppingCard&lt;/code&gt; object due to their different signatures.&lt;/p&gt;
+
+&lt;p&gt;In order to adopt them we should implement an adapters that obey the &lt;code&gt;Payment&lt;/code&gt;
+interface.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;BankAdapter&lt;/code&gt; adapts the bank package API by wrapping &lt;code&gt;bank.Gateway&lt;/code&gt;
+struct:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// BankAdapter adapts bank API
+type BankAdapter struct {
+	// Gateway of the bank
+	Gateway *bank.Gateway
+}
+
+// Pay from email to email this amount
+func (b *BankAdapter) Pay(fromEmail, toEmail string, amount float64) error {
+	fromAccount, err := b.Gateway.FindAccountByEmail(fromEmail)
+	if err != nil {
+		return err
+	}
+
+	toAccount, err := b.Gateway.FindAccountByEmail(toEmail)
+	if err != nil {
+		return err
+	}
+
+	t := &amp;amp;bank.Transaction{
+		FromAccount: fromAccount,
+		ToAccount:   toAccount,
+		Amount:      amount,
+		Date:        time.Now(),
+		Reason:      &amp;quot;Payment to Online Store&amp;quot;,
+	}
+
+	return b.Gateway.ProcessTransaction(t)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;PayPal&lt;/code&gt; API is adopted by &lt;code&gt;PayPalAdapter&lt;/code&gt; struct:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// PayPalAdapter adapts PayPal API
+type PayPalAdapter struct {
+	Payment *paypal.Payment
+}
+
+// Pay from email to email this amount
+func (p *PayPalAdapter) Pay(fromEmail, toEmail string, amount float64) error {
+	return p.Payment.Send(fromEmail, toEmail, &amp;amp;paypal.Money{Amount: amount, Currency: &amp;quot;USD&amp;quot;})
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;The Adapter Pattern&lt;/code&gt; is used wherever there is code to be wrapped up and
+redirected to a different implementation.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;But How Much the &lt;code&gt;Adapter&lt;/code&gt; Should Do?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;If the &lt;code&gt;Target&lt;/code&gt; and &lt;code&gt;Adaptee&lt;/code&gt; has similarities then the adapter has just to
+delegate the requests from the Target to the Adaptee. If &lt;code&gt;Target&lt;/code&gt; and &lt;code&gt;Adaptee&lt;/code&gt;
+are not similar, then the adapter might have to convert the data structures
+between those and to implement the operations required by the Target but not
+implemented by the Adaptee.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Design Patterns in Golang: Prototype</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-prototype/</link>
+      <pubDate>Sat, 06 Feb 2016 16:01:29 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-prototype/</guid>
+      <description>
+
+&lt;h4 id=&#34;preface&#34;&gt;Preface&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;The Prototype Pattern&lt;/code&gt; creates duplicate objects while keeping performance
+in mind. It&amp;rsquo;s a part of the creational patterns and provides one of the best
+ways to create an object.&lt;/p&gt;
+
+&lt;p&gt;In the mainstream languages (like C# and JAVA), it requires implementing a
+prototype interface which tells to create a clone of the current object. It is
+used when creation of object directly is costly.&lt;/p&gt;
+
+&lt;p&gt;For instance, an object is to be created after a costly database operation. We
+can cache the object, returns its clone on next request and update the database
+as and when needed thus reducing database calls.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Specify the kind of objects to create using a prototypical instance, and
+create new objects by copying this prototype.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/prototype.gif&#34; alt=&#34;Prototype Class Diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Prototype&lt;/code&gt; declares an interface for cloning itself&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ConcretePrototype&lt;/code&gt; implements an operation for cloning itself&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Client&lt;/code&gt; creates a new object by asking a prototype to clone itself&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;In Golang, the pattern is applicable only in situation that we want to
+customize how the object is cloned. We will explore two examples regarding
+both situations.&lt;/p&gt;
+
+&lt;p&gt;Lets build a system that generates a different configuration files depending on
+our needs. In first place, we have a struct &lt;code&gt;Config&lt;/code&gt; that looks like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;package configurer
+
+// Config provides a configuration of microservice
+type Config struct {
+	workDir string
+	user    string
+}
+
+// NewConfig create a new config
+func NewConfig(user string, workDir string) Config {
+	return Config{
+		user:    user,
+		workDir: workDir,
+	}
+}
+
+// WithWorkDir creates a copy of Config with the provided working directory
+func (c Config) WithWorkDir(dir string) Config {
+	c.workDir = dir
+	return c
+}
+
+// WithUser creates a copy of Config with the provided user
+func (c Config) WithUser(user string) Config {
+	c.user = user
+	return c
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We want to be able to mutate the object without affecting its initial instance.
+The goal is to be able to generate different configuration files without loosing
+the flexibility of customizing them without mutation of the initial default
+configuration.&lt;/p&gt;
+
+&lt;p&gt;As you can see the functions &lt;code&gt;WithWorkDir&lt;/code&gt;, &lt;code&gt;WithUser&lt;/code&gt; are declared for the
+struct &lt;code&gt;Config&lt;/code&gt; (not for &lt;code&gt;*Config&lt;/code&gt;). At the time, when they are called the
+object is copied by the &lt;code&gt;Golang&lt;/code&gt; runtime. This allows us to modify it
+without affecting the original object.&lt;/p&gt;
+
+&lt;p&gt;Lets see it&amp;rsquo;s usage in action:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;config := configurer.NewConfig(&amp;quot;guest&amp;quot;, &amp;quot;/home/guest&amp;quot;)
+rootConfig := config.WithUser(&amp;quot;root&amp;quot;).WithWorkDir(&amp;quot;/root&amp;quot;)
+
+fmt.Println(&amp;quot;Guest Config&amp;quot;, config)
+fmt.Println(&amp;quot;Root Config&amp;quot;, rootConfig)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now lets explore the classic implementation of &lt;code&gt;The Prototype Design Pattern&lt;/code&gt;.
+We will assume that we are developing again document object model for a custom
+document format. The core object is an &lt;code&gt;Element&lt;/code&gt; structure which has parent and
+children.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Element represents an element in document object model
+type Element struct {
+	text     string
+	parent   Node
+	children []Node
+}
+
+// NewElement makes a new element
+func NewElement(text string) *Element {
+	return &amp;amp;Element{
+		text:     text,
+		parent:   nil,
+		children: make([]Node, 0),
+	}
+}
+
+// Parent returns the element parent
+func (e *Element) Parent() Node {
+	return e.parent
+}
+
+// SetParent sets the element parent
+func (e *Element) SetParent(node Node) {
+	e.parent = node
+}
+
+// Children returns the element children elements
+func (e *Element) Children() []Node {
+	return e.children
+}
+
+// AddChild adds a child element
+func (e *Element) AddChild(child Node) {
+	copy := child.Clone()
+	copy.SetParent(e)
+	e.children = append(e.children, copy)
+}
+
+// Clone makes a copy of particular element. Note that the element becomes a
+// root of new orphan tree
+func (e *Element) Clone() Node {
+	copy := &amp;amp;Element{
+		text:     e.text,
+		parent:   nil,
+		children: make([]Node, 0),
+	}
+	for _, child := range e.children {
+		copy.AddChild(child)
+	}
+	return copy
+}
+
+// String returns string representation of element
+func (e *Element) String() string {
+	buffer := bytes.NewBufferString(e.text)
+
+	for _, c := range e.Children() {
+		text := c.String()
+		fmt.Fprintf(buffer, &amp;quot;\n %s&amp;quot;, text)
+	}
+
+	return buffer.String()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The contract that exposes the &lt;code&gt;Clone&lt;/code&gt; funcion is the &lt;code&gt;Node&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Node a document object model node
+type Node interface {
+	// Strings returns nodes text representation
+	String() string
+	// Parent returns the node parent
+	Parent() Node
+	// SetParent sets the node parent
+	SetParent(node Node)
+	// Children returns the node children nodes
+	Children() []Node
+	// AddChild adds a child node
+	AddChild(child Node)
+	// Clone clones a node
+	Clone() Node
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We want to extract a particular subtree of concrete element hierary. We want to
+use it as independent document object model. In order to do that, we should use
+the clone function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;directorNode := dom.NewElement(&amp;quot;Director of Engineering&amp;quot;)
+
+engManagerNode := dom.NewElement(&amp;quot;Engineering Manager&amp;quot;)
+engManagerNode.AddChild(dom.NewElement(&amp;quot;Lead Software Engineer&amp;quot;))
+
+directorNode.AddChild(engManagerNode)
+directorNode.AddChild(engManagerNode)
+
+officeManagerNode := dom.NewElement(&amp;quot;Office Manager&amp;quot;)
+directorNode.AddChild(officeManagerNode)
+
+fmt.Println(&amp;quot;&amp;quot;)
+fmt.Println(&amp;quot;# Company Hierarchy&amp;quot;)
+fmt.Print(directorNode)
+fmt.Println(&amp;quot;&amp;quot;)
+fmt.Println(&amp;quot;# Team Hiearachy&amp;quot;)
+fmt.Print(engManagerNode.Clone())
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The sample above creates a tree from the subtree pointed by &lt;code&gt;engManagerNode&lt;/code&gt;
+variable.&lt;/p&gt;
+
+&lt;p&gt;You can get the full source code from
+&lt;a href=&#34;https://github.com/svett/golang-design-patterns/tree/master/creational-patterns/prototype&#34;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;One of the disadvantages of this pattern is that the process of copying an object
+can be complicated. In addition, structs that have circular references to other
+classes are difficult to clone. Its overuse could affect performance, as the
+prototype object itself would need to be instantiated if you use a registry of
+prototypes.&lt;/p&gt;
+
+&lt;p&gt;In the context of &lt;code&gt;Golang&lt;/code&gt;, I don&amp;rsquo;t see any particular reason to adopt it.
+&lt;code&gt;Golang&lt;/code&gt; already provides builtin mechanism for cloning objects.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Design Patterns in Golang: The Good, the Bad and the Ugly</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-design-patterns/</link>
+      <pubDate>Wed, 03 Feb 2016 13:34:23 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-design-patterns/</guid>
+      <description>
+
+&lt;p&gt;Recently I started a series of articles about &lt;a href=&#34;https://en.wikipedia.org/wiki/Design_Patterns&#34;&gt;Gang of Four Design
+Patterns&lt;/a&gt; and their adoption in
+Golang. They made a lot of noise in the community. I read a lot
+of contradictionary opionions whether should be used or not. I am publishing those
+articles as show case how the common design patterns can be adopted and implemented
+in Golang. I don&amp;rsquo;t encourage or promote their usage. Every developer has own style
+of programming, architecture desing and problem solving solutions.&lt;/p&gt;
+
+&lt;p&gt;Well, I don&amp;rsquo;t have a strong opionion about that. However, I have my own angle
+of view about this topic. I have never been a strong believer that they should
+be used intensively in any project. For me they have always been a language for
+communication among development teams. Yes, they solve particular problems. But
+I don&amp;rsquo;t think we should use them, because they exist and ar good practice.&lt;/p&gt;
+
+&lt;p&gt;Particular pattern should be used only in concrete case, when we gain benefit of
+that. I don&amp;rsquo;t encourage applying it by the book.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;Design Patterns&lt;/code&gt; have never been something encourage by the Golang community.
+They are not idiomatic for the language. Everybody knows that the language itself
+is very opioninated and idiomatic. There are no so many ways to achieve particular
+task or solve particular problem.&lt;/p&gt;
+
+&lt;p&gt;But let&amp;rsquo;s explore. Are they used in the existing Golang packages? I will give
+you a few examples how they are used in Golang libraries:&lt;/p&gt;
+
+&lt;h4 id=&#34;singleton-design-pattern&#34;&gt;Singleton Design Pattern&lt;/h4&gt;
+
+&lt;p&gt;The &lt;a href=&#34;https://golang.org/pkg/net/http/&#34;&gt;net/http&lt;/a&gt; package has
+&lt;a href=&#34;https://golang.org/src/net/http/client.go?s=76:76#L76&#34;&gt;http.DefaultClient&lt;/a&gt; and
+&lt;a href=&#34;https://golang.org/src/net/http/server.go?s=1595:1595#L1595&#34;&gt;http.DefaultServeMux&lt;/a&gt;
+objects that are alive during the application lifecycle. The &lt;code&gt;DefaultClient&lt;/code&gt; is
+used by &lt;a href=&#34;https://golang.org/src/net/http/client.go?s=9198:9246#L270&#34;&gt;Get&lt;/a&gt;,
+&lt;a href=&#34;https://golang.org/src/net/http/client.go?s=15901:15950#L500&#34;&gt;Head&lt;/a&gt; and
+&lt;a href=&#34;https://golang.org/src/net/http/client.go?s=13816:13898#L443&#34;&gt;Post&lt;/a&gt; functions
+to send request to http server.&lt;/p&gt;
+
+&lt;p&gt;Those variables contains a single instances that can be used accros the application.
+The implementation does not follow the same as most of the mainstream language. It&amp;rsquo;s
+still Golang idiomatic.&lt;/p&gt;
+
+&lt;h4 id=&#34;factory-design-pattern&#34;&gt;Factory Design Pattern&lt;/h4&gt;
+
+&lt;p&gt;Did you used &lt;a href=&#34;https://github.com/lib/pq&#34;&gt;PostrgreSQL&lt;/a&gt; library like that?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;import (
+	&amp;quot;database/sql&amp;quot;
+	_ &amp;quot;github.com/lib/pq&amp;quot;
+)
+
+func main() {
+	db, err := sql.Open(&amp;quot;postgres&amp;quot;, &amp;quot;user=pqgotest dbname=pqgotest sslmode=verify-full&amp;quot;)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	age := 21
+	rows, err := db.Query(&amp;quot;SELECT name FROM users WHERE age = $1&amp;quot;, age)
+	...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Well in order to connect to &lt;code&gt;PostgreSQL&lt;/code&gt; server the &lt;code&gt;sql&lt;/code&gt; package instaciate the
+registered driver via &lt;code&gt;Factory&lt;/code&gt; Design Pattern. The driver is registered by
+&lt;a href=&#34;https://golang.org/src/database/sql/sql.go?s=805:853#L24&#34;&gt;this function&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;Factory&lt;/code&gt; function is &lt;a href=&#34;https://golang.org/src/database/sql/sql.go?s=805:853#L468&#34;&gt;db.Open&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;iterator-design-pattern&#34;&gt;Iterator Design Pattern&lt;/h4&gt;
+
+&lt;p&gt;Golang has a &lt;a href=&#34;https://golang.org/pkg/go/token/&#34;&gt;token package&lt;/a&gt; that defines
+constants representing the lexical tokens of the Go programming language and
+basic operations on tokens (printing, predicates).&lt;/p&gt;
+
+&lt;p&gt;The package has a
+&lt;a href=&#34;https://golang.org/src/go/token/position.go?s=9878:10118#L312&#34;&gt;token.FileSet&lt;/a&gt;
+struct that represents a set of source files. The struct implements &lt;a href=&#34;https://en.wikipedia.org/wiki/Iterator_pattern&#34;&gt;The
+Interator Design Pattern&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;func printStats(d time.Duration) {
+ 	fileCount := 0
+ 	lineCount := 0
+ 	fset.Iterate(func(f *token.File) bool {
+ 		fileCount++
+ 		lineCount += f.LineCount()
+ 		return true
+ 	})
+ 	fmt.Printf(
+ 		&amp;quot;%s (%d files, %d lines, %d lines/s)\n&amp;quot;,
+ 		d, fileCount, lineCount, int64(float64(lineCount)/d.Seconds()),
+ 	)
+ }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It has an
+&lt;a href=&#34;https://golang.org/src/go/token/position.go?s=11886:11931#L378&#34;&gt;Iterate&lt;/a&gt;
+function that calls a function for the files in the file set in the order they
+were added until it returns false.&lt;/p&gt;
+
+&lt;h4 id=&#34;builder-or-strategy-design-pattern&#34;&gt;Builder or Strategy Design Pattern&lt;/h4&gt;
+
+&lt;p&gt;The Golang has an &lt;a href=&#34;https://golang.org/pkg/image/&#34;&gt;image&lt;/a&gt; package that can
+generate and manipulate different formats of images. The package exposes
+interfaces &lt;a href=&#34;https://golang.org/pkg/image/#Image&#34;&gt;image.Image&lt;/a&gt; and
+subpackage &lt;a href=&#34;https://golang.org/pkg/image/draw/&#34;&gt;draw&lt;/a&gt; that has
+&lt;a href=&#34;https://golang.org/pkg/image/draw/#Drawer&#34;&gt;draw.Drawer&lt;/a&gt; interface.&lt;/p&gt;
+
+&lt;p&gt;These interfaces allow composition of different shapes and draw strategies:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Example from: http://blog.golang.org/go-imagedraw-package
+type circle struct {
+    p image.Point
+    r int
+}
+
+func (c *circle) ColorModel() color.Model {
+    return color.AlphaModel
+}
+
+func (c *circle) Bounds() image.Rectangle {
+    return image.Rect(c.p.X-c.r, c.p.Y-c.r, c.p.X+c.r, c.p.Y+c.r)
+}
+
+func (c *circle) At(x, y int) color.Color {
+    xx, yy, rr := float64(x-c.p.X)+0.5, float64(y-c.p.Y)+0.5, float64(c.r)
+    if xx*xx+yy*yy &amp;lt; rr*rr {
+        return color.Alpha{255}
+    }
+    return color.Alpha{0}
+}
+
+draw.DrawMask(dst, dst.Bounds(), src, image.ZP, &amp;amp;circle{p, r}, image.ZP, draw.Over)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For me it looks more like &lt;a href=&#34;http://blog.ralch.com/tutorial/design-patterns/golang-builder/&#34;&gt;Builder Design
+Pattern&lt;/a&gt; or
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Strategy_pattern&#34;&gt;Strategy Design Pattern&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can read more about it in this &lt;a href=&#34;http://blog.golang.org/go-imagedraw-package&#34;&gt;Golang blog
+post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;PS. Please share your finding regarding any other examples of GoF Desing
+Pattern usage. I will be glad to publish them as well.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;The Desing Patterns do exist in Golang. Their implementation does not align with
+the one that we have used to see in the mainstream languages like C#, JAVA and etc.&lt;/p&gt;
+
+&lt;p&gt;But what should we consider as idiomatic for Golang?&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;As my colleague George said:&lt;/em&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;After all we (as users) define the idioms in the language.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;It&amp;rsquo;s true, isn&amp;rsquo;t it?&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Desing Patterns in Golang: Factory Method</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</link>
+      <pubDate>Sun, 31 Jan 2016 08:46:53 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</guid>
+      <description>
+
+&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;Factory Method&lt;/code&gt; pattern is a design pattern used to define a runtime
+interface for creating an object. It’s called a factory because it creates
+various types of objects without necessarily knowing what kind of object it
+creates or how to create it.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Allows the sub-classes to choose the type of objects to create at runtime&lt;/li&gt;
+&lt;li&gt;It provides a simple way of extending the family of objects with minor
+changes in application code.&lt;/li&gt;
+&lt;li&gt;Promotes the loose-coupling by eliminating the need to bind
+application-specific structs into the code&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+&lt;p&gt;The structs and objects participating in this pattern are: product,
+concreate product, creator and concrete creator. The Creator contains one
+method to produce one type of product related to its type.&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/factory-method.gif&#34; alt=&#34;Builder Class Diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Product&lt;/code&gt; defines the interface of objects the factory method creates&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ConcreteProduct&lt;/code&gt; implements the Product interface&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Creator&lt;/code&gt; declares the factory method, which returns an object of type Product&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ConcreteCreator&lt;/code&gt; overrides the factory method to return an instance of a Concrete Product&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;The Factory Method defines an interface for creating objects, but lets
+subclasses decide which classes to instantiate. In these example, we will adopt
+the pattern to create document object model of Scalable Vector Graphics.&lt;/p&gt;
+
+&lt;p&gt;The SVG format can contains multiple elements. In this example, we will illustrate
+only some of the shape elements. In the context of &lt;code&gt;Factory Method&lt;/code&gt; design pattern,
+they are our product.&lt;/p&gt;
+
+&lt;p&gt;Every shape implements the &lt;code&gt;Shape&lt;/code&gt; interface, which expose a &lt;code&gt;Draw&lt;/code&gt; function that
+generates the required XML element:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type Shape interface {
+	Draw(io.Writer) error
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the following code snippets, we will illustrate two implementations of &lt;code&gt;Shape&lt;/code&gt;
+interface &lt;code&gt;Circle&lt;/code&gt; and &lt;code&gt;Ractangle&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type Circle struct {
+	Location Point
+	Radius   float64
+}
+
+func (c *Circle) Draw(w io.Writer) error {
+	_, err := fmt.Fprintf(w, `&amp;lt;circle cx=&amp;quot;%f&amp;quot; cy=&amp;quot;%f&amp;quot; r=&amp;quot;%f&amp;quot;/&amp;gt;`, c.Location.X, c.Location.Y, c.Radius)
+	return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type Rectangle struct {
+	Location Point
+	Size     Size
+}
+
+func (rect *Rectangle) Draw(w io.Writer) error {
+	_, err := fmt.Fprintf(w, `&amp;lt;rect x=&amp;quot;%f&amp;quot; y=&amp;quot;%f&amp;quot; width=&amp;quot;%f&amp;quot; height=&amp;quot;%f&amp;quot;/&amp;gt;`, rect.Location.X, rect.Location.Y, rect.Size.Width, rect.Size.Height)
+	return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Every of them has a function that is responsible for their instantiation based
+on the provided &lt;code&gt;Viewport&lt;/code&gt;. The &lt;code&gt;Viewport&lt;/code&gt; is an argument which keeps an information
+about the location and the size of the view port.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type ShapeFactory interface {
+	Create(viewport Viewport) Shape
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;CircleFactory&lt;/code&gt; creates a &lt;code&gt;Circle&lt;/code&gt; instance that has radius, which fits
+the viewport:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type CircleFactory struct{}
+
+func (factory *CircleFactory) Create(viewport Viewport) Shape {
+	return &amp;amp;Circle{
+		Location: viewport.Location,
+		Radius:   math.Min(viewport.Size.Width, viewport.Size.Height),
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;RectangleFactory&lt;/code&gt; produces a rectangle that fits the viewport:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type RactangleFactory struct{}
+
+func (factory *RactangleFactory) Create(viewport Viewport) Shape {
+	return &amp;amp;Rectangle{
+		Location: viewport.Location,
+		Size:     viewport.Size,
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The main object &lt;code&gt;Document&lt;/code&gt; has a &lt;code&gt;Draw&lt;/code&gt; function, which composes a different
+shapes created by provided factories. The &lt;code&gt;Document&lt;/code&gt; can be instaciated with
+different set of factories. This allow to customize and change the document&amp;rsquo;s
+content:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type Document struct {
+	ShapeFactories []ShapeFactory
+}
+
+func (doc *Document) Draw(w io.Writer) error {
+	viewport := Viewport{
+		Location: Point{
+			X: 0,
+			Y: 0,
+		},
+		Size: Size{
+			Width:  640,
+			Height: 480,
+		},
+	}
+	if _, err := fmt.Fprintf(w, `&amp;lt;svg height=&amp;quot;%f&amp;quot; width=&amp;quot;%f&amp;quot;&amp;gt;`, viewport.Size.Height, viewport.Size.Width); err != nil {
+		return err
+	}
+
+	for _, factory := range doc.ShapeFactories {
+		shape := factory.Create(viewport)
+		if err := shape.Draw(w); err != nil {
+			return err
+		}
+	}
+
+	_, err := fmt.Fprint(w, `&amp;lt;/svg&amp;gt;`)
+	return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We should instaciate the &lt;code&gt;Document&lt;/code&gt; struct with the available factories in
+the following way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;doc := &amp;amp;svg.Document{
+	ShapeFactories: []svg.ShapeFactory{
+		&amp;amp;svg.CircleFactory{},
+		&amp;amp;svg.RactangleFactory{},
+	},
+}
+
+doc.Draw(os.Stdout)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can get the full source code from &lt;a href=&#34;https://github.com/svett/golang-design-patterns/tree/master/creational-patterns/factory-method&#34;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Important aspects when we implement the Factory Method design pattern are:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Designing the arguments of the factory method&lt;/li&gt;
+&lt;li&gt;Considering an internal object pool that will allow object cache and reuse instead
+of created from scratch&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;The Factory Method is one of the most used design patterns. It makes a design
+more customizable and only a little more complicated. Other design patterns
+require new structs, whereas Factory Method only requires a new operation.
+The Factory Method is similar to Abstract Factory but without the emphasis on
+families.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Desing Patterns in Golang: Builder</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-builder/</link>
+      <pubDate>Sun, 24 Jan 2016 08:46:53 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-builder/</guid>
+      <description>
+
+&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
+
+&lt;p&gt;The Builder Pattern is a creational design pattern that&amp;rsquo;s used to
+encapsulate the construction logic for an object. It is often used
+when the construction process of an object is complex. The patterns is well
+suited for constructing different representations of the same class.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Separate the construction of a complex object from its representation so that
+the same construction process can create different representations.&lt;/li&gt;
+&lt;li&gt;A common software creational design pattern that&amp;rsquo;s used to encapsulate the
+construction logic for an object.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+&lt;p&gt;The Builder Pattern is comprised of four components: a builder interface, a
+concrete builder, a director and a product.&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/builder.gif&#34; alt=&#34;Builder Class Diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Builder&lt;/code&gt; defines a template for the steps to construct the product.
+Specifies an abstract interface for creating parts of a Product object.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Concrete Builder&lt;/code&gt; implements the builder interface and provides an interface
+for getting the product. Constructs and assembles parts of the product by
+implementing the Builder interface defines and keeps track of the
+representation it creates provides an interface for retrieving the product.
+&lt;code&gt;ConcreteBuilder&lt;/code&gt; builds the product&amp;rsquo;s internal representation and defines
+the process by which it&amp;rsquo;s assembled includes classes that define the
+constituent parts, including interfaces for assembling the parts into the
+final result.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Director&lt;/code&gt; constructs the object through the builder interface.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Product&lt;/code&gt; is the main object that&amp;rsquo;s constructed. Represents the complex
+object under construction.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;The Builder pattern separates the construction of a complex object from its
+representation so that the same construction process can create different
+representations. This pattern is used by mail service to construct
+children&amp;rsquo;s mails to Santa Claus.&lt;/p&gt;
+
+&lt;p&gt;Note that there can be variation in the content of the children&amp;rsquo;s emails, but the
+construction process is the same. In the example, the service supports &lt;code&gt;JSON&lt;/code&gt;
+and &lt;code&gt;XML&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The messages typically consist of body and format. They can be transmitted via
+different protocol. In order to do that their body should be encoded in the right
+format.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Message is the Product object in Builder Design Pattern
+type Message struct {
+	// Message Body
+	Body []byte
+	// Message Format
+	Format string
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Every message body should consist the recipient and text. Therefore, the Builder
+interface provides a functions to set these attributes. The &lt;code&gt;Message&lt;/code&gt; function
+is responsible for constructing the actual message in the right format.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// MessageBuilder is the inteface that every concrete implementation
+// should obey
+type MessageBuilder interface {
+	// Set the message&#39;s recipient
+	SetRecipient(recipient string)
+	// Set the message&#39;s text
+	SetText(text string)
+	// Returns the built Message
+	Message() (*Message, error)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;JSONMessageBuilder&lt;/code&gt; is a concrete implementation of the &lt;code&gt;MessageBuilder&lt;/code&gt;
+interface. It uses &lt;a href=&#34;http://golang.org/pkg/encoding/json/&#34;&gt;json&lt;/a&gt; package to
+encode the message.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// JSON Message Builder is concrete builder
+type JSONMessageBuilder struct {
+	messageRecipient string
+	messageText      string
+}
+
+func (b *JSONMessageBuilder) SetRecipient(recipient string) {
+	b.messageRecipient = recipient
+}
+
+func (b *JSONMessageBuilder) SetText(text string) {
+	b.messageText = text
+}
+
+func (b *JSONMessageBuilder) Message() (*Message, error) {
+	m := make(map[string]string)
+	m[&amp;quot;recipient&amp;quot;] = b.messageRecipient
+	m[&amp;quot;message&amp;quot;] = b.messageText
+
+	data, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+
+	return &amp;amp;Message{Body: data, Format: &amp;quot;JSON&amp;quot;}, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;XMLMessageBuilder&lt;/code&gt; is a concrete implementation of the &lt;code&gt;MessageBuilder&lt;/code&gt;
+interface. It uses &lt;a href=&#34;http://golang.org/pkg/encoding/xml/&#34;&gt;xml&lt;/a&gt; package to encode
+the message.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// XML Message Builder is concrete builder
+type XMLMessageBuilder struct {
+	messageRecipient string
+	messageText      string
+}
+
+func (b *XMLMessageBuilder) SetRecipient(recipient string) {
+	b.messageRecipient = recipient
+}
+
+func (b *XMLMessageBuilder) SetText(text string) {
+	b.messageText = text
+}
+
+func (b *XMLMessageBuilder) Message() (*Message, error) {
+	type XMLMessage struct {
+		Recipient string `xml:&amp;quot;recipient&amp;quot;`
+		Text      string `xml:&amp;quot;body&amp;quot;`
+	}
+
+	m := XMLMessage{
+		Recipient: b.messageRecipient,
+		Text:      b.messageText,
+	}
+
+	data, err := xml.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+
+	return &amp;amp;Message{Body: data, Format: &amp;quot;XML&amp;quot;}, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The sender object decides what should be the content of the email and its
+recipient (ex. Santa Claus).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Sender is the Director in Builder Design Pattern
+type Sender struct{}
+
+// Build a concrete message via MessageBuilder
+func (s *Sender) BuildMessage(builder MessageBuilder) (*Message, error) {
+	builder.SetRecipient(&amp;quot;Santa Claus&amp;quot;)
+	builder.SetText(&amp;quot;I have tried to be good all year and hope that you and your reindeers will be able to deliver me a nice present.&amp;quot;)
+	return builder.Message()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We should use the designed architecture to build XML and JSON messages in the
+following way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;sender := &amp;amp;messenger.Sender{}
+
+jsonMsg, err := sender.BuildMessage(&amp;amp;messenger.JSONMessageBuilder{})
+if err != nil {
+	panic(err)
+}
+
+fmt.Println(string(jsonMsg.Body))
+
+xmlMsg, err := sender.BuildMessage(&amp;amp;messenger.XMLMessageBuilder{})
+if err != nil {
+	panic(err)
+}
+
+fmt.Println(string(xmlMsg.Body))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;As you can see, the true strength of the Builder Pattern is that it lets you
+break up the construction of a complex object. Not only that, it also allows
+you to hide the construction process from the consumer, thus allowing for
+additional representations of the product to be added with ease. The pattern
+also encourages separation of concerns and promotes application extensibility&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Design Patterns in Golang: Singleton</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-singleton/</link>
+      <pubDate>Sun, 17 Jan 2016 13:35:05 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-singleton/</guid>
+      <description>
+
+&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
+
+&lt;p&gt;Sometimes it&amp;rsquo;s important to have only one instance of an struct. This is useful
+when exactly one object is needed to coordinate actions across the system.
+Singletons provide a global point of access to themselves.&lt;/p&gt;
+
+&lt;p&gt;The singleton pattern is one of the simplest design patterns. It requires only
+one type which is responsible to instantiate itself, to make sure it creates
+not more than one instance. The same instance can be used from everywhere.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Ensure that only one instance of a class is created for application lifecycle.&lt;/li&gt;
+&lt;li&gt;Provide a single point of access to the object.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/singleton.gif&#34; alt=&#34;Singleton Class Diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;In Golang the Singleon pattern implementation defers from another languages due
+to the language differences.&lt;/p&gt;
+
+&lt;p&gt;In langauges like &lt;code&gt;C#&lt;/code&gt; and &lt;code&gt;JAVA&lt;/code&gt;, the implementation involves a static member
+in the &lt;code&gt;Singleton&lt;/code&gt; class, a private constructor and a static public method that
+returns a reference to the static member.&lt;/p&gt;
+
+&lt;p&gt;In Golang the static member of the &lt;code&gt;Singleton&lt;/code&gt; struct is declared as a global
+variable in the package that contains this type.&lt;/p&gt;
+
+&lt;p&gt;Lets have a &lt;code&gt;db&lt;/code&gt; package that should provide a &lt;code&gt;repository&lt;/code&gt; struct as a
+singleton object. Note that we should define the struct with lowercase letters
+in order to make it private. This will disallow instaciating the struct outside
+the package.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;package db
+
+import &amp;quot;fmt&amp;quot;
+
+type repository struct {
+	items map[string]string
+	mu    sync.RWMutex
+}
+
+func (r *repository) Set(key, data string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.items[key] = data
+}
+
+func (r *repository) Get(key string) (string, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	item, ok := r.items[key]
+	if !ok {
+		return &amp;quot;&amp;quot;, fmt.Errorf(&amp;quot;The &#39;%s&#39; is not presented&amp;quot;, key)
+	}
+	return item, nil
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we should declare a global variable of type pointer to &lt;code&gt;repository&lt;/code&gt; that will
+keep an reference to its singleton instance. Then we should declare a function
+&lt;code&gt;Repository&lt;/code&gt; that provides a global point of access to that instance.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;var (
+	r *repository
+)
+
+func Repository() *repository {
+	if r == nil {
+		r = &amp;amp;repository{
+			items: make(map[string]string)
+		}
+	}
+	return r
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The function &lt;code&gt;Repository&lt;/code&gt; instanciate the singleton object once if it has not
+been instance. It checks whether the &lt;code&gt;repository&lt;/code&gt; global variable is &lt;code&gt;nil&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;thread-safety&#34;&gt;Thread safety&lt;/h4&gt;
+
+&lt;p&gt;A robust singleton implementation should work in any circumstances. This is why
+we need to ensure it works when multiple go routines use it.&lt;/p&gt;
+
+&lt;p&gt;The standard implementation requires to synchronize the action that instanciate
+the singleton object once.&lt;/p&gt;
+
+&lt;p&gt;In order to achieve that we should use the &lt;a href=&#34;https://golang.org/pkg/sync/&#34;&gt;sync&lt;/a&gt;
+package. It provides a &lt;a href=&#34;https://golang.org/pkg/sync/#Once&#34;&gt;sync.Once&lt;/a&gt; struct
+that will perform exactly one action:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;var (
+	r    *repository
+	once sync.Once
+)
+
+func Repository() *repository {
+	once.Do(func() {
+		r = &amp;amp;repository{
+			items: make(map[string]string),
+		}
+	})
+	
+	return r
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;The Singleton design pattern is a very useful mechanism for providing a single
+point of object access in an object-oriented application. Regardless of the
+implementation used, the pattern provides a commonly understood concept that
+can be easily shared among design and development teams.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Serialization objects with protocol buffers in Golang</title>
+      <link>http://blog.ralch.com/tutorial/golang-proto-buffer/</link>
+      <pubDate>Tue, 12 Jan 2016 08:02:19 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-proto-buffer/</guid>
+      <description>
+
+&lt;h4 id=&#34;what-is-protocol-buffers&#34;&gt;What is protocol buffers?&lt;/h4&gt;
+
+&lt;p&gt;Protocol Buffers is a method of serializing structured data. It is useful in
+developing programs to communicate with each other over a wire or for storing
+data. The method involves an interface description language that describes the
+structure of some data and a program that generates source code from that
+description for generating or parsing a stream of bytes that represents the
+structured data.&lt;/p&gt;
+
+&lt;p&gt;Google developed Protocol Buffers for use internally and has made protocol
+compilers for C++, Java and Python available to the public under a free
+software, open source license. Various other language implementations are also
+available, including C#, JavaScript, Go, Perl, PHP, Ruby, Scala and Julia.&lt;/p&gt;
+
+&lt;p&gt;The design goals for Protocol Buffers emphasized simplicity and performance. In
+particular, it was designed to be smaller and faster than XML.&lt;/p&gt;
+
+&lt;p&gt;Protocol Buffers is widely used at Google for storing and interchanging all
+kinds of structured information. The method serves as a basis for a custom
+remote procedure call (RPC) system that is used for nearly all inter-machine
+communication at Google.&lt;/p&gt;
+
+&lt;p&gt;A software developer defines data structures (called messages) and services in
+a proto definition file (.proto) and compiles it with protoc. This compilation
+generates code that can be invoked by a sender or recipient of these data
+structures.&lt;/p&gt;
+
+&lt;p&gt;The messages are serialized into a binary wire format which is
+compact, forward- and backward-compatible, but not self-describing (that is,
+there is no way to tell the names, meaning, or full datatypes of fields without
+an external specification).&lt;/p&gt;
+
+&lt;p&gt;Though the primary purpose of Protocol Buffers is to facilitate network
+communication.&lt;/p&gt;
+
+&lt;h4 id=&#34;installation&#34;&gt;Installation&lt;/h4&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Install the C++ implementation of protocol buffers from
+&lt;a href=&#34;https://github.com/google/protobuf&#34;&gt;here&lt;/a&gt;:&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git clone https://github.com/google/protobuf
+$ cd protobuf
+$ ./autogen.sh
+$ ./configure
+$ make
+$ make check
+$ make install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Install the Golang packages to work with protocol buffers. I recommend using
+the &lt;code&gt;gogo&lt;/code&gt; protocol buffers &lt;a href=&#34;https://github.com/gogo/protobuf&#34;&gt;fork&lt;/a&gt; that is
+performance optimized. Like most of the go package, we should install it by
+executing the following commands:&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go get github.com/gogo/protobuf/proto
+$ go get github.com/gogo/protobuf/protoc-gen-gogo
+$ go get github.com/gogo/protobuf/gogoproto
+$ go get github.com/gogo/protobuf/protoc-gen-gofast
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;creating-a-protocol-buffer-data-structure&#34;&gt;Creating a protocol buffer data structure&lt;/h4&gt;
+
+&lt;p&gt;Lets create a &lt;code&gt;Company&lt;/code&gt; structure that has &lt;code&gt;Name&lt;/code&gt;, &lt;code&gt;Address&lt;/code&gt; and &lt;code&gt;Employees&lt;/code&gt;
+fields. Also, we should create the corresponding objects as well.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;syntax = &#39;proto2&#39;;
+
+package example;
+
+enum CompanyType {
+  Private = 17;
+  Public = 18;
+  NonProfit = 19;
+};
+
+message Company {
+  required string Name = 1;
+  repeated Employee Employees = 2;
+  required CompanyType Type = 3;
+  optional group Address = 4 {
+    required string Country = 5;
+    required string City = 6;
+    optional string Street = 7;
+  }
+}
+
+message Employee {
+  required string Name = 1;
+  optional string SSN = 2;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Lets keep the declaration in
+&lt;a href=&#34;https://gist.github.com/svett/acdbc1b1429d97371609&#34;&gt;spec.proto&lt;/a&gt; file.&lt;/p&gt;
+
+&lt;p&gt;In order to use protocol buffers, you should define a protocol buffer file that
+declare the messages that are going to be serialized. The protocol buffers
+provide a syntax for doing that. You can specify whether a field should be optional
+or required as well. Enumeration types can be defined as well. If you have a message
+that is used only as property of another message, you can inline the define it
+by using &lt;code&gt;group&lt;/code&gt; declaration.&lt;/p&gt;
+
+&lt;p&gt;The protocol buffers supports the common scalar types, strings, enums and slices.
+Slice fields can be defined as &lt;code&gt;repeated&lt;/code&gt; fields.&lt;/p&gt;
+
+&lt;p&gt;You can read more about the supported types and syntax in &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto&#34;&gt;the official
+documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;After we define our messages in &lt;code&gt;spec.proto&lt;/code&gt; file, we should generate their
+&lt;code&gt;Golang&lt;/code&gt; representation by executing the following command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ protoc --go_out=. spec.proto
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The command will generate a &lt;code&gt;spec.pb.go&lt;/code&gt; that implements all messages as &lt;code&gt;Golang&lt;/code&gt;
+structs and types:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type CompanyType int32
+
+const (
+	CompanyType_Private   CompanyType = 17
+	CompanyType_Public    CompanyType = 18
+	CompanyType_NonProfit CompanyType = 19
+)
+
+type Company struct {
+	Name             *string          `protobuf:&amp;quot;bytes,1,req,name=Name&amp;quot; json:&amp;quot;Name,omitempty&amp;quot;`
+	Employees        []*Employee      `protobuf:&amp;quot;bytes,2,rep,name=Employees&amp;quot; json:&amp;quot;Employees,omitempty&amp;quot;`
+	Type             *CompanyType     `protobuf:&amp;quot;varint,3,req,name=Type,enum=example.CompanyType&amp;quot; json:&amp;quot;Type,omitempty&amp;quot;`
+	Address          *Company_Address `protobuf:&amp;quot;group,4,opt,name=Address&amp;quot; json:&amp;quot;address,omitempty&amp;quot;`
+	XXX_unrecognized []byte           `json:&amp;quot;-&amp;quot;`
+}
+
+func (m *Company) Reset()                    { *m = Company{} }
+func (m *Company) String() string            { return proto.CompactTextString(m) }
+func (*Company) ProtoMessage()               {}
+func (*Company) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+
+func (m *Company) GetName() string {
+	if m != nil &amp;amp;&amp;amp; m.Name != nil {
+		return *m.Name
+	}
+	return &amp;quot;&amp;quot;
+}
+
+func (m *Company) GetEmployees() []*Employee {
+	if m != nil {
+		return m.Employees
+	}
+	return nil
+}
+
+func (m *Company) GetType() CompanyType {
+	if m != nil &amp;amp;&amp;amp; m.Type != nil {
+		return *m.Type
+	}
+	return CompanyType_Private
+}
+
+func (m *Company) GetAddress() *Company_Address {
+	if m != nil {
+		return m.Address
+	}
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can download the full implementation from
+&lt;a href=&#34;https://gist.github.com/svett/7632c3628ded96a1fc60&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;serialization-objects&#34;&gt;Serialization objects&lt;/h4&gt;
+
+&lt;p&gt;The serialization and deserialization is processed by the &lt;code&gt;proto&lt;/code&gt; package,
+which provides &lt;code&gt;Marshal&lt;/code&gt; and &lt;code&gt;Unmarshal&lt;/code&gt; functions:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golanog&#34;&gt;comp := &amp;amp;example.Company{
+  Name: proto.String(&amp;quot;Example Corp&amp;quot;),
+  Address: &amp;amp;example.Company_Address{
+    City:    proto.String(&amp;quot;London&amp;quot;),
+    Country: proto.String(&amp;quot;UK&amp;quot;),
+  },
+  Type: example.CompanyType_Public.Enum(),
+  Employees: []*example.Employee{
+    &amp;amp;example.Employee{
+      Name: proto.String(&amp;quot;John&amp;quot;),
+    },
+  },
+}
+
+data, err := proto.Marshal(comp)
+if err != nil {
+  log.Fatal(&amp;quot;marshaling error: &amp;quot;, err)
+}
+serialized := &amp;amp;example.Company{}
+err = proto.Unmarshal(data, serialized)
+if err != nil {
+  log.Fatal(&amp;quot;unmarshaling error: &amp;quot;, err)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h4&gt;
+
+&lt;p&gt;The advantage of using protocol buffers is that you can develop heterogeneous
+system in multiple languages and technologies which are communicating via known
+protocol. It has better performance than standar serialization like JSON.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Reflection in Golang</title>
+      <link>http://blog.ralch.com/tutorial/golang-reflection/</link>
+      <pubDate>Mon, 21 Dec 2015 08:15:16 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-reflection/</guid>
+      <description>
+
+&lt;h4 id=&#34;what-is-reflection&#34;&gt;What is reflection?&lt;/h4&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;In computer science, reflection is the ability of a computer program to examine
+and modify its own structure and behavior (specifically the values,
+meta-data, properties and functions) at runtime.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;em&gt;source: &lt;a href=&#34;http://bit.ly/1Rpm16G&#34;&gt;Wikipedia&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Reflection can be used for observing and modifying program execution at
+runtime. A reflection-oriented program component can monitor the execution of
+an enclosure of code and can modify itself according to a desired goal related
+to that enclosure. This is typically accomplished by dynamically assigning
+program code at runtime.&lt;/p&gt;
+
+&lt;p&gt;In &lt;code&gt;Golang&lt;/code&gt; reflection allows inspection of struct, interfaces, fields and
+methods at runtime without knowing the names of the interfaces, fields, methods
+at compile time. It also allows instantiation of new objects and invocation of
+methods.&lt;/p&gt;
+
+&lt;h4 id=&#34;reflection-in-action&#34;&gt;Reflection in action&lt;/h4&gt;
+
+&lt;p&gt;Reflection objects are used for obtaining type information at runtime. The
+structs that give access to the metadata of a running program are in the
+&lt;code&gt;reflect&lt;/code&gt; package. The package contains structs that allow you to obtain
+information about the application and to dynamically emits types, values, and
+objects to the program.&lt;/p&gt;
+
+&lt;p&gt;Even that reflection is not idiomatic for Golang. We will explore in details some
+of &lt;code&gt;reflect&lt;/code&gt; package capabilities.&lt;/p&gt;
+
+&lt;h4 id=&#34;example-querybuilder&#34;&gt;Example: QueryBuilder&lt;/h4&gt;
+
+&lt;p&gt;Lets assume that we are developing an object-relation mapping packages like
+&lt;a href=&#34;https://github.com/jinzhu/gorm&#34;&gt;gorm&lt;/a&gt;. We will implement &lt;code&gt;QueryBuilder&lt;/code&gt; struct
+that is responsible for generating &lt;code&gt;SQL&lt;/code&gt; queries for update, delete and insert.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;QueryBuilder&lt;/code&gt; has a field &lt;code&gt;Type&lt;/code&gt; that keep a metadata information about the
+type that builder generates &lt;code&gt;SQL&lt;/code&gt; queries for:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type QueryBuilder struct {
+	Type reflect.Type
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Typically the metadata for particular type could be accessed by instaciating the
+&lt;code&gt;reflect.Type&lt;/code&gt;. Lets have the followin struct:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Employee struct {
+	ID        uint32
+	FirstName string
+	LastName  string
+	Birthday  time.Time
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We need to instaciate &lt;code&gt;reflection.Type&lt;/code&gt; in order to access its type metadata.
+It is the representation of a Go type. We should use the following code snippet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;t := reflect.TypeOf(&amp;amp;Employee{}).Elem()
+builder := &amp;amp;QueryBuilder{Type: t}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note in case of pointer type, we should retrieve the underlying actual type by
+getting the result from the &lt;code&gt;Elem&lt;/code&gt; function. It panics if the type&amp;rsquo;s
+Kind is not Array, Chan, Map, Ptr, or Slice.&lt;/p&gt;
+
+&lt;p&gt;Lets inspect the implementation of &lt;code&gt;QueryBuilder&lt;/code&gt; function &lt;code&gt;CreateSelectQuery&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func (qb *QueryBuilder) CreateSelectQuery() string {
+	buffer := bytes.NewBufferString(&amp;quot;&amp;quot;)
+
+	for index := 0; index &amp;lt; qb.Type.NumField(); index++ {
+		field := qb.Type.Field(index)
+
+		if index == 0 {
+			buffer.WriteString(&amp;quot;SELECT &amp;quot;)
+		} else {
+			buffer.WriteString(&amp;quot;, &amp;quot;)
+		}
+		column := field.Name
+		buffer.WriteString(column)
+	}
+
+	if buffer.Len() &amp;gt; 0 {
+		fmt.Fprintf(buffer, &amp;quot; FROM %s&amp;quot;, qb.Type.Name())
+	}
+
+	return buffer.String()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The type &lt;code&gt;NumField&lt;/code&gt; function returns the struct type&amp;rsquo;s field count. The &lt;code&gt;for-loop&lt;/code&gt;
+interates over that count and obtain every field by index. The type&amp;rsquo;s &lt;code&gt;Field&lt;/code&gt; function
+returns a &lt;code&gt;StructField&lt;/code&gt; value that describes the field owned by the underlying struct:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// A StructField describes a single field in a struct.
+type StructField struct {
+	// Name is the field name.
+	// PkgPath is the package path that qualifies a lower case (unexported)
+	// field name.  It is empty for upper case (exported) field names.
+	// See https://golang.org/ref/spec#Uniqueness_of_identifiers
+	Name    string
+	PkgPath string
+
+	Type      Type      // field type
+	Tag       StructTag // field tag string
+	Offset    uintptr   // offset within struct, in bytes
+	Index     []int     // index sequence for Type.FieldByIndex
+	Anonymous bool      // is an embedded field
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we are appending the field name to the select query. The final implementation
+produces the following result for &lt;code&gt;Employee&lt;/code&gt; struct:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-SQL&#34;&gt;SELECT ID, FirstName, LastName, Birthday FROM Employee
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But how to handle the case when our field are represented with different names
+in underlying database. Lets say that we want to represent &lt;code&gt;ID&lt;/code&gt; field as
+&lt;code&gt;id_pk&lt;/code&gt;, &lt;code&gt;FirstName&lt;/code&gt; field as &lt;code&gt;first_name&lt;/code&gt; and &lt;code&gt;LastName&lt;/code&gt; field as &lt;code&gt;last_name&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;We can implement that kind of mapping by using &lt;a href=&#34;https://golang.org/pkg/reflect/#example_StructTag&#34;&gt;field
+tags&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The use of tags strongly depends on how your struct is used. A typical use is
+to add specifications or constraints for persistence or serialisation.  For
+example, when using the &lt;a href=&#34;https://golang.org/pkg/encoding/json/&#34;&gt;JSON
+parser/encoder&lt;/a&gt;, tags are used to
+specify how the struct will be read from JSON or written in JSON, when the
+default encoding scheme (i.e. the name of the field) isn&amp;rsquo;t to be used.&lt;/p&gt;
+
+&lt;p&gt;Lets change the &lt;code&gt;Employee&lt;/code&gt; struct declaration to use tags that carries additional
+information about how the field should be mapped into the underlying database:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Employee struct {
+	ID        uint32 `orm:&amp;quot;id_pk&amp;quot;`
+	FirstName string `orm:&amp;quot;first_name&amp;quot;`
+	LastName  string `orm:&amp;quot;last_name&amp;quot;`
+	Birthday  time.Time
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we can access the associated tags by using &lt;code&gt;field.Tag&lt;/code&gt; field. It provides
+a &lt;code&gt;Get&lt;/code&gt; function that allows access to any of the tags by name:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;column := field.Name
+if tag := field.Tag.Get(&amp;quot;orm&amp;quot;); tag != &amp;quot;&amp;quot; {
+	column = tag
+}
+
+buffer.WriteString(column)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then the generated select query would be:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-SQL&#34;&gt;SELECT id_pk, first_name, last_name, Birthday FROM Employee
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;example-validating-fields&#34;&gt;Example: Validating fields&lt;/h4&gt;
+
+&lt;p&gt;In the following example, we will explore how to read and validate fields values.
+Lets assume that we have the following &lt;code&gt;PaymentTransaction&lt;/code&gt; struct:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type PaymentTransaction struct {
+	Amount      float64 `validate:&amp;quot;positive&amp;quot;`
+	Description string  `validate:&amp;quot;max_length:250&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Like the previous example, we will use the tag annotation. The implementation of
+&lt;code&gt;Validate&lt;/code&gt; function is the following code snippet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Validate(obj interface{}) error {
+	v := reflect.ValueOf(obj).Elem()
+	t := v.Type()
+
+	for index := 0; index &amp;lt; v.NumField(); index++ {
+		vField := v.Field(index)
+		tField := t.Field(index)
+
+		tag := tField.Tag.Get(&amp;quot;validate&amp;quot;)
+		if tag == &amp;quot;&amp;quot; {
+			continue
+		}
+
+		switch vField.Kind() {
+		case reflect.Float64:
+			value := vField.Float()
+			if tag == &amp;quot;positive&amp;quot; &amp;amp;&amp;amp; value &amp;lt; 0 {
+				value = math.Abs(value)
+				vField.SetFloat(value)
+			}
+		case reflect.String:
+			value := vField.String()
+			if tag == &amp;quot;upper_case&amp;quot; {
+				value = strings.ToUpper(value)
+				vField.SetString(value)
+			}
+		default:
+			return fmt.Errorf(&amp;quot;Unsupported kind &#39;%s&#39;&amp;quot;, vField.Kind())
+		}
+	}
+
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;reflect.Value&lt;/code&gt; is the reflection interface to a Go value. It is used to
+access all member for particular object (fields, function and interfaces). By
+invoking the &lt;code&gt;Kind&lt;/code&gt; function we determine the field type. Then we could access
+the actual value with the appropriate type function (such as &lt;code&gt;Float&lt;/code&gt; or &lt;code&gt;String&lt;/code&gt;).
+To change the field value we should use some of the setters functions.&lt;/p&gt;
+
+&lt;h4 id=&#34;example-recognising-interfaces-and-calling-functions&#34;&gt;Example: Recognising interfaces and calling functions&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;reflect&lt;/code&gt; package can used to identify whether a particular interface is
+implemented.&lt;/p&gt;
+
+&lt;p&gt;Lets have the &lt;code&gt;Validator&lt;/code&gt; interface which provide a &lt;code&gt;Validate&lt;/code&gt; function called
+every time when an object is validated:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Validator interface {
+	Validate() error
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We will extend the implementation of &lt;code&gt;PaymentTransaction&lt;/code&gt; struct by implementing
+the &lt;code&gt;Validator&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func (p *PaymentTransaction) Validate() error {
+	fmt.Println(&amp;quot;Validating payment transaction&amp;quot;)
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In order to determine whether the &lt;code&gt;PaymentTransaction&lt;/code&gt; implements the interface,
+we should call the &lt;code&gt;reflect.Type&lt;/code&gt; function &lt;code&gt;Implements&lt;/code&gt;. It returns &lt;code&gt;true&lt;/code&gt; if
+the type obeys the interface signature.&lt;/p&gt;
+
+&lt;p&gt;To call a particular function, we could either case the object to the &lt;code&gt;Validator&lt;/code&gt;
+interface or retrieve the method via &lt;code&gt;MethodByName&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func CustomValidate(obj interface{}) error {
+	v := reflect.ValueOf(obj)
+	t := v.Type()
+
+	interfaceT := reflect.TypeOf((*Validator)(nil)).Elem()
+	if !t.Implements(interfaceT) {
+		return fmt.Errorf(&amp;quot;The Validator interface is not implemented&amp;quot;)
+	}
+
+	validateFunc := v.MethodByName(&amp;quot;Validate&amp;quot;)
+	validateFunc.Call(nil)
+	return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can read more about different features provided by the &lt;code&gt;reflect&lt;/code&gt; package
+in &lt;a href=&#34;https://golang.org/pkg/reflect/&#34;&gt;the official documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;reflect&lt;/code&gt; package is great way to make descision at runtime. However, we
+should be aware that it gives us some performance penalties. I would try to
+avoid using reflection. It&amp;rsquo;s not idiomatic, but it&amp;rsquo;s very powerfull in
+particular cases. Do not forget to follow &lt;a href=&#34;http://blog.golang.org/laws-of-reflection&#34;&gt;the laws of
+reflection&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Performance and memory analysis of Golang programs</title>
+      <link>http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/</link>
+      <pubDate>Sun, 13 Dec 2015 13:39:32 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/</guid>
+      <description>
+
+&lt;p&gt;As we continue looking at program metrics in Golang, it is time to look at
+performance matrics analysis.&lt;/p&gt;
+
+&lt;h3 id=&#34;instrumentation&#34;&gt;Instrumentation&lt;/h3&gt;
+
+&lt;p&gt;Instrumentation is the process of adding code to your application to generate
+events to allow you to monitor application health and performance.
+Instrumentation allows you to profile applications. Profiling enables you to
+identify how long a particular method or operation takes to run and how
+efficient it is in terms of CPU and memory resource usage. Collect custom data.
+This might include custom performance counters that you use to monitor
+application-specific activity, such as how long it takes to place an order.
+Trace code. This allows you to understand the application code path and all the
+methods run for a particular use case.&lt;/p&gt;
+
+&lt;p&gt;In this artcile, we will explore how to use the
+&lt;a href=&#34;https://golang.org/pkg/runtime/pprof&#34;&gt;pprof&lt;/a&gt; package and tool to profile
+&lt;code&gt;Golang&lt;/code&gt; applications.&lt;/p&gt;
+
+&lt;p&gt;You should import &lt;a href=&#34;https://golang.org/pkg/net/http/pprof/&#34;&gt;net/http/pprof&lt;/a&gt; to
+expose the application profile via HTTP.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import _ &amp;quot;net/http/pprof&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you don&amp;rsquo;t run an HTTP server, you should the following code snippet to make
+available an HTTP endpoint:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.DefaultServeMux)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The packages registers a set of http handlers as part of the &lt;code&gt;/debug/pprof&lt;/code&gt;
+endpoint into the default http mux that allows &lt;code&gt;pprof&lt;/code&gt; tool to retrieve any
+infromation about the different application profiles:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Memory profile (&lt;a href=&#34;http://localhost:8080/debug/pprof/heap&#34;&gt;http://localhost:8080/debug/pprof/heap&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;CPU profile (&lt;a href=&#34;http://localhost:6060/debug/pprof/profile&#34;&gt;http://localhost:6060/debug/pprof/profile&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Goroutine blocking profile (&lt;a href=&#34;http://localhost:6060/debug/pprof/block&#34;&gt;http://localhost:6060/debug/pprof/block&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Then use the pprof tool to look at query and read the profiles by executing &lt;code&gt;go
+tool pprof&lt;/code&gt; command.&lt;/p&gt;
+
+&lt;h4 id=&#34;heap-profile&#34;&gt;HEAP Profile&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;HEAP profile&lt;/code&gt; can be useful for:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Figuring out what is in the program heap at any given time&lt;/li&gt;
+&lt;li&gt;Locating memory leaks&lt;/li&gt;
+&lt;li&gt;Finding places that do a lot of allocation&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;By using &lt;code&gt;top&lt;/code&gt; command you can see the top functions that take most of the heap
+memory.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go tool pprof http://localhost:8080/debug/pprof/heap
+
+Fetching profile from http://127.0.0.1:8080/debug/pprof/heap
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.inuse_objects.inuse_space.005.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof) top
+512.19kB of 512.19kB total (  100%)
+      flat  flat%   sum%        cum   cum%
+  512.19kB   100%   100%   512.19kB   100%  runtime.malg
+         0     0%   100%   512.19kB   100%  runtime.mcommoninit
+         0     0%   100%   512.19kB   100%  runtime.mpreinit
+         0     0%   100%   512.19kB   100%  runtime.rt0_go
+         0     0%   100%   512.19kB   100%  runtime.schedinit
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;cpu-profile&#34;&gt;CPU Profile&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;CPU profiler&lt;/code&gt; helps finds a performance bottlenecks of given
+application. You could read ana analyse the profile by executing &lt;code&gt;go tool pprof&lt;/code&gt;
+command. By default it is sampling the application performance for 30 seconds.
+The Go program stops about 100 times per second and records a sample consisting
+of the program counters on the currently executing goroutine&amp;rsquo;s stack:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go tool pprof http://localhost:8080/debug/pprof/profile
+Fetching profile from http://127.0.0.1:8080/debug/pprof/profile
+Please wait... (30s)
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.samples.cpu.004.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;custom-profile&#34;&gt;Custom profile&lt;/h4&gt;
+
+&lt;p&gt;If you want to create your own cutom profiler, you should use &lt;code&gt;pprof.Profile&lt;/code&gt;
+object:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;import (
+	&amp;quot;net/http&amp;quot;
+	pprofHTTP &amp;quot;net/http/pprof&amp;quot;
+	&amp;quot;runtime/pprof&amp;quot;
+)
+
+var paymentProfile *pprof.Profile
+
+func init() {
+	paymentProfile = pprof.NewProfile(&amp;quot;payment&amp;quot;)
+	http.DefaultServeMux.Handle(&amp;quot;/debug/pprof/payment&amp;quot;, pprofHTTP.Handler(&amp;quot;payment&amp;quot;))
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The named profile could be create by executing &lt;code&gt;pprof.NewProfile&lt;/code&gt; constructor
+function.  In addition the &lt;code&gt;net/http/pprof&lt;/code&gt; packages provides a &lt;code&gt;Handler&lt;/code&gt;
+function that register a handler for a particular profile by name.&lt;/p&gt;
+
+&lt;p&gt;Then you can add/remove the profile sampling data with the following code snippet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;payment := &amp;amp;Payment{
+	Payee:  &amp;quot;John Doe&amp;quot;,
+	Amount: 128.54}
+
+skip := 0
+
+paymentProfile.Add(payment, skip)
+ProcessPayment(ctx, payment)
+paymentProfile.Remove(payment)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Add&lt;/code&gt; function accepts two arguments:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;value&lt;/code&gt; a sampling data associated with the profile&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;skip&lt;/code&gt; defines when the profile should begin the trace in the function calling &lt;code&gt;Add&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Lets retrive the profile and explore the difference:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ go tool pprof http://127.0.0.1:8080/debug/pprof/payment
+Fetching profile from http://127.0.0.1:8080/debug/pprof/payment
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.payment.008.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof) top
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Passing &lt;code&gt;skip=0&lt;/code&gt; begins the stack trace at the call to &lt;code&gt;Add&lt;/code&gt; before &lt;code&gt;ProcessPayment&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1 of 1 total (  100%)
+      flat  flat%   sum%        cum   cum%
+         1   100%   100%          1   100%  runtime/pprof.(*Profile).Add
+         0     0%   100%          1   100%  main.main
+         0     0%   100%          1   100%  runtime.goexit
+         0     0%   100%          1   100%  runtime.main
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Passing &lt;code&gt;skip=1&lt;/code&gt; begins the stack trace at the call to &lt;code&gt;Add&lt;/code&gt; inside &lt;code&gt;ProcessPayment&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1 of 1 total (  100%)
+      flat  flat%   sum%        cum   cum%
+         1   100%   100%          1   100%  main.main
+         0     0%   100%          1   100%  runtime.goexit
+         0     0%   100%          1   100%  runtime.main
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The sample application can be found &lt;a href=&#34;https://gist.github.com/svett/3babb3d65e9cf626d1d5&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;generating-reports&#34;&gt;Generating reports&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;pprof&lt;/code&gt; tool even provides a nice way to visualise the program profile in
+svg diagram. You should execute &lt;code&gt;web&lt;/code&gt; command as part of &lt;code&gt;pprof&lt;/code&gt; tool:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Fetching profile from http://127.0.0.1:8080/debug/pprof/heap
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.inuse_objects.inuse_space.005.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof) web
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/pprof-heap.png&#34; alt=&#34;pprof heap profile&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;h3 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;It&amp;rsquo;s never been so easy to profile our programs. &lt;code&gt;Golang&lt;/code&gt; is designed for distributed
+environment. Therefore profiling and metrics analysis are comming as part of
+the language runtime.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Expose application metrics with expvar</title>
+      <link>http://blog.ralch.com/tutorial/golang-metrics-with-expvar/</link>
+      <pubDate>Sun, 06 Dec 2015 08:47:15 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-metrics-with-expvar/</guid>
+      <description>
+
+&lt;p&gt;To determine whether your application meets its performance objectives and to
+help identify bottlenecks, you need to measure your program&amp;rsquo;s performance
+and collect metrics. They tend to be response time, throughput, and resource
+utilization (how much CPU, memory, disk I/O, and network bandwidth your
+application consumes while performing its tasks).&lt;/p&gt;
+
+&lt;h4 id=&#34;metrics&#34;&gt;Metrics&lt;/h4&gt;
+
+&lt;p&gt;Metrics provide information about how close your program is to your
+performance goals. In addition, they also help you identify problem areas and
+bottlenecks within your application. Metric types could be grouped under
+the following categories:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Network&lt;/code&gt; metric related to network bandwidth usage.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;System&lt;/code&gt; metrics are related to processor, memory, disk I/O, and network I/O.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Platform&lt;/code&gt; metrics are related to execution runtime.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Application&lt;/code&gt; metrics include custom performance counters.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;how-measuring-applies-to-life-cycle&#34;&gt;How Measuring Applies to Life Cycle&lt;/h4&gt;
+
+&lt;p&gt;You should start to measure as soon as you have a defined set of performance
+objectives for your program. This should be early in the application design
+phase.&lt;/p&gt;
+
+&lt;p&gt;You must continue to measure application performance throughout the
+life cycle to determine whether your application is trending toward or away
+from its performance objectives.&lt;/p&gt;
+
+&lt;h4 id=&#34;exposing-and-collecting-metrics-in-golang&#34;&gt;Exposing and collecting metrics in Golang&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;Golang&lt;/code&gt; provides a variety of packages for exposing metrics, application
+monitoring and performance analysis.&lt;/p&gt;
+
+&lt;p&gt;In the article, we will explore &lt;code&gt;expvar&lt;/code&gt; package that can provide command line
+arguments, allocation stats, heap stats and garbage collection metrics. In
+addition, it allows you to define variables to export and publish over http.&lt;/p&gt;
+
+&lt;p&gt;The package should be imported to register http handler into the default http mux:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import _ &amp;quot;expvar&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Also it publishes &amp;lsquo;cmdline&amp;rsquo; and &amp;lsquo;memstats&amp;rsquo; variables for the current process.
+If you don&amp;rsquo;t run an HTTP server, you should the following code snippet to make
+available an HTTP endpoint:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.DefaultServeMux)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You could access the exported variables on &lt;code&gt;http://127.0.0.1:8080/debug/vars&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;cmdline&amp;quot;: [
+    &amp;quot;/var/folders/74/8nd9swvj2rs7j3phs34tw7lm0000gq/T/go-build109647759/command-line-arguments/_obj/exe/main&amp;quot;
+  ],
+  &amp;quot;memstats&amp;quot;: {
+    &amp;quot;Alloc&amp;quot;: 204728,
+    &amp;quot;TotalAlloc&amp;quot;: 204728,
+    &amp;quot;Sys&amp;quot;: 4720888,
+    &amp;quot;Lookups&amp;quot;: 6,
+    &amp;quot;Mallocs&amp;quot;: 887,
+    &amp;quot;Frees&amp;quot;: 0,
+    &amp;quot;HeapAlloc&amp;quot;: 204728,
+    &amp;quot;HeapSys&amp;quot;: 1671168,
+    &amp;quot;HeapIdle&amp;quot;: 966656,
+    &amp;quot;HeapInuse&amp;quot;: 704512,
+    &amp;quot;HeapReleased&amp;quot;: 0,
+    &amp;quot;HeapObjects&amp;quot;: 887,
+    &amp;quot;StackInuse&amp;quot;: 425984,
+    &amp;quot;StackSys&amp;quot;: 425984,
+    &amp;quot;MSpanInuse&amp;quot;: 9520,
+    &amp;quot;MSpanSys&amp;quot;: 16384,
+    &amp;quot;MCacheInuse&amp;quot;: 9664,
+    &amp;quot;MCacheSys&amp;quot;: 16384,
+    &amp;quot;BuckHashSys&amp;quot;: 1443053,
+    &amp;quot;GCSys&amp;quot;: 65536,
+    &amp;quot;OtherSys&amp;quot;: 1082379,
+    &amp;quot;NextGC&amp;quot;: 4194304,
+    &amp;quot;LastGC&amp;quot;: 0,
+    &amp;quot;PauseTotalNs&amp;quot;: 0,
+    &amp;quot;PauseNs&amp;quot;: [],
+    &amp;quot;PauseEnd&amp;quot;: [],
+    &amp;quot;NumGC&amp;quot;: 0,
+    &amp;quot;GCCPUFraction&amp;quot;: 0,
+    &amp;quot;EnableGC&amp;quot;: true,
+    &amp;quot;DebugGC&amp;quot;: false,
+    &amp;quot;BySize&amp;quot;: [
+      {
+        &amp;quot;Size&amp;quot;: 17664,
+        &amp;quot;Mallocs&amp;quot;: 0,
+        &amp;quot;Frees&amp;quot;: 0
+      }
+    ]
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In addtion exported variables could be accessed by using &lt;code&gt;expvar.Get&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;memstatsFunc := expvar.Get(&amp;quot;memstats&amp;quot;).(expvar.Func)
+memstats := memstatsFunc().(runtime.MemStats)
+fmt.Println(memstats.Alloc)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you want to collect all exported variables you should consider using &lt;code&gt;expvar.Do&lt;/code&gt;
+function which invokes the provided callback function for every variable in thread
+safe way. The &lt;code&gt;expvar.KeyValue&lt;/code&gt; type has &lt;code&gt;Key&lt;/code&gt; and &lt;code&gt;Value&lt;/code&gt; field that returns the
+variable name and variable value.&lt;/p&gt;
+
+&lt;p&gt;The sample below prints out all exported variables:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;expvar.Do(func(variable expvar.KeyValue) {
+	fmt.Printf(&amp;quot;expvar.Key: %s expvar.Value: %s&amp;quot;, variable.Key, variable.Value)
+})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The package allows exporting of integers, floats and string variables.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var (
+	orderCounter      *expvar.Int
+	balanceCounter    *expvar.Float
+	transactionMetric *expvar.String
+)
+
+func init() {
+	orderCounter = expvar.NewInt(&amp;quot;counter&amp;quot;)
+	balanceCounter = expvar.NewFloat(&amp;quot;balance&amp;quot;)
+	transactionMetrics = expvar.NewString(&amp;quot;transaction&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note that it&amp;rsquo;s recommended to register the new exported variables in the init
+function of your package.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Then you should the variables in the similar way as their counterparts:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Adds an integer value to expvar.Int counter
+orderCounter.Add(2)
+// Sets a float value to expvar.Float metrics
+balanceCounter.Set(1000)
+// Sets a string to expvar.String metrics
+transactionMetrics.Set(&amp;quot;this is my transaction&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you want to do something more complex you should use the &lt;code&gt;expvar.Publish&lt;/code&gt;
+function which register any type that obeys &lt;code&gt;expvar.Var&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Var interface {
+  String() string
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Lets define our own metrics that exports &lt;code&gt;time.Time&lt;/code&gt; type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type TimeVar struct {
+	value time.Time
+}
+
+// Sets a time.Time as time metrics value
+func (v *TimeVar) Set(date time.Time) {
+	v.value = date
+}
+
+// Adds a time.Duration to current time metrics value
+func (v *TimeVar) Add(duration time.Duration) {
+	v.value = v.value.Add(duration)
+}
+
+// Converts the TimeVar metrics to string
+func (v *TimeVar) String() string {
+	return v.value.Format(time.UnixDate)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we should use &lt;code&gt;expvar.Publish&lt;/code&gt; function to export this type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var (
+	timeMetrics        *TimeVar
+)
+
+func init() {
+	timeMetrics = &amp;amp;TimeVar{value: time.Now()}
+	expvar.Publish(&amp;quot;Time&amp;quot;, timeMetrics)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can use the exported variable in the following way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Adds an hour to the initial time metrics value
+timeMetrics.Add(1 * time.Hour)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;Having set metrics objects early in your application&amp;rsquo;s design phase, you
+begin to measure by collecting them. You continue to measure throughout the
+application life cycle to determine whether your application&amp;rsquo;s performance is
+trending toward or away from its performance goals.&lt;/p&gt;
+
+&lt;p&gt;In &lt;code&gt;Golang&lt;/code&gt; this goal is considered as important part of every application. The
+ease of use and out of the box support give us confidence to build scalable
+and performan programs.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Concurrent patterns in Golang: Context</title>
+      <link>http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/</link>
+      <pubDate>Sun, 29 Nov 2015 08:50:48 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/</guid>
+      <description>
+
+&lt;h4 id=&#34;what-is-concurrency&#34;&gt;What is concurrency?&lt;/h4&gt;
+
+&lt;p&gt;Concurrent applications have multiple computations executing during overlapping
+periods of time. Respectively sequential programs in which no computations can
+be executed in overlapping periods of time.&lt;/p&gt;
+
+&lt;h4 id=&#34;getting-started-with-context-package&#34;&gt;Getting started with &lt;code&gt;Context&lt;/code&gt; package&lt;/h4&gt;
+
+&lt;p&gt;The &lt;a href=&#34;https://godoc.org/golang.org/x/net/context&#34;&gt;Context&lt;/a&gt; package is responsible
+for signal cancelation and operation deadlines for processes and server requests.&lt;/p&gt;
+
+&lt;p&gt;The package has an &lt;code&gt;context.Context&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Context interface {
+	Deadline() (deadline time.Time, ok bool)
+	Done() &amp;lt;-chan struct{}
+	Err() error
+	Value(key interface{}) interface{}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The interface provides four functions to observe the context state:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Deadline&lt;/code&gt; returns the time when work done on behalf of this context should be canceled. It returns &lt;code&gt;false&lt;/code&gt; when no deadline is set.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Done&lt;/code&gt; returns a channel that&amp;rsquo;s closed when work done on behalf of this context should be canceled.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Err&lt;/code&gt; returns a non-nil error value after Done is closed. It returns &lt;code&gt;Canceled&lt;/code&gt; if the context was canceled or &lt;code&gt;DeadlineExceeded&lt;/code&gt; if the context&amp;rsquo;s deadline passed.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Value&lt;/code&gt; returns the value associated with this context for key, or nil&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;There are two types of contexts:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;context.TODO&lt;/code&gt; should be used &lt;code&gt;context.TODO&lt;/code&gt; when it&amp;rsquo;s unclear which Context to use.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;context.Background&lt;/code&gt; is typically used by the main function, initialization, and tests, and as the top-level Context for incoming requests.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Both are never canceled, have no values, and has no deadline.&lt;/p&gt;
+
+&lt;p&gt;In order to setup a deadline you should use one of the following constructors:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;context.WithDeadline&lt;/code&gt; returns a copy of the parent context with the deadline adjusted
+to be no later than a specified &lt;code&gt;time.Time&lt;/code&gt;. The returned context&amp;rsquo;s Done
+channel is closed when the deadline expires, when the returned cancel function
+is called, or when the parent context&amp;rsquo;s Done channel is closed, whichever
+happens first.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;context.WithTimeout&lt;/code&gt; just calls &lt;code&gt;context.WithDeadline&lt;/code&gt; for particular &lt;code&gt;time.Duration&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you want to have a context that could be canceled only, you should use
+&lt;code&gt;context.WithCancel&lt;/code&gt; function. Canceling this context releases resources
+associated with it, so code should call cancel as soon as the operations
+running in this Context complete.&lt;/p&gt;
+
+&lt;h4 id=&#34;context-package-in-practice&#34;&gt;&lt;code&gt;Context&lt;/code&gt; package in practice&lt;/h4&gt;
+
+&lt;p&gt;Lets have an application that process a payment transactions like that:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Payment struct {
+	Payee  string
+	Amount float64
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The program is asking the user to &lt;code&gt;[C]onfirm&lt;/code&gt; or &lt;code&gt;[A]bort&lt;/code&gt; his payment transaction
+within a 1 minute. If he does not anything, it will be terminated automacitally.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;ProcessPayment&lt;/code&gt; function is started as go routine that is waiting for user
+input.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;go ProcessPayment(ctx, &amp;amp;Payment{
+	Payee:  &amp;quot;John Doe&amp;quot;,
+	Amount: 128.54})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The function is observing the context state to terminate, cancel or proceed the
+payment:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func ProcessPayment(ctx context.Context, payment *Payment) {
+	confirmed := ctx.Value(&amp;quot;confirmed&amp;quot;).(chan struct{})
+
+	for {
+		select {
+		case &amp;lt;-confirmed:
+			fmt.Printf(&amp;quot;Your payment of %f GBP has been completed succefully.\n&amp;quot;, payment.Amount)
+			return
+		case &amp;lt;-ctx.Done():
+			if ctx.Err() == context.Canceled {
+				fmt.Printf(&amp;quot;Your payment transaction is canceled. The amount of %f GBP has been refunded.\n&amp;quot;, payment.Amount)
+				return
+			} else if ctx.Err() == context.DeadlineExceeded {
+				fmt.Println(&amp;quot;Your payment transaction expired. You can complete it later.&amp;quot;)
+				os.Exit(0)
+			}
+		default:
+			time.Sleep(1 * time.Second)
+		}
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The confirmation channel is used to notify the function that the payment should
+be processed. If the &lt;code&gt;Done&lt;/code&gt; channel returns a value before that the operation
+is aborted due to canceleation or exceeded deadline.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;ctx&lt;/code&gt; variable is a background context that has a deadline of 1 minute:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var (
+	ctx    context.Context
+	cancel context.CancelFunc
+)
+
+confirmed := make(chan struct{})
+ctx = context.WithValue(context.Background(), &amp;quot;confirmed&amp;quot;, confirmed)
+ctx, cancel = context.WithTimeout(ctx, 1*time.Minute)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The full implementation of the example could be downloaded from &lt;a href=&#34;http://bit.ly/1Mrqkeo&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;recommended-usage&#34;&gt;Recommended usage&lt;/h4&gt;
+
+&lt;p&gt;Usually the incomming request should create a &lt;code&gt;context.Context&lt;/code&gt; object that underlying
+algorithm comply with.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Do not store Contexts inside a struct type; instead, pass a &lt;code&gt;Context&lt;/code&gt; explicitly to each function that needs it.&lt;/li&gt;
+&lt;li&gt;Do not pass a nil Context, even if a function permits it. Pass context.TODO if you are unsure about which Context to use.&lt;/li&gt;
+&lt;li&gt;Do not use &lt;code&gt;context.WithValue&lt;/code&gt; for passing optional parameters to functions. Use it for request data only.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;working-with-http-request&#34;&gt;Working with HTTP Request&lt;/h4&gt;
+
+&lt;p&gt;On top of &lt;code&gt;Context&lt;/code&gt; API there is a &lt;a href=&#34;https://godoc.org/golang.org/x/net/context/ctxhttp&#34;&gt;ctxhttp&lt;/a&gt; package that
+provides helper functions for performing context-aware HTTP requests. All of them are calling internally
+the &lt;code&gt;Do&lt;/code&gt; function that is performing an http request that could be canceled or expired via the provided context.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func Do(ctx context.Context, client *http.Client, req *http.Request)
+func Get(ctx context.Context, client *http.Client, url string)
+func Head(ctx context.Context, client *http.Client, url string)
+func PostForm(ctx context.Context, client *http.Client, url string, data url.Values)
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/metrics/index.xml</link>
+    <language>en-us</language>
+    <author>Svett Ralchev</author>
+    
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Performance and memory analysis of Golang programs</title>
+      <link>http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/</link>
+      <pubDate>Sun, 13 Dec 2015 13:39:32 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/</guid>
+      <description>
+
+&lt;p&gt;As we continue looking at program metrics in Golang, it is time to look at
+performance matrics analysis.&lt;/p&gt;
+
+&lt;h3 id=&#34;instrumentation&#34;&gt;Instrumentation&lt;/h3&gt;
+
+&lt;p&gt;Instrumentation is the process of adding code to your application to generate
+events to allow you to monitor application health and performance.
+Instrumentation allows you to profile applications. Profiling enables you to
+identify how long a particular method or operation takes to run and how
+efficient it is in terms of CPU and memory resource usage. Collect custom data.
+This might include custom performance counters that you use to monitor
+application-specific activity, such as how long it takes to place an order.
+Trace code. This allows you to understand the application code path and all the
+methods run for a particular use case.&lt;/p&gt;
+
+&lt;p&gt;In this artcile, we will explore how to use the
+&lt;a href=&#34;https://golang.org/pkg/runtime/pprof&#34;&gt;pprof&lt;/a&gt; package and tool to profile
+&lt;code&gt;Golang&lt;/code&gt; applications.&lt;/p&gt;
+
+&lt;p&gt;You should import &lt;a href=&#34;https://golang.org/pkg/net/http/pprof/&#34;&gt;net/http/pprof&lt;/a&gt; to
+expose the application profile via HTTP.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import _ &amp;quot;net/http/pprof&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you don&amp;rsquo;t run an HTTP server, you should the following code snippet to make
+available an HTTP endpoint:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.DefaultServeMux)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The packages registers a set of http handlers as part of the &lt;code&gt;/debug/pprof&lt;/code&gt;
+endpoint into the default http mux that allows &lt;code&gt;pprof&lt;/code&gt; tool to retrieve any
+infromation about the different application profiles:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Memory profile (&lt;a href=&#34;http://localhost:8080/debug/pprof/heap&#34;&gt;http://localhost:8080/debug/pprof/heap&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;CPU profile (&lt;a href=&#34;http://localhost:6060/debug/pprof/profile&#34;&gt;http://localhost:6060/debug/pprof/profile&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Goroutine blocking profile (&lt;a href=&#34;http://localhost:6060/debug/pprof/block&#34;&gt;http://localhost:6060/debug/pprof/block&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Then use the pprof tool to look at query and read the profiles by executing &lt;code&gt;go
+tool pprof&lt;/code&gt; command.&lt;/p&gt;
+
+&lt;h4 id=&#34;heap-profile&#34;&gt;HEAP Profile&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;HEAP profile&lt;/code&gt; can be useful for:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Figuring out what is in the program heap at any given time&lt;/li&gt;
+&lt;li&gt;Locating memory leaks&lt;/li&gt;
+&lt;li&gt;Finding places that do a lot of allocation&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;By using &lt;code&gt;top&lt;/code&gt; command you can see the top functions that take most of the heap
+memory.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go tool pprof http://localhost:8080/debug/pprof/heap
+
+Fetching profile from http://127.0.0.1:8080/debug/pprof/heap
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.inuse_objects.inuse_space.005.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof) top
+512.19kB of 512.19kB total (  100%)
+      flat  flat%   sum%        cum   cum%
+  512.19kB   100%   100%   512.19kB   100%  runtime.malg
+         0     0%   100%   512.19kB   100%  runtime.mcommoninit
+         0     0%   100%   512.19kB   100%  runtime.mpreinit
+         0     0%   100%   512.19kB   100%  runtime.rt0_go
+         0     0%   100%   512.19kB   100%  runtime.schedinit
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;cpu-profile&#34;&gt;CPU Profile&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;CPU profiler&lt;/code&gt; helps finds a performance bottlenecks of given
+application. You could read ana analyse the profile by executing &lt;code&gt;go tool pprof&lt;/code&gt;
+command. By default it is sampling the application performance for 30 seconds.
+The Go program stops about 100 times per second and records a sample consisting
+of the program counters on the currently executing goroutine&amp;rsquo;s stack:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go tool pprof http://localhost:8080/debug/pprof/profile
+Fetching profile from http://127.0.0.1:8080/debug/pprof/profile
+Please wait... (30s)
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.samples.cpu.004.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;custom-profile&#34;&gt;Custom profile&lt;/h4&gt;
+
+&lt;p&gt;If you want to create your own cutom profiler, you should use &lt;code&gt;pprof.Profile&lt;/code&gt;
+object:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;import (
+	&amp;quot;net/http&amp;quot;
+	pprofHTTP &amp;quot;net/http/pprof&amp;quot;
+	&amp;quot;runtime/pprof&amp;quot;
+)
+
+var paymentProfile *pprof.Profile
+
+func init() {
+	paymentProfile = pprof.NewProfile(&amp;quot;payment&amp;quot;)
+	http.DefaultServeMux.Handle(&amp;quot;/debug/pprof/payment&amp;quot;, pprofHTTP.Handler(&amp;quot;payment&amp;quot;))
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The named profile could be create by executing &lt;code&gt;pprof.NewProfile&lt;/code&gt; constructor
+function.  In addition the &lt;code&gt;net/http/pprof&lt;/code&gt; packages provides a &lt;code&gt;Handler&lt;/code&gt;
+function that register a handler for a particular profile by name.&lt;/p&gt;
+
+&lt;p&gt;Then you can add/remove the profile sampling data with the following code snippet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;payment := &amp;amp;Payment{
+	Payee:  &amp;quot;John Doe&amp;quot;,
+	Amount: 128.54}
+
+skip := 0
+
+paymentProfile.Add(payment, skip)
+ProcessPayment(ctx, payment)
+paymentProfile.Remove(payment)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Add&lt;/code&gt; function accepts two arguments:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;value&lt;/code&gt; a sampling data associated with the profile&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;skip&lt;/code&gt; defines when the profile should begin the trace in the function calling &lt;code&gt;Add&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Lets retrive the profile and explore the difference:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ go tool pprof http://127.0.0.1:8080/debug/pprof/payment
+Fetching profile from http://127.0.0.1:8080/debug/pprof/payment
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.payment.008.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof) top
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Passing &lt;code&gt;skip=0&lt;/code&gt; begins the stack trace at the call to &lt;code&gt;Add&lt;/code&gt; before &lt;code&gt;ProcessPayment&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1 of 1 total (  100%)
+      flat  flat%   sum%        cum   cum%
+         1   100%   100%          1   100%  runtime/pprof.(*Profile).Add
+         0     0%   100%          1   100%  main.main
+         0     0%   100%          1   100%  runtime.goexit
+         0     0%   100%          1   100%  runtime.main
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Passing &lt;code&gt;skip=1&lt;/code&gt; begins the stack trace at the call to &lt;code&gt;Add&lt;/code&gt; inside &lt;code&gt;ProcessPayment&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1 of 1 total (  100%)
+      flat  flat%   sum%        cum   cum%
+         1   100%   100%          1   100%  main.main
+         0     0%   100%          1   100%  runtime.goexit
+         0     0%   100%          1   100%  runtime.main
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The sample application can be found &lt;a href=&#34;https://gist.github.com/svett/3babb3d65e9cf626d1d5&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;generating-reports&#34;&gt;Generating reports&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;pprof&lt;/code&gt; tool even provides a nice way to visualise the program profile in
+svg diagram. You should execute &lt;code&gt;web&lt;/code&gt; command as part of &lt;code&gt;pprof&lt;/code&gt; tool:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Fetching profile from http://127.0.0.1:8080/debug/pprof/heap
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.inuse_objects.inuse_space.005.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof) web
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/pprof-heap.png&#34; alt=&#34;pprof heap profile&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;h3 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;It&amp;rsquo;s never been so easy to profile our programs. &lt;code&gt;Golang&lt;/code&gt; is designed for distributed
+environment. Therefore profiling and metrics analysis are comming as part of
+the language runtime.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Expose application metrics with expvar</title>
+      <link>http://blog.ralch.com/tutorial/golang-metrics-with-expvar/</link>
+      <pubDate>Sun, 06 Dec 2015 08:47:15 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-metrics-with-expvar/</guid>
+      <description>
+
+&lt;p&gt;To determine whether your application meets its performance objectives and to
+help identify bottlenecks, you need to measure your program&amp;rsquo;s performance
+and collect metrics. They tend to be response time, throughput, and resource
+utilization (how much CPU, memory, disk I/O, and network bandwidth your
+application consumes while performing its tasks).&lt;/p&gt;
+
+&lt;h4 id=&#34;metrics&#34;&gt;Metrics&lt;/h4&gt;
+
+&lt;p&gt;Metrics provide information about how close your program is to your
+performance goals. In addition, they also help you identify problem areas and
+bottlenecks within your application. Metric types could be grouped under
+the following categories:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Network&lt;/code&gt; metric related to network bandwidth usage.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;System&lt;/code&gt; metrics are related to processor, memory, disk I/O, and network I/O.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Platform&lt;/code&gt; metrics are related to execution runtime.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Application&lt;/code&gt; metrics include custom performance counters.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;how-measuring-applies-to-life-cycle&#34;&gt;How Measuring Applies to Life Cycle&lt;/h4&gt;
+
+&lt;p&gt;You should start to measure as soon as you have a defined set of performance
+objectives for your program. This should be early in the application design
+phase.&lt;/p&gt;
+
+&lt;p&gt;You must continue to measure application performance throughout the
+life cycle to determine whether your application is trending toward or away
+from its performance objectives.&lt;/p&gt;
+
+&lt;h4 id=&#34;exposing-and-collecting-metrics-in-golang&#34;&gt;Exposing and collecting metrics in Golang&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;Golang&lt;/code&gt; provides a variety of packages for exposing metrics, application
+monitoring and performance analysis.&lt;/p&gt;
+
+&lt;p&gt;In the article, we will explore &lt;code&gt;expvar&lt;/code&gt; package that can provide command line
+arguments, allocation stats, heap stats and garbage collection metrics. In
+addition, it allows you to define variables to export and publish over http.&lt;/p&gt;
+
+&lt;p&gt;The package should be imported to register http handler into the default http mux:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import _ &amp;quot;expvar&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Also it publishes &amp;lsquo;cmdline&amp;rsquo; and &amp;lsquo;memstats&amp;rsquo; variables for the current process.
+If you don&amp;rsquo;t run an HTTP server, you should the following code snippet to make
+available an HTTP endpoint:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.DefaultServeMux)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You could access the exported variables on &lt;code&gt;http://127.0.0.1:8080/debug/vars&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;cmdline&amp;quot;: [
+    &amp;quot;/var/folders/74/8nd9swvj2rs7j3phs34tw7lm0000gq/T/go-build109647759/command-line-arguments/_obj/exe/main&amp;quot;
+  ],
+  &amp;quot;memstats&amp;quot;: {
+    &amp;quot;Alloc&amp;quot;: 204728,
+    &amp;quot;TotalAlloc&amp;quot;: 204728,
+    &amp;quot;Sys&amp;quot;: 4720888,
+    &amp;quot;Lookups&amp;quot;: 6,
+    &amp;quot;Mallocs&amp;quot;: 887,
+    &amp;quot;Frees&amp;quot;: 0,
+    &amp;quot;HeapAlloc&amp;quot;: 204728,
+    &amp;quot;HeapSys&amp;quot;: 1671168,
+    &amp;quot;HeapIdle&amp;quot;: 966656,
+    &amp;quot;HeapInuse&amp;quot;: 704512,
+    &amp;quot;HeapReleased&amp;quot;: 0,
+    &amp;quot;HeapObjects&amp;quot;: 887,
+    &amp;quot;StackInuse&amp;quot;: 425984,
+    &amp;quot;StackSys&amp;quot;: 425984,
+    &amp;quot;MSpanInuse&amp;quot;: 9520,
+    &amp;quot;MSpanSys&amp;quot;: 16384,
+    &amp;quot;MCacheInuse&amp;quot;: 9664,
+    &amp;quot;MCacheSys&amp;quot;: 16384,
+    &amp;quot;BuckHashSys&amp;quot;: 1443053,
+    &amp;quot;GCSys&amp;quot;: 65536,
+    &amp;quot;OtherSys&amp;quot;: 1082379,
+    &amp;quot;NextGC&amp;quot;: 4194304,
+    &amp;quot;LastGC&amp;quot;: 0,
+    &amp;quot;PauseTotalNs&amp;quot;: 0,
+    &amp;quot;PauseNs&amp;quot;: [],
+    &amp;quot;PauseEnd&amp;quot;: [],
+    &amp;quot;NumGC&amp;quot;: 0,
+    &amp;quot;GCCPUFraction&amp;quot;: 0,
+    &amp;quot;EnableGC&amp;quot;: true,
+    &amp;quot;DebugGC&amp;quot;: false,
+    &amp;quot;BySize&amp;quot;: [
+      {
+        &amp;quot;Size&amp;quot;: 17664,
+        &amp;quot;Mallocs&amp;quot;: 0,
+        &amp;quot;Frees&amp;quot;: 0
+      }
+    ]
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In addtion exported variables could be accessed by using &lt;code&gt;expvar.Get&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;memstatsFunc := expvar.Get(&amp;quot;memstats&amp;quot;).(expvar.Func)
+memstats := memstatsFunc().(runtime.MemStats)
+fmt.Println(memstats.Alloc)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you want to collect all exported variables you should consider using &lt;code&gt;expvar.Do&lt;/code&gt;
+function which invokes the provided callback function for every variable in thread
+safe way. The &lt;code&gt;expvar.KeyValue&lt;/code&gt; type has &lt;code&gt;Key&lt;/code&gt; and &lt;code&gt;Value&lt;/code&gt; field that returns the
+variable name and variable value.&lt;/p&gt;
+
+&lt;p&gt;The sample below prints out all exported variables:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;expvar.Do(func(variable expvar.KeyValue) {
+	fmt.Printf(&amp;quot;expvar.Key: %s expvar.Value: %s&amp;quot;, variable.Key, variable.Value)
+})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The package allows exporting of integers, floats and string variables.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var (
+	orderCounter      *expvar.Int
+	balanceCounter    *expvar.Float
+	transactionMetric *expvar.String
+)
+
+func init() {
+	orderCounter = expvar.NewInt(&amp;quot;counter&amp;quot;)
+	balanceCounter = expvar.NewFloat(&amp;quot;balance&amp;quot;)
+	transactionMetrics = expvar.NewString(&amp;quot;transaction&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note that it&amp;rsquo;s recommended to register the new exported variables in the init
+function of your package.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Then you should the variables in the similar way as their counterparts:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Adds an integer value to expvar.Int counter
+orderCounter.Add(2)
+// Sets a float value to expvar.Float metrics
+balanceCounter.Set(1000)
+// Sets a string to expvar.String metrics
+transactionMetrics.Set(&amp;quot;this is my transaction&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you want to do something more complex you should use the &lt;code&gt;expvar.Publish&lt;/code&gt;
+function which register any type that obeys &lt;code&gt;expvar.Var&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Var interface {
+  String() string
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Lets define our own metrics that exports &lt;code&gt;time.Time&lt;/code&gt; type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type TimeVar struct {
+	value time.Time
+}
+
+// Sets a time.Time as time metrics value
+func (v *TimeVar) Set(date time.Time) {
+	v.value = date
+}
+
+// Adds a time.Duration to current time metrics value
+func (v *TimeVar) Add(duration time.Duration) {
+	v.value = v.value.Add(duration)
+}
+
+// Converts the TimeVar metrics to string
+func (v *TimeVar) String() string {
+	return v.value.Format(time.UnixDate)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we should use &lt;code&gt;expvar.Publish&lt;/code&gt; function to export this type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var (
+	timeMetrics        *TimeVar
+)
+
+func init() {
+	timeMetrics = &amp;amp;TimeVar{value: time.Now()}
+	expvar.Publish(&amp;quot;Time&amp;quot;, timeMetrics)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can use the exported variable in the following way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Adds an hour to the initial time metrics value
+timeMetrics.Add(1 * time.Hour)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;Having set metrics objects early in your application&amp;rsquo;s design phase, you
+begin to measure by collecting them. You continue to measure throughout the
+application life cycle to determine whether your application&amp;rsquo;s performance is
+trending toward or away from its performance goals.&lt;/p&gt;
+
+&lt;p&gt;In &lt;code&gt;Golang&lt;/code&gt; this goal is considered as important part of every application. The
+ease of use and out of the box support give us confidence to build scalable
+and performan programs.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
