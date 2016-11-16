@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="description" content="">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+
+<meta name="keywords" content="go, opinion, ">
+
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:description" content=""/>
+<meta property="og:title" content="Design Patterns in Golang: The Good, the Bad and the Ugly : blog.ralch.com"/>
+<meta property="og:site_name" content="Svett Ralchev"/>
+<meta property="og:image" content="" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="" />
+<meta property="og:image:height" content="" />
+<meta property="og:url" content="http://blog.ralch.com/tutorial/design-patterns/golang-design-patterns/">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-02-03"/>
+<meta property="article:modified_time" content="2016-02-03"/>
+
+
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="opinion">
+
+
+
+  <title> Design Patterns in Golang: The Good, the Bad and the Ugly &middot; Software adventures and thoughts </title>
+
+  
+  <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
+
+  
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+  
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+
+<body>
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
+      <p class="lead">
+       Software adventures and thoughts 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a></li>
+      <li><a href="/tutorial">Tutorials</a></li>
+      
+      <li><a href="/about/">About </a></li>
+      
+    </ul>
+      <a href="http://uk.linkedin.com/in/svettralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
+      <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+      
+      <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
+      
+      <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
+
+    <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
+      &copy; 2016 Svett Ralchev. All rights reserved.</p>
+    
+  </div>
+</div>
+
+  <div class="content container">
+  <div class="post">
+    <h1 class="post-title">Design Patterns in Golang: The Good, the Bad and the Ugly</h1>
+    <span class="post-date">Wed, Feb 3, 2016</span>
+    
+
+<div class="post-categories">
+    
+    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
+    
+    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
+    
+</div>
+
+
+
+    
+
+<p>Recently I started a series of articles about <a href="https://en.wikipedia.org/wiki/Design_Patterns">Gang of Four Design
+Patterns</a> and their adoption in
+Golang. They made a lot of noise in the community. I read a lot
+of contradictionary opionions whether should be used or not. I am publishing those
+articles as show case how the common design patterns can be adopted and implemented
+in Golang. I don&rsquo;t encourage or promote their usage. Every developer has own style
+of programming, architecture desing and problem solving solutions.</p>
+
+<p>Well, I don&rsquo;t have a strong opionion about that. However, I have my own angle
+of view about this topic. I have never been a strong believer that they should
+be used intensively in any project. For me they have always been a language for
+communication among development teams. Yes, they solve particular problems. But
+I don&rsquo;t think we should use them, because they exist and ar good practice.</p>
+
+<p>Particular pattern should be used only in concrete case, when we gain benefit of
+that. I don&rsquo;t encourage applying it by the book.</p>
+
+<p>The <code>Design Patterns</code> have never been something encourage by the Golang community.
+They are not idiomatic for the language. Everybody knows that the language itself
+is very opioninated and idiomatic. There are no so many ways to achieve particular
+task or solve particular problem.</p>
+
+<p>But let&rsquo;s explore. Are they used in the existing Golang packages? I will give
+you a few examples how they are used in Golang libraries:</p>
+
+<h4 id="singleton-design-pattern">Singleton Design Pattern</h4>
+
+<p>The <a href="https://golang.org/pkg/net/http/">net/http</a> package has
+<a href="https://golang.org/src/net/http/client.go?s=76:76#L76">http.DefaultClient</a> and
+<a href="https://golang.org/src/net/http/server.go?s=1595:1595#L1595">http.DefaultServeMux</a>
+objects that are alive during the application lifecycle. The <code>DefaultClient</code> is
+used by <a href="https://golang.org/src/net/http/client.go?s=9198:9246#L270">Get</a>,
+<a href="https://golang.org/src/net/http/client.go?s=15901:15950#L500">Head</a> and
+<a href="https://golang.org/src/net/http/client.go?s=13816:13898#L443">Post</a> functions
+to send request to http server.</p>
+
+<p>Those variables contains a single instances that can be used accros the application.
+The implementation does not follow the same as most of the mainstream language. It&rsquo;s
+still Golang idiomatic.</p>
+
+<h4 id="factory-design-pattern">Factory Design Pattern</h4>
+
+<p>Did you used <a href="https://github.com/lib/pq">PostrgreSQL</a> library like that?</p>
+
+<pre><code class="language-Golang">import (
+	&quot;database/sql&quot;
+	_ &quot;github.com/lib/pq&quot;
+)
+
+func main() {
+	db, err := sql.Open(&quot;postgres&quot;, &quot;user=pqgotest dbname=pqgotest sslmode=verify-full&quot;)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	age := 21
+	rows, err := db.Query(&quot;SELECT name FROM users WHERE age = $1&quot;, age)
+	...
+}
+</code></pre>
+
+<p>Well in order to connect to <code>PostgreSQL</code> server the <code>sql</code> package instaciate the
+registered driver via <code>Factory</code> Design Pattern. The driver is registered by
+<a href="https://golang.org/src/database/sql/sql.go?s=805:853#L24">this function</a>.</p>
+
+<p>The <code>Factory</code> function is <a href="https://golang.org/src/database/sql/sql.go?s=805:853#L468">db.Open</a>.</p>
+
+<h4 id="iterator-design-pattern">Iterator Design Pattern</h4>
+
+<p>Golang has a <a href="https://golang.org/pkg/go/token/">token package</a> that defines
+constants representing the lexical tokens of the Go programming language and
+basic operations on tokens (printing, predicates).</p>
+
+<p>The package has a
+<a href="https://golang.org/src/go/token/position.go?s=9878:10118#L312">token.FileSet</a>
+struct that represents a set of source files. The struct implements <a href="https://en.wikipedia.org/wiki/Iterator_pattern">The
+Interator Design Pattern</a>.</p>
+
+<pre><code class="language-Golang">func printStats(d time.Duration) {
+ 	fileCount := 0
+ 	lineCount := 0
+ 	fset.Iterate(func(f *token.File) bool {
+ 		fileCount++
+ 		lineCount += f.LineCount()
+ 		return true
+ 	})
+ 	fmt.Printf(
+ 		&quot;%s (%d files, %d lines, %d lines/s)\n&quot;,
+ 		d, fileCount, lineCount, int64(float64(lineCount)/d.Seconds()),
+ 	)
+ }
+</code></pre>
+
+<p>It has an
+<a href="https://golang.org/src/go/token/position.go?s=11886:11931#L378">Iterate</a>
+function that calls a function for the files in the file set in the order they
+were added until it returns false.</p>
+
+<h4 id="builder-or-strategy-design-pattern">Builder or Strategy Design Pattern</h4>
+
+<p>The Golang has an <a href="https://golang.org/pkg/image/">image</a> package that can
+generate and manipulate different formats of images. The package exposes
+interfaces <a href="https://golang.org/pkg/image/#Image">image.Image</a> and
+subpackage <a href="https://golang.org/pkg/image/draw/">draw</a> that has
+<a href="https://golang.org/pkg/image/draw/#Drawer">draw.Drawer</a> interface.</p>
+
+<p>These interfaces allow composition of different shapes and draw strategies:</p>
+
+<pre><code class="language-Golang">// Example from: http://blog.golang.org/go-imagedraw-package
+type circle struct {
+    p image.Point
+    r int
+}
+
+func (c *circle) ColorModel() color.Model {
+    return color.AlphaModel
+}
+
+func (c *circle) Bounds() image.Rectangle {
+    return image.Rect(c.p.X-c.r, c.p.Y-c.r, c.p.X+c.r, c.p.Y+c.r)
+}
+
+func (c *circle) At(x, y int) color.Color {
+    xx, yy, rr := float64(x-c.p.X)+0.5, float64(y-c.p.Y)+0.5, float64(c.r)
+    if xx*xx+yy*yy &lt; rr*rr {
+        return color.Alpha{255}
+    }
+    return color.Alpha{0}
+}
+
+draw.DrawMask(dst, dst.Bounds(), src, image.ZP, &amp;circle{p, r}, image.ZP, draw.Over)
+</code></pre>
+
+<p>For me it looks more like <a href="http://blog.ralch.com/tutorial/design-patterns/golang-builder/">Builder Design
+Pattern</a> or
+<a href="https://en.wikipedia.org/wiki/Strategy_pattern">Strategy Design Pattern</a>.</p>
+
+<p>You can read more about it in this <a href="http://blog.golang.org/go-imagedraw-package">Golang blog
+post</a>.</p>
+
+<p><em>PS. Please share your finding regarding any other examples of GoF Desing
+Pattern usage. I will be glad to publish them as well.</em></p>
+
+<h4 id="verdict">Verdict</h4>
+
+<p>The Desing Patterns do exist in Golang. Their implementation does not align with
+the one that we have used to see in the mainstream languages like C#, JAVA and etc.</p>
+
+<p>But what should we consider as idiomatic for Golang?</p>
+
+<p><em>As my colleague George said:</em></p>
+
+<blockquote>
+<p>After all we (as users) define the idioms in the language.</p>
+</blockquote>
+
+<p>It&rsquo;s true, isn&rsquo;t it?</p>
+
+    
+<div class="social-sharing">
+	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-design-patterns%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
+	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-design-patterns%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
+	<a class="share-button-linkedin" onClick="return popupShare(this.href);" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-design-patterns%2f&title=Design%20Patterns%20in%20Golang%3a%20The%20Good%2c%20the%20Bad%20and%20the%20Ugly&summary=Recently%20I%20started%20a%20series%20of%20articles%20about%20Gang%20of%20Four%20Design%20Patterns%20and%20their%20adoption%20in%20Golang.%20They%20made%20a%20lot%20of%20noise%20in%20the%20community.%20I%20read%20a%20lot%20of%20contradictionary%20opionions%20whether%20should%20be%20used%20or%20not.%20I%20am%20publishing%20those%20articles%20as%20show%20case%20how%20the%20common%20design%20patterns%20can%20be%20adopted%20and%20implemented%20in%20Golang.%20I%20don%26rsquo%3bt%20encourage%20or%20promote%20their%20usage.%20Every%20developer%20has%20own%20style%20of%20programming%2c%20architecture%20desing%20and%20problem%20solving%20solutions.}&source=Software%20adventures%20and%20thoughts" target="_blank"><i class="fa fa-linkedin"><span>Share on LinkedIn</span></i></a>
+	<a class="share-button-twitter" onClick="return popupShare(this.href);" href="http://twitter.com/share?text=Design%20Patterns%20in%20Golang%3a%20The%20Good%2c%20the%20Bad%20and%20the%20Ugly&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-design-patterns%2f" target="_blank"><i class="fa fa-twitter"><span>Tweet</span></i></a>	
+</div>
+<script type="text/javascript">
+    function popupShare(url) {
+        window.open(url, '_blank', 'scrollbars,resizable,height=525,width=600');
+        return false;
+    }
+</script>
+
+
+    
+
+<div class="tags-list">
+    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
+    
+    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
+    
+    <a class="post-tag post-tag-opinion" href="http://blog.ralch.com/tags/opinion">opinion</a>,
+    
+</div>
+
+
+
+    
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost") 
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+  </div>
+  </div>
+  </body>
+</html>

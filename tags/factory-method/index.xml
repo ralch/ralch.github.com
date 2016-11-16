@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/factory-method/index.xml</link>
+    <language>en-us</language>
+    <author>Svett Ralchev</author>
+    
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Desing Patterns in Golang: Factory Method</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</link>
+      <pubDate>Sun, 31 Jan 2016 08:46:53 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</guid>
+      <description>
+
+&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;Factory Method&lt;/code&gt; pattern is a design pattern used to define a runtime
+interface for creating an object. It’s called a factory because it creates
+various types of objects without necessarily knowing what kind of object it
+creates or how to create it.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Allows the sub-classes to choose the type of objects to create at runtime&lt;/li&gt;
+&lt;li&gt;It provides a simple way of extending the family of objects with minor
+changes in application code.&lt;/li&gt;
+&lt;li&gt;Promotes the loose-coupling by eliminating the need to bind
+application-specific structs into the code&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+&lt;p&gt;The structs and objects participating in this pattern are: product,
+concreate product, creator and concrete creator. The Creator contains one
+method to produce one type of product related to its type.&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/factory-method.gif&#34; alt=&#34;Builder Class Diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Product&lt;/code&gt; defines the interface of objects the factory method creates&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ConcreteProduct&lt;/code&gt; implements the Product interface&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Creator&lt;/code&gt; declares the factory method, which returns an object of type Product&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ConcreteCreator&lt;/code&gt; overrides the factory method to return an instance of a Concrete Product&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;The Factory Method defines an interface for creating objects, but lets
+subclasses decide which classes to instantiate. In these example, we will adopt
+the pattern to create document object model of Scalable Vector Graphics.&lt;/p&gt;
+
+&lt;p&gt;The SVG format can contains multiple elements. In this example, we will illustrate
+only some of the shape elements. In the context of &lt;code&gt;Factory Method&lt;/code&gt; design pattern,
+they are our product.&lt;/p&gt;
+
+&lt;p&gt;Every shape implements the &lt;code&gt;Shape&lt;/code&gt; interface, which expose a &lt;code&gt;Draw&lt;/code&gt; function that
+generates the required XML element:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type Shape interface {
+	Draw(io.Writer) error
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the following code snippets, we will illustrate two implementations of &lt;code&gt;Shape&lt;/code&gt;
+interface &lt;code&gt;Circle&lt;/code&gt; and &lt;code&gt;Ractangle&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type Circle struct {
+	Location Point
+	Radius   float64
+}
+
+func (c *Circle) Draw(w io.Writer) error {
+	_, err := fmt.Fprintf(w, `&amp;lt;circle cx=&amp;quot;%f&amp;quot; cy=&amp;quot;%f&amp;quot; r=&amp;quot;%f&amp;quot;/&amp;gt;`, c.Location.X, c.Location.Y, c.Radius)
+	return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type Rectangle struct {
+	Location Point
+	Size     Size
+}
+
+func (rect *Rectangle) Draw(w io.Writer) error {
+	_, err := fmt.Fprintf(w, `&amp;lt;rect x=&amp;quot;%f&amp;quot; y=&amp;quot;%f&amp;quot; width=&amp;quot;%f&amp;quot; height=&amp;quot;%f&amp;quot;/&amp;gt;`, rect.Location.X, rect.Location.Y, rect.Size.Width, rect.Size.Height)
+	return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Every of them has a function that is responsible for their instantiation based
+on the provided &lt;code&gt;Viewport&lt;/code&gt;. The &lt;code&gt;Viewport&lt;/code&gt; is an argument which keeps an information
+about the location and the size of the view port.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type ShapeFactory interface {
+	Create(viewport Viewport) Shape
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;CircleFactory&lt;/code&gt; creates a &lt;code&gt;Circle&lt;/code&gt; instance that has radius, which fits
+the viewport:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type CircleFactory struct{}
+
+func (factory *CircleFactory) Create(viewport Viewport) Shape {
+	return &amp;amp;Circle{
+		Location: viewport.Location,
+		Radius:   math.Min(viewport.Size.Width, viewport.Size.Height),
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;RectangleFactory&lt;/code&gt; produces a rectangle that fits the viewport:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type RactangleFactory struct{}
+
+func (factory *RactangleFactory) Create(viewport Viewport) Shape {
+	return &amp;amp;Rectangle{
+		Location: viewport.Location,
+		Size:     viewport.Size,
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The main object &lt;code&gt;Document&lt;/code&gt; has a &lt;code&gt;Draw&lt;/code&gt; function, which composes a different
+shapes created by provided factories. The &lt;code&gt;Document&lt;/code&gt; can be instaciated with
+different set of factories. This allow to customize and change the document&amp;rsquo;s
+content:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type Document struct {
+	ShapeFactories []ShapeFactory
+}
+
+func (doc *Document) Draw(w io.Writer) error {
+	viewport := Viewport{
+		Location: Point{
+			X: 0,
+			Y: 0,
+		},
+		Size: Size{
+			Width:  640,
+			Height: 480,
+		},
+	}
+	if _, err := fmt.Fprintf(w, `&amp;lt;svg height=&amp;quot;%f&amp;quot; width=&amp;quot;%f&amp;quot;&amp;gt;`, viewport.Size.Height, viewport.Size.Width); err != nil {
+		return err
+	}
+
+	for _, factory := range doc.ShapeFactories {
+		shape := factory.Create(viewport)
+		if err := shape.Draw(w); err != nil {
+			return err
+		}
+	}
+
+	_, err := fmt.Fprint(w, `&amp;lt;/svg&amp;gt;`)
+	return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We should instaciate the &lt;code&gt;Document&lt;/code&gt; struct with the available factories in
+the following way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;doc := &amp;amp;svg.Document{
+	ShapeFactories: []svg.ShapeFactory{
+		&amp;amp;svg.CircleFactory{},
+		&amp;amp;svg.RactangleFactory{},
+	},
+}
+
+doc.Draw(os.Stdout)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can get the full source code from &lt;a href=&#34;https://github.com/svett/golang-design-patterns/tree/master/creational-patterns/factory-method&#34;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Important aspects when we implement the Factory Method design pattern are:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Designing the arguments of the factory method&lt;/li&gt;
+&lt;li&gt;Considering an internal object pool that will allow object cache and reuse instead
+of created from scratch&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;The Factory Method is one of the most used design patterns. It makes a design
+more customizable and only a little more complicated. Other design patterns
+require new structs, whereas Factory Method only requires a new operation.
+The Factory Method is similar to Abstract Factory but without the emphasis on
+families.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

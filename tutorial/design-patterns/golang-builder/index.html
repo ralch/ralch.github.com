@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="description" content="">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+
+<meta name="keywords" content="go, builder, creational design patterns, ">
+
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:description" content=""/>
+<meta property="og:title" content="Desing Patterns in Golang: Builder : blog.ralch.com"/>
+<meta property="og:site_name" content="Svett Ralchev"/>
+<meta property="og:image" content="" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="" />
+<meta property="og:image:height" content="" />
+<meta property="og:url" content="http://blog.ralch.com/tutorial/design-patterns/golang-builder/">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-01-24"/>
+<meta property="article:modified_time" content="2016-01-24"/>
+
+
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="builder">
+<meta property="article:tag" content="creational design patterns">
+
+
+
+  <title> Desing Patterns in Golang: Builder &middot; Software adventures and thoughts </title>
+
+  
+  <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
+
+  
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+  
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+
+<body>
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
+      <p class="lead">
+       Software adventures and thoughts 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a></li>
+      <li><a href="/tutorial">Tutorials</a></li>
+      
+      <li><a href="/about/">About </a></li>
+      
+    </ul>
+      <a href="http://uk.linkedin.com/in/svettralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
+      <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+      
+      <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
+      
+      <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
+
+    <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
+      &copy; 2016 Svett Ralchev. All rights reserved.</p>
+    
+  </div>
+</div>
+
+  <div class="content container">
+  <div class="post">
+    <h1 class="post-title">Desing Patterns in Golang: Builder</h1>
+    <span class="post-date">Sun, Jan 24, 2016</span>
+    
+
+<div class="post-categories">
+    
+    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
+    
+    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
+    
+</div>
+
+
+
+    
+
+<h4 id="introduction">Introduction</h4>
+
+<p>The Builder Pattern is a creational design pattern that&rsquo;s used to
+encapsulate the construction logic for an object. It is often used
+when the construction process of an object is complex. The patterns is well
+suited for constructing different representations of the same class.</p>
+
+<h4 id="purpose">Purpose</h4>
+
+<ul>
+<li>Separate the construction of a complex object from its representation so that
+the same construction process can create different representations.</li>
+<li>A common software creational design pattern that&rsquo;s used to encapsulate the
+construction logic for an object.</li>
+</ul>
+
+<h4 id="design-pattern-diagram">Design Pattern Diagram</h4>
+
+<p>The Builder Pattern is comprised of four components: a builder interface, a
+concrete builder, a director and a product.</p>
+
+
+<figure >
+    
+        <img src="/media/golang/design-patterns/builder.gif" alt="Builder Class Diagram" />
+    
+    
+</figure>
+
+
+<ul>
+<li><code>Builder</code> defines a template for the steps to construct the product.
+Specifies an abstract interface for creating parts of a Product object.</li>
+<li><code>Concrete Builder</code> implements the builder interface and provides an interface
+for getting the product. Constructs and assembles parts of the product by
+implementing the Builder interface defines and keeps track of the
+representation it creates provides an interface for retrieving the product.
+<code>ConcreteBuilder</code> builds the product&rsquo;s internal representation and defines
+the process by which it&rsquo;s assembled includes classes that define the
+constituent parts, including interfaces for assembling the parts into the
+final result.</li>
+<li><code>Director</code> constructs the object through the builder interface.</li>
+<li><code>Product</code> is the main object that&rsquo;s constructed. Represents the complex
+object under construction.</li>
+</ul>
+
+<h4 id="implementation">Implementation</h4>
+
+<p>The Builder pattern separates the construction of a complex object from its
+representation so that the same construction process can create different
+representations. This pattern is used by mail service to construct
+children&rsquo;s mails to Santa Claus.</p>
+
+<p>Note that there can be variation in the content of the children&rsquo;s emails, but the
+construction process is the same. In the example, the service supports <code>JSON</code>
+and <code>XML</code>.</p>
+
+<p>The messages typically consist of body and format. They can be transmitted via
+different protocol. In order to do that their body should be encoded in the right
+format.</p>
+
+<pre><code class="language-Golang">// Message is the Product object in Builder Design Pattern
+type Message struct {
+	// Message Body
+	Body []byte
+	// Message Format
+	Format string
+}
+</code></pre>
+
+<p>Every message body should consist the recipient and text. Therefore, the Builder
+interface provides a functions to set these attributes. The <code>Message</code> function
+is responsible for constructing the actual message in the right format.</p>
+
+<pre><code class="language-Golang">// MessageBuilder is the inteface that every concrete implementation
+// should obey
+type MessageBuilder interface {
+	// Set the message's recipient
+	SetRecipient(recipient string)
+	// Set the message's text
+	SetText(text string)
+	// Returns the built Message
+	Message() (*Message, error)
+}
+</code></pre>
+
+<p>The <code>JSONMessageBuilder</code> is a concrete implementation of the <code>MessageBuilder</code>
+interface. It uses <a href="http://golang.org/pkg/encoding/json/">json</a> package to
+encode the message.</p>
+
+<pre><code class="language-Golang">// JSON Message Builder is concrete builder
+type JSONMessageBuilder struct {
+	messageRecipient string
+	messageText      string
+}
+
+func (b *JSONMessageBuilder) SetRecipient(recipient string) {
+	b.messageRecipient = recipient
+}
+
+func (b *JSONMessageBuilder) SetText(text string) {
+	b.messageText = text
+}
+
+func (b *JSONMessageBuilder) Message() (*Message, error) {
+	m := make(map[string]string)
+	m[&quot;recipient&quot;] = b.messageRecipient
+	m[&quot;message&quot;] = b.messageText
+
+	data, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+
+	return &amp;Message{Body: data, Format: &quot;JSON&quot;}, nil
+}
+</code></pre>
+
+<p>The <code>XMLMessageBuilder</code> is a concrete implementation of the <code>MessageBuilder</code>
+interface. It uses <a href="http://golang.org/pkg/encoding/xml/">xml</a> package to encode
+the message.</p>
+
+<pre><code class="language-Golang">// XML Message Builder is concrete builder
+type XMLMessageBuilder struct {
+	messageRecipient string
+	messageText      string
+}
+
+func (b *XMLMessageBuilder) SetRecipient(recipient string) {
+	b.messageRecipient = recipient
+}
+
+func (b *XMLMessageBuilder) SetText(text string) {
+	b.messageText = text
+}
+
+func (b *XMLMessageBuilder) Message() (*Message, error) {
+	type XMLMessage struct {
+		Recipient string `xml:&quot;recipient&quot;`
+		Text      string `xml:&quot;body&quot;`
+	}
+
+	m := XMLMessage{
+		Recipient: b.messageRecipient,
+		Text:      b.messageText,
+	}
+
+	data, err := xml.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+
+	return &amp;Message{Body: data, Format: &quot;XML&quot;}, nil
+}
+</code></pre>
+
+<p>The sender object decides what should be the content of the email and its
+recipient (ex. Santa Claus).</p>
+
+<pre><code class="language-Golang">// Sender is the Director in Builder Design Pattern
+type Sender struct{}
+
+// Build a concrete message via MessageBuilder
+func (s *Sender) BuildMessage(builder MessageBuilder) (*Message, error) {
+	builder.SetRecipient(&quot;Santa Claus&quot;)
+	builder.SetText(&quot;I have tried to be good all year and hope that you and your reindeers will be able to deliver me a nice present.&quot;)
+	return builder.Message()
+}
+</code></pre>
+
+<p>We should use the designed architecture to build XML and JSON messages in the
+following way:</p>
+
+<pre><code class="language-Golang">sender := &amp;messenger.Sender{}
+
+jsonMsg, err := sender.BuildMessage(&amp;messenger.JSONMessageBuilder{})
+if err != nil {
+	panic(err)
+}
+
+fmt.Println(string(jsonMsg.Body))
+
+xmlMsg, err := sender.BuildMessage(&amp;messenger.XMLMessageBuilder{})
+if err != nil {
+	panic(err)
+}
+
+fmt.Println(string(xmlMsg.Body))
+</code></pre>
+
+<h4 id="verdict">Verdict</h4>
+
+<p>As you can see, the true strength of the Builder Pattern is that it lets you
+break up the construction of a complex object. Not only that, it also allows
+you to hide the construction process from the consumer, thus allowing for
+additional representations of the product to be added with ease. The pattern
+also encourages separation of concerns and promotes application extensibility</p>
+
+    
+<div class="social-sharing">
+	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-builder%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
+	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-builder%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
+	<a class="share-button-linkedin" onClick="return popupShare(this.href);" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-builder%2f&title=Desing%20Patterns%20in%20Golang%3a%20Builder&summary=Introduction%20The%20Builder%20Pattern%20is%20a%20creational%20design%20pattern%20that%26rsquo%3bs%20used%20to%20encapsulate%20the%20construction%20logic%20for%20an%20object.%20It%20is%20often%20used%20when%20the%20construction%20process%20of%20an%20object%20is%20complex.%20The%20patterns%20is%20well%20suited%20for%20constructing%20different%20representations%20of%20the%20same%20class.%0aPurpose%20%20Separate%20the%20construction%20of%20a%20complex%20object%20from%20its%20representation%20so%20that%20the%20same%20construction%20process%20can%20create%20different%20representations.%20A%20common%20software%20creational%20design%20pattern%20that%26rsquo%3bs%20used%20to%20encapsulate%20the%20construction%20logic%20for%20an%20object.}&source=Software%20adventures%20and%20thoughts" target="_blank"><i class="fa fa-linkedin"><span>Share on LinkedIn</span></i></a>
+	<a class="share-button-twitter" onClick="return popupShare(this.href);" href="http://twitter.com/share?text=Desing%20Patterns%20in%20Golang%3a%20Builder&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fdesign-patterns%2fgolang-builder%2f" target="_blank"><i class="fa fa-twitter"><span>Tweet</span></i></a>	
+</div>
+<script type="text/javascript">
+    function popupShare(url) {
+        window.open(url, '_blank', 'scrollbars,resizable,height=525,width=600');
+        return false;
+    }
+</script>
+
+
+    
+
+<div class="tags-list">
+    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
+    
+    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
+    
+    <a class="post-tag post-tag-builder" href="http://blog.ralch.com/tags/builder">builder</a>,
+    
+    <a class="post-tag post-tag-creational-design-patterns" href="http://blog.ralch.com/tags/creational-design-patterns">creational design patterns</a>,
+    
+</div>
+
+
+
+    
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost") 
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+  </div>
+  </div>
+  </body>
+</html>

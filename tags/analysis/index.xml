@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/analysis/index.xml</link>
+    <language>en-us</language>
+    <author>Svett Ralchev</author>
+    
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Performance and memory analysis of Golang programs</title>
+      <link>http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/</link>
+      <pubDate>Sun, 13 Dec 2015 13:39:32 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/</guid>
+      <description>
+
+&lt;p&gt;As we continue looking at program metrics in Golang, it is time to look at
+performance matrics analysis.&lt;/p&gt;
+
+&lt;h3 id=&#34;instrumentation&#34;&gt;Instrumentation&lt;/h3&gt;
+
+&lt;p&gt;Instrumentation is the process of adding code to your application to generate
+events to allow you to monitor application health and performance.
+Instrumentation allows you to profile applications. Profiling enables you to
+identify how long a particular method or operation takes to run and how
+efficient it is in terms of CPU and memory resource usage. Collect custom data.
+This might include custom performance counters that you use to monitor
+application-specific activity, such as how long it takes to place an order.
+Trace code. This allows you to understand the application code path and all the
+methods run for a particular use case.&lt;/p&gt;
+
+&lt;p&gt;In this artcile, we will explore how to use the
+&lt;a href=&#34;https://golang.org/pkg/runtime/pprof&#34;&gt;pprof&lt;/a&gt; package and tool to profile
+&lt;code&gt;Golang&lt;/code&gt; applications.&lt;/p&gt;
+
+&lt;p&gt;You should import &lt;a href=&#34;https://golang.org/pkg/net/http/pprof/&#34;&gt;net/http/pprof&lt;/a&gt; to
+expose the application profile via HTTP.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import _ &amp;quot;net/http/pprof&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you don&amp;rsquo;t run an HTTP server, you should the following code snippet to make
+available an HTTP endpoint:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.DefaultServeMux)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The packages registers a set of http handlers as part of the &lt;code&gt;/debug/pprof&lt;/code&gt;
+endpoint into the default http mux that allows &lt;code&gt;pprof&lt;/code&gt; tool to retrieve any
+infromation about the different application profiles:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Memory profile (&lt;a href=&#34;http://localhost:8080/debug/pprof/heap&#34;&gt;http://localhost:8080/debug/pprof/heap&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;CPU profile (&lt;a href=&#34;http://localhost:6060/debug/pprof/profile&#34;&gt;http://localhost:6060/debug/pprof/profile&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Goroutine blocking profile (&lt;a href=&#34;http://localhost:6060/debug/pprof/block&#34;&gt;http://localhost:6060/debug/pprof/block&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Then use the pprof tool to look at query and read the profiles by executing &lt;code&gt;go
+tool pprof&lt;/code&gt; command.&lt;/p&gt;
+
+&lt;h4 id=&#34;heap-profile&#34;&gt;HEAP Profile&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;HEAP profile&lt;/code&gt; can be useful for:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Figuring out what is in the program heap at any given time&lt;/li&gt;
+&lt;li&gt;Locating memory leaks&lt;/li&gt;
+&lt;li&gt;Finding places that do a lot of allocation&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;By using &lt;code&gt;top&lt;/code&gt; command you can see the top functions that take most of the heap
+memory.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go tool pprof http://localhost:8080/debug/pprof/heap
+
+Fetching profile from http://127.0.0.1:8080/debug/pprof/heap
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.inuse_objects.inuse_space.005.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof) top
+512.19kB of 512.19kB total (  100%)
+      flat  flat%   sum%        cum   cum%
+  512.19kB   100%   100%   512.19kB   100%  runtime.malg
+         0     0%   100%   512.19kB   100%  runtime.mcommoninit
+         0     0%   100%   512.19kB   100%  runtime.mpreinit
+         0     0%   100%   512.19kB   100%  runtime.rt0_go
+         0     0%   100%   512.19kB   100%  runtime.schedinit
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;cpu-profile&#34;&gt;CPU Profile&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;CPU profiler&lt;/code&gt; helps finds a performance bottlenecks of given
+application. You could read ana analyse the profile by executing &lt;code&gt;go tool pprof&lt;/code&gt;
+command. By default it is sampling the application performance for 30 seconds.
+The Go program stops about 100 times per second and records a sample consisting
+of the program counters on the currently executing goroutine&amp;rsquo;s stack:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go tool pprof http://localhost:8080/debug/pprof/profile
+Fetching profile from http://127.0.0.1:8080/debug/pprof/profile
+Please wait... (30s)
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.samples.cpu.004.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;custom-profile&#34;&gt;Custom profile&lt;/h4&gt;
+
+&lt;p&gt;If you want to create your own cutom profiler, you should use &lt;code&gt;pprof.Profile&lt;/code&gt;
+object:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;import (
+	&amp;quot;net/http&amp;quot;
+	pprofHTTP &amp;quot;net/http/pprof&amp;quot;
+	&amp;quot;runtime/pprof&amp;quot;
+)
+
+var paymentProfile *pprof.Profile
+
+func init() {
+	paymentProfile = pprof.NewProfile(&amp;quot;payment&amp;quot;)
+	http.DefaultServeMux.Handle(&amp;quot;/debug/pprof/payment&amp;quot;, pprofHTTP.Handler(&amp;quot;payment&amp;quot;))
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The named profile could be create by executing &lt;code&gt;pprof.NewProfile&lt;/code&gt; constructor
+function.  In addition the &lt;code&gt;net/http/pprof&lt;/code&gt; packages provides a &lt;code&gt;Handler&lt;/code&gt;
+function that register a handler for a particular profile by name.&lt;/p&gt;
+
+&lt;p&gt;Then you can add/remove the profile sampling data with the following code snippet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;payment := &amp;amp;Payment{
+	Payee:  &amp;quot;John Doe&amp;quot;,
+	Amount: 128.54}
+
+skip := 0
+
+paymentProfile.Add(payment, skip)
+ProcessPayment(ctx, payment)
+paymentProfile.Remove(payment)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Add&lt;/code&gt; function accepts two arguments:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;value&lt;/code&gt; a sampling data associated with the profile&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;skip&lt;/code&gt; defines when the profile should begin the trace in the function calling &lt;code&gt;Add&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Lets retrive the profile and explore the difference:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ go tool pprof http://127.0.0.1:8080/debug/pprof/payment
+Fetching profile from http://127.0.0.1:8080/debug/pprof/payment
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.payment.008.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof) top
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Passing &lt;code&gt;skip=0&lt;/code&gt; begins the stack trace at the call to &lt;code&gt;Add&lt;/code&gt; before &lt;code&gt;ProcessPayment&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1 of 1 total (  100%)
+      flat  flat%   sum%        cum   cum%
+         1   100%   100%          1   100%  runtime/pprof.(*Profile).Add
+         0     0%   100%          1   100%  main.main
+         0     0%   100%          1   100%  runtime.goexit
+         0     0%   100%          1   100%  runtime.main
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Passing &lt;code&gt;skip=1&lt;/code&gt; begins the stack trace at the call to &lt;code&gt;Add&lt;/code&gt; inside &lt;code&gt;ProcessPayment&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1 of 1 total (  100%)
+      flat  flat%   sum%        cum   cum%
+         1   100%   100%          1   100%  main.main
+         0     0%   100%          1   100%  runtime.goexit
+         0     0%   100%          1   100%  runtime.main
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The sample application can be found &lt;a href=&#34;https://gist.github.com/svett/3babb3d65e9cf626d1d5&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;generating-reports&#34;&gt;Generating reports&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;pprof&lt;/code&gt; tool even provides a nice way to visualise the program profile in
+svg diagram. You should execute &lt;code&gt;web&lt;/code&gt; command as part of &lt;code&gt;pprof&lt;/code&gt; tool:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Fetching profile from http://127.0.0.1:8080/debug/pprof/heap
+Saved profile in /Users/svett/pprof/pprof.127.0.0.1:8080.inuse_objects.inuse_space.005.pb.gz
+Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
+(pprof) web
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/pprof-heap.png&#34; alt=&#34;pprof heap profile&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;h3 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;It&amp;rsquo;s never been so easy to profile our programs. &lt;code&gt;Golang&lt;/code&gt; is designed for distributed
+environment. Therefore profiling and metrics analysis are comming as part of
+the language runtime.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
