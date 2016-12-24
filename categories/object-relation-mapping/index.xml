@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/categories/object-relation-mapping/index.xml</link>
+    <language>en-us</language>
+    <author>Svett Ralchev</author>
+
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+
+    <item>
+      <title>Object relation mapping with GORM</title>
+      <link>http://blog.ralch.com/tutorial/golang-object-relation-mapping-with-gorm/</link>
+      <pubDate>Sun, 15 Nov 2015 08:54:02 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-object-relation-mapping-with-gorm/</guid>
+      <description>
+
+&lt;h3 id=&#34;what-is-object-relation-mapping-orm-o-rm-and-o-r-mapping&#34;&gt;What is object-relation mapping (ORM, O/RM, and O/R mapping)?&lt;/h3&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Object-relational mapping in computer science is a programming technique for
+converting data between incompatible type systems in object-oriented
+programming languages. This creates, in effect, a &amp;ldquo;virtual object database&amp;rdquo;
+that can be used from within the programming language.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;em&gt;source: &lt;a href=&#34;https://en.wikipedia.org/wiki/Object-relational_mapping&#34;&gt;Wikipedia&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;what-is-gorm&#34;&gt;What is GORM?&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/jinzhu/gorm&#34;&gt;GORM&lt;/a&gt; is object-relation package for &lt;code&gt;Go&lt;/code&gt;. It
+supports the following databases:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.foundationdb.com&#34;&gt;FoundationDB&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.postgresql.org&#34;&gt;PostgreSQL&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://dev.mysql.com&#34;&gt;MySQL&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.sqlite.org&#34;&gt;SQLite&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;installation&#34;&gt;Installation&lt;/h4&gt;
+
+&lt;p&gt;It is easy to install by invoking &lt;code&gt;go get&lt;/code&gt; command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ go get -u github.com/jinzhu/gorm
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;model-declaration&#34;&gt;Model declaration&lt;/h4&gt;
+
+&lt;p&gt;Models in &lt;code&gt;GORM&lt;/code&gt; are a simple &lt;code&gt;Go&lt;/code&gt; structs that declare a set of public fields.
+Every model is representent as table and every field is column in this table.&lt;/p&gt;
+
+&lt;p&gt;In this blog we will define all models illustrated on the following diagram:&lt;/p&gt;
+
+
+&lt;figure &gt;
+
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/gorm-diagram.png&#34; alt=&#34;ORM Diagram&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+
+&lt;p&gt;The actual representation of the diagram are three structs. Each of them has
+different fields that define a database column mapping via &lt;code&gt;sql&lt;/code&gt; and &lt;code&gt;gorm&lt;/code&gt;
+&lt;a href=&#34;https://golang.org/pkg/reflect/#example_StructTag&#34;&gt;tags&lt;/a&gt;. In this examples, we
+will explore some of them.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Company struct {
+	ID        int        `sql:&amp;quot;AUTO_INCREMENT&amp;quot; gorm:&amp;quot;primary_key&amp;quot;`
+	Name      string     `sql:&amp;quot;size:255;unique;index&amp;quot;`
+	Employees []Employee // one-to-many relationship
+	Address   Address    // one-to-one relationship
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Company&lt;/code&gt; struct has an auto incremental primary key defined by
+&lt;code&gt;sql:&amp;quot;AUTO_INCREMENT&amp;quot; gorm:&amp;quot;primary_key&amp;quot;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Its string &lt;code&gt;Name&lt;/code&gt; field should contain a value that is unique for all rows in
+the &lt;code&gt;Company&lt;/code&gt; table. The column is indexed, which improves the performance on
+any queries that uses it in their &lt;code&gt;where&lt;/code&gt; clause.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;GORM&lt;/code&gt; automatically creates for the rest of the fields:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;one-to-many relationship between &lt;code&gt;Company&lt;/code&gt; and &lt;code&gt;Employee&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;one to one relationship between &lt;code&gt;Company&lt;/code&gt; and &lt;code&gt;Address&lt;/code&gt; tables&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;type Employee struct {
+	FirstName        string    `sql:&amp;quot;size:255;index:name_idx&amp;quot;`
+	LastName         string    `sql:&amp;quot;size:255;index:name_idx&amp;quot;`
+	SocialSecurityNo string    `sql:&amp;quot;type:varchar(100);unique&amp;quot; gorm:&amp;quot;column:ssn&amp;quot;`
+	DateOfBirth      time.Time `sql:&amp;quot;DEFAULT:current_timestamp&amp;quot;`
+	Address          *Address  // one-to-one relationship
+	Deleted          bool      `sql:&amp;quot;DEFAULT:false&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Employee&lt;/code&gt; struct is defined in similar to way.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;FirstName&lt;/code&gt; and &lt;code&gt;LastName&lt;/code&gt; field have maximum length 255. In additionl a
+&lt;code&gt;name_idx&lt;/code&gt; index is created for both fields.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;SocialSecurityNo&lt;/code&gt; field is
+renamed to &lt;code&gt;ssn&lt;/code&gt; column (by declaring &lt;code&gt;gorm:&amp;quot;column:ssn&lt;/code&gt; tag) that has values
+that should be unique and do not exceed 100 characters.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;Employee&lt;/code&gt; struct has one-to-one relationship with the &lt;code&gt;Address&lt;/code&gt; struct.&lt;/p&gt;
+
+&lt;p&gt;The fields &lt;code&gt;DateOfBirth&lt;/code&gt; and &lt;code&gt;Deleted&lt;/code&gt; has default values declared by
+&lt;code&gt;sql:&amp;quot;DEFAULT:&amp;lt;default_value&amp;gt;&amp;quot;&lt;/code&gt; tag. For the &lt;code&gt;DateOfBirth&lt;/code&gt; column we are using
+the postgres function &lt;code&gt;current_timestamp&lt;/code&gt; to set the default value.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Address struct {
+	Country  string `gorm:&amp;quot;primary_key&amp;quot;`
+	City     string `gorm:&amp;quot;primary_key&amp;quot;`
+	PostCode string `gorm:&amp;quot;primary_key&amp;quot;`
+	Line1    sql.NullString
+	Line2    sql.NullString
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Address&lt;/code&gt; struct has a primary key that consists three fields &lt;code&gt;Country&lt;/code&gt;, &lt;code&gt;City&lt;/code&gt;
+and &lt;code&gt;PostCode&lt;/code&gt;. In fact it has two columns &lt;code&gt;Line1&lt;/code&gt; and &lt;code&gt;Line2&lt;/code&gt; that are using
+&lt;code&gt;sql.NullString&lt;/code&gt; type to allow null values.&lt;/p&gt;
+
+&lt;p&gt;In order to access your database you should open a new connection to it. In this
+article I am using &lt;code&gt;PostgreSQL&lt;/code&gt;. Therefore, any thoughts will be related to
+&lt;code&gt;PostgreSQL&lt;/code&gt; and relational databases.&lt;/p&gt;
+
+&lt;p&gt;You should install its driver for &lt;code&gt;GO&lt;/code&gt; with the following command:&lt;/p&gt;
+
+&lt;h3 id=&#34;establishing-connection&#34;&gt;Establishing connection&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;$ go get &amp;quot;github.com/lib/pq&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The driver should be registered to make it available for &lt;code&gt;GORM&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import _ &amp;quot;github.com/lib/pq&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we should establish the connection:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db, err := gorm.Open(&amp;quot;postgres&amp;quot;, &amp;quot;postgresql://myapp:dbpass@localhost:15432/myapp&amp;quot;)
+if err != nil {
+	panic(err)
+}
+
+// Ping function checks the database connectivity
+err = db.DB().Ping()
+if err != nil {
+	panic(err)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;creating-tables&#34;&gt;Creating tables&lt;/h4&gt;
+
+&lt;p&gt;Every struct type is presented as a table in the underlying database. Respectively
+every property is represented as a column in the database table.&lt;/p&gt;
+
+&lt;p&gt;Lets create the declared models by invoking &lt;code&gt;db.CreateTable&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.CreateTable(&amp;amp;company.Address{})
+db.CreateTable(&amp;amp;company.Company{})
+db.CreateTable(&amp;amp;company.Employee{})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The function will create underlying tables if they do not exists. They have a schema
+based on the property definitions. A properties that contain &lt;code&gt;int&lt;/code&gt;sql:&amp;ldquo;-&amp;rdquo;` tag
+are not emitted as a table columns.&lt;/p&gt;
+
+&lt;p&gt;By default the created table names are in plural. If you want to disable that
+you should use the following code snippet before any table create and table
+migrate task.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.SingularTable(true)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;migrating-tables&#34;&gt;Migrating tables&lt;/h4&gt;
+
+&lt;p&gt;If you want to change an existing table schema for your models, &lt;code&gt;GORM&lt;/code&gt; provides
+a set of features. You could automatically use the &lt;code&gt;AutoMigrate&lt;/code&gt; function to
+migrate the existing database schema to the new model changes.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.AutoMigrate(&amp;amp;company.Address{})
+db.AutoMigrate(&amp;amp;company.Company{})
+db.AutoMigrate(&amp;amp;company.Employee{})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Unfortunately, the migration adds only a new columns and new indexes, but does
+not alter existing columns and existing indexes.&lt;/p&gt;
+
+&lt;p&gt;If you want to do that you should use the functions provided by &lt;code&gt;gorm.Model&lt;/code&gt;
+object.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ModifyColumn&lt;/code&gt; change columns type&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DropColumn&lt;/code&gt; drops an existing column&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;AddIndex&lt;/code&gt; creates an index&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;AddUniqueIndex&lt;/code&gt; creates a unique index&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;RemoveIndex&lt;/code&gt; removes an existings index&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Lets change the &lt;code&gt;Name&lt;/code&gt; columns type of &lt;code&gt;Company&lt;/code&gt; table to a &lt;code&gt;text&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.Model(&amp;amp;company.Company{}).ModifyColumn(&amp;quot;name&amp;quot;, &amp;quot;text&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;dropping-tables&#34;&gt;Dropping tables&lt;/h4&gt;
+
+&lt;p&gt;Tables could be dropped by using &lt;code&gt;db.DropTable&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.DropTable(&amp;amp;company.Address{})
+db.DropTable(&amp;amp;company.Company{})
+db.DropTable(&amp;amp;company.Employee{})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The operation destroys the tables schema and all records.&lt;/p&gt;
+
+&lt;h4 id=&#34;create-update-and-delete-records&#34;&gt;Create, Update and Delete records&lt;/h4&gt;
+
+&lt;p&gt;In this section we will explore the &lt;code&gt;CRUD&lt;/code&gt; operations for this company:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sampleCompany := company.Company{
+	Name: &amp;quot;Google&amp;quot;,
+	Address: company.Address{
+		Country:  &amp;quot;USA&amp;quot;,
+		City:     &amp;quot;Moutain View&amp;quot;,
+		PostCode: &amp;quot;1600&amp;quot;,
+	},
+	Employees: []company.Employee{
+		company.Employee{
+			FirstName:        &amp;quot;John&amp;quot;,
+			LastName:         &amp;quot;Doe&amp;quot;,
+			SocialSecurityNo: &amp;quot;00-000-0000&amp;quot;,
+		},
+	},
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;create&#34;&gt;Create&lt;/h5&gt;
+
+&lt;p&gt;Lets create an new company by executing the &lt;code&gt;db.Create&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// It creates a single Company record and all associations (Address and Employees)
+db.Create(&amp;amp;sampleCompany)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;delete&#34;&gt;Delete&lt;/h5&gt;
+
+&lt;p&gt;To delete the created company, you should use &lt;code&gt;db.Delete&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.Delete(&amp;amp;sampleCompany)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You could do a batch delete. In the following example we are deleting all companies
+that contains letter &lt;code&gt;G&lt;/code&gt; in their name:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.Where(&amp;quot;Name LIKE ?&amp;quot;, &amp;quot;%G%&amp;quot;).Delete(company.Company{})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;update&#34;&gt;Update&lt;/h5&gt;
+
+&lt;p&gt;To update an existing record you should simple change its property and use
+&lt;code&gt;db.Save&lt;/code&gt; command to persist the change:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;model.Country = &amp;quot;USA&amp;quot;
+db.Save(&amp;amp;sampleCompany)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For batch updates we should use simiplar to &lt;code&gt;Delete&lt;/code&gt; operation approach, but this
+time we should use &lt;code&gt;Updates&lt;/code&gt; function instead. Lets update all &lt;code&gt;USA&lt;/code&gt; addresses:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.Table(&amp;quot;addresses&amp;quot;).Where(&amp;quot;Country = ?&amp;quot;, &amp;quot;USA&amp;quot;).Updates(map[string]interface{}{&amp;quot;Country&amp;quot;: &amp;quot;North America&amp;quot;})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;query-data-records&#34;&gt;Query data records&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;GORM&lt;/code&gt; provides a very intuitive way to query your data. It brings all power of
+underlying database by providing the following functions:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var firstComp company.Company
+
+// fetch a company by primary key
+db.First(&amp;amp;firstComp, 1)
+
+// fetch a company by name
+db.Find(&amp;amp;firstComp, &amp;quot;name = ?&amp;quot;, &amp;quot;Google&amp;quot;)
+
+// fetch all companies
+var comapnies []company.Company
+db.Find(&amp;amp;companies)
+
+// fetch all companies that starts with G
+db.Where(&amp;quot;name = ?&amp;quot;, &amp;quot;%G%&amp;quot;).Find(&amp;amp;companies)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I cannot manage to cover in a single post. You can read more about them in the
+&lt;a href=&#34;https://github.com/jinzhu/gorm&#34;&gt;official documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;GORM&lt;/code&gt; is great object relation mapping package that unifies the access to
+different data base. The provides all query capabilities that we are familiar
+with in &lt;code&gt;SQL&lt;/code&gt; like languages. I would like to see a code generation package
+that generates a models from existing data base.&lt;/p&gt;
+</description>
+    </item>
+
+  </channel>
+</rss>

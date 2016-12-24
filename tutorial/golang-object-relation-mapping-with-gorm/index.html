@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="description" content="">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+
+<meta name="keywords" content="">
+
+
+<meta property="og:type" content="article"/>
+<meta property="og:description" content=""/>
+<meta property="og:title" content="Object relation mapping with GORM : blog.ralch.com"/>
+<meta property="og:site_name" content="Svett Ralchev"/>
+<meta property="og:image" content="" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="" />
+<meta property="og:image:height" content="" />
+<meta property="og:url" content="http://blog.ralch.com/tutorial/golang-object-relation-mapping-with-gorm/">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-11-15"/>
+<meta property="article:modified_time" content="2015-11-15"/>
+
+
+
+  <title> Object relation mapping with GORM &middot; Software adventures and thoughts </title>
+
+
+  <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
+
+
+  <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
+
+
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+
+<body>
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
+      <p class="lead">
+       Software adventures and thoughts
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a></li>
+      <li><a href="/tutorial">Tutorials</a></li>
+
+      <li><a href="/about/">About </a></li>
+
+    </ul>
+      <a href="http://uk.linkedin.com/in/svettralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
+      <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+
+      <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
+
+      <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
+
+    <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
+      &copy; 2016 Svett Ralchev. All rights reserved.</p>
+
+  </div>
+</div>
+
+  <div class="content container">
+  <div class="post">
+    <h1 class="post-title">Object relation mapping with GORM</h1>
+    <span class="post-date">Sun, Nov 15, 2015</span>
+
+
+<div class="post-categories">
+
+    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
+
+    <a class="post-category post-category-object-relation-mapping" href="http://blog.ralch.com/categories/object-relation-mapping">object relation mapping</a>
+
+    <a class="post-category post-category-database" href="http://blog.ralch.com/categories/database">database</a>
+
+</div>
+
+
+
+
+
+<h3 id="what-is-object-relation-mapping-orm-o-rm-and-o-r-mapping">What is object-relation mapping (ORM, O/RM, and O/R mapping)?</h3>
+
+<blockquote>
+<p>Object-relational mapping in computer science is a programming technique for
+converting data between incompatible type systems in object-oriented
+programming languages. This creates, in effect, a &ldquo;virtual object database&rdquo;
+that can be used from within the programming language.</p>
+</blockquote>
+
+<p><em>source: <a href="https://en.wikipedia.org/wiki/Object-relational_mapping">Wikipedia</a></em></p>
+
+<h3 id="what-is-gorm">What is GORM?</h3>
+
+<p><a href="https://github.com/jinzhu/gorm">GORM</a> is object-relation package for <code>Go</code>. It
+supports the following databases:</p>
+
+<ul>
+<li><a href="http://www.foundationdb.com">FoundationDB</a></li>
+<li><a href="http://www.postgresql.org">PostgreSQL</a></li>
+<li><a href="http://dev.mysql.com">MySQL</a></li>
+<li><a href="https://www.sqlite.org">SQLite</a></li>
+</ul>
+
+<h4 id="installation">Installation</h4>
+
+<p>It is easy to install by invoking <code>go get</code> command:</p>
+
+<pre><code>$ go get -u github.com/jinzhu/gorm
+</code></pre>
+
+<h4 id="model-declaration">Model declaration</h4>
+
+<p>Models in <code>GORM</code> are a simple <code>Go</code> structs that declare a set of public fields.
+Every model is representent as table and every field is column in this table.</p>
+
+<p>In this blog we will define all models illustrated on the following diagram:</p>
+
+
+<figure >
+
+        <img src="/media/golang/gorm-diagram.png" alt="ORM Diagram" />
+
+
+</figure>
+
+
+<p>The actual representation of the diagram are three structs. Each of them has
+different fields that define a database column mapping via <code>sql</code> and <code>gorm</code>
+<a href="https://golang.org/pkg/reflect/#example_StructTag">tags</a>. In this examples, we
+will explore some of them.</p>
+
+<pre><code>type Company struct {
+	ID        int        `sql:&quot;AUTO_INCREMENT&quot; gorm:&quot;primary_key&quot;`
+	Name      string     `sql:&quot;size:255;unique;index&quot;`
+	Employees []Employee // one-to-many relationship
+	Address   Address    // one-to-one relationship
+}
+</code></pre>
+
+<p>The <code>Company</code> struct has an auto incremental primary key defined by
+<code>sql:&quot;AUTO_INCREMENT&quot; gorm:&quot;primary_key&quot;</code>.</p>
+
+<p>Its string <code>Name</code> field should contain a value that is unique for all rows in
+the <code>Company</code> table. The column is indexed, which improves the performance on
+any queries that uses it in their <code>where</code> clause.</p>
+
+<p><code>GORM</code> automatically creates for the rest of the fields:</p>
+
+<ul>
+<li>one-to-many relationship between <code>Company</code> and <code>Employee</code></li>
+<li>one to one relationship between <code>Company</code> and <code>Address</code> tables</li>
+</ul>
+
+<pre><code>type Employee struct {
+	FirstName        string    `sql:&quot;size:255;index:name_idx&quot;`
+	LastName         string    `sql:&quot;size:255;index:name_idx&quot;`
+	SocialSecurityNo string    `sql:&quot;type:varchar(100);unique&quot; gorm:&quot;column:ssn&quot;`
+	DateOfBirth      time.Time `sql:&quot;DEFAULT:current_timestamp&quot;`
+	Address          *Address  // one-to-one relationship
+	Deleted          bool      `sql:&quot;DEFAULT:false&quot;`
+}
+</code></pre>
+
+<p>The <code>Employee</code> struct is defined in similar to way.</p>
+
+<p>The <code>FirstName</code> and <code>LastName</code> field have maximum length 255. In additionl a
+<code>name_idx</code> index is created for both fields.</p>
+
+<p>The <code>SocialSecurityNo</code> field is
+renamed to <code>ssn</code> column (by declaring <code>gorm:&quot;column:ssn</code> tag) that has values
+that should be unique and do not exceed 100 characters.</p>
+
+<p>The <code>Employee</code> struct has one-to-one relationship with the <code>Address</code> struct.</p>
+
+<p>The fields <code>DateOfBirth</code> and <code>Deleted</code> has default values declared by
+<code>sql:&quot;DEFAULT:&lt;default_value&gt;&quot;</code> tag. For the <code>DateOfBirth</code> column we are using
+the postgres function <code>current_timestamp</code> to set the default value.</p>
+
+<pre><code>type Address struct {
+	Country  string `gorm:&quot;primary_key&quot;`
+	City     string `gorm:&quot;primary_key&quot;`
+	PostCode string `gorm:&quot;primary_key&quot;`
+	Line1    sql.NullString
+	Line2    sql.NullString
+}
+</code></pre>
+
+<p>The <code>Address</code> struct has a primary key that consists three fields <code>Country</code>, <code>City</code>
+and <code>PostCode</code>. In fact it has two columns <code>Line1</code> and <code>Line2</code> that are using
+<code>sql.NullString</code> type to allow null values.</p>
+
+<p>In order to access your database you should open a new connection to it. In this
+article I am using <code>PostgreSQL</code>. Therefore, any thoughts will be related to
+<code>PostgreSQL</code> and relational databases.</p>
+
+<p>You should install its driver for <code>GO</code> with the following command:</p>
+
+<h3 id="establishing-connection">Establishing connection</h3>
+
+<pre><code>$ go get &quot;github.com/lib/pq&quot;
+</code></pre>
+
+<p>The driver should be registered to make it available for <code>GORM</code>:</p>
+
+<pre><code>import _ &quot;github.com/lib/pq&quot;
+</code></pre>
+
+<p>Then we should establish the connection:</p>
+
+<pre><code>db, err := gorm.Open(&quot;postgres&quot;, &quot;postgresql://myapp:dbpass@localhost:15432/myapp&quot;)
+if err != nil {
+	panic(err)
+}
+
+// Ping function checks the database connectivity
+err = db.DB().Ping()
+if err != nil {
+	panic(err)
+}
+</code></pre>
+
+<h4 id="creating-tables">Creating tables</h4>
+
+<p>Every struct type is presented as a table in the underlying database. Respectively
+every property is represented as a column in the database table.</p>
+
+<p>Lets create the declared models by invoking <code>db.CreateTable</code> function:</p>
+
+<pre><code>db.CreateTable(&amp;company.Address{})
+db.CreateTable(&amp;company.Company{})
+db.CreateTable(&amp;company.Employee{})
+</code></pre>
+
+<p>The function will create underlying tables if they do not exists. They have a schema
+based on the property definitions. A properties that contain <code>int</code>sql:&ldquo;-&rdquo;` tag
+are not emitted as a table columns.</p>
+
+<p>By default the created table names are in plural. If you want to disable that
+you should use the following code snippet before any table create and table
+migrate task.</p>
+
+<pre><code>db.SingularTable(true)
+</code></pre>
+
+<h4 id="migrating-tables">Migrating tables</h4>
+
+<p>If you want to change an existing table schema for your models, <code>GORM</code> provides
+a set of features. You could automatically use the <code>AutoMigrate</code> function to
+migrate the existing database schema to the new model changes.</p>
+
+<pre><code>db.AutoMigrate(&amp;company.Address{})
+db.AutoMigrate(&amp;company.Company{})
+db.AutoMigrate(&amp;company.Employee{})
+</code></pre>
+
+<p>Unfortunately, the migration adds only a new columns and new indexes, but does
+not alter existing columns and existing indexes.</p>
+
+<p>If you want to do that you should use the functions provided by <code>gorm.Model</code>
+object.</p>
+
+<ul>
+<li><code>ModifyColumn</code> change columns type</li>
+<li><code>DropColumn</code> drops an existing column</li>
+<li><code>AddIndex</code> creates an index</li>
+<li><code>AddUniqueIndex</code> creates a unique index</li>
+<li><code>RemoveIndex</code> removes an existings index</li>
+</ul>
+
+<p>Lets change the <code>Name</code> columns type of <code>Company</code> table to a <code>text</code>:</p>
+
+<pre><code>db.Model(&amp;company.Company{}).ModifyColumn(&quot;name&quot;, &quot;text&quot;)
+</code></pre>
+
+<h4 id="dropping-tables">Dropping tables</h4>
+
+<p>Tables could be dropped by using <code>db.DropTable</code> function:</p>
+
+<pre><code>db.DropTable(&amp;company.Address{})
+db.DropTable(&amp;company.Company{})
+db.DropTable(&amp;company.Employee{})
+</code></pre>
+
+<p>The operation destroys the tables schema and all records.</p>
+
+<h4 id="create-update-and-delete-records">Create, Update and Delete records</h4>
+
+<p>In this section we will explore the <code>CRUD</code> operations for this company:</p>
+
+<pre><code>sampleCompany := company.Company{
+	Name: &quot;Google&quot;,
+	Address: company.Address{
+		Country:  &quot;USA&quot;,
+		City:     &quot;Moutain View&quot;,
+		PostCode: &quot;1600&quot;,
+	},
+	Employees: []company.Employee{
+		company.Employee{
+			FirstName:        &quot;John&quot;,
+			LastName:         &quot;Doe&quot;,
+			SocialSecurityNo: &quot;00-000-0000&quot;,
+		},
+	},
+}
+</code></pre>
+
+<h5 id="create">Create</h5>
+
+<p>Lets create an new company by executing the <code>db.Create</code> function:</p>
+
+<pre><code>// It creates a single Company record and all associations (Address and Employees)
+db.Create(&amp;sampleCompany)
+</code></pre>
+
+<h5 id="delete">Delete</h5>
+
+<p>To delete the created company, you should use <code>db.Delete</code> function:</p>
+
+<pre><code>db.Delete(&amp;sampleCompany)
+</code></pre>
+
+<p>You could do a batch delete. In the following example we are deleting all companies
+that contains letter <code>G</code> in their name:</p>
+
+<pre><code>db.Where(&quot;Name LIKE ?&quot;, &quot;%G%&quot;).Delete(company.Company{})
+</code></pre>
+
+<h5 id="update">Update</h5>
+
+<p>To update an existing record you should simple change its property and use
+<code>db.Save</code> command to persist the change:</p>
+
+<pre><code>model.Country = &quot;USA&quot;
+db.Save(&amp;sampleCompany)
+</code></pre>
+
+<p>For batch updates we should use simiplar to <code>Delete</code> operation approach, but this
+time we should use <code>Updates</code> function instead. Lets update all <code>USA</code> addresses:</p>
+
+<pre><code>db.Table(&quot;addresses&quot;).Where(&quot;Country = ?&quot;, &quot;USA&quot;).Updates(map[string]interface{}{&quot;Country&quot;: &quot;North America&quot;})
+</code></pre>
+
+<h4 id="query-data-records">Query data records</h4>
+
+<p><code>GORM</code> provides a very intuitive way to query your data. It brings all power of
+underlying database by providing the following functions:</p>
+
+<pre><code>var firstComp company.Company
+
+// fetch a company by primary key
+db.First(&amp;firstComp, 1)
+
+// fetch a company by name
+db.Find(&amp;firstComp, &quot;name = ?&quot;, &quot;Google&quot;)
+
+// fetch all companies
+var comapnies []company.Company
+db.Find(&amp;companies)
+
+// fetch all companies that starts with G
+db.Where(&quot;name = ?&quot;, &quot;%G%&quot;).Find(&amp;companies)
+</code></pre>
+
+<p>I cannot manage to cover in a single post. You can read more about them in the
+<a href="https://github.com/jinzhu/gorm">official documentation</a>.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p><code>GORM</code> is great object relation mapping package that unifies the access to
+different data base. The provides all query capabilities that we are familiar
+with in <code>SQL</code> like languages. I would like to see a code generation package
+that generates a models from existing data base.</p>
+
+
+<div class="social-sharing">
+	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-object-relation-mapping-with-gorm%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
+	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-object-relation-mapping-with-gorm%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
+	<a class="share-button-linkedin" onClick="return popupShare(this.href);" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-object-relation-mapping-with-gorm%2f&title=Object%20relation%20mapping%20with%20GORM&summary=What%20is%20object-relation%20mapping%20%28ORM%2c%20O%2fRM%2c%20and%20O%2fR%20mapping%29%3f%20%20Object-relational%20mapping%20in%20computer%20science%20is%20a%20programming%20technique%20for%20converting%20data%20between%20incompatible%20type%20systems%20in%20object-oriented%20programming%20languages.%20This%20creates%2c%20in%20effect%2c%20a%20%26ldquo%3bvirtual%20object%20database%26rdquo%3b%20that%20can%20be%20used%20from%20within%20the%20programming%20language.%0a%20source%3a%20Wikipedia%0aWhat%20is%20GORM%3f%20GORM%20is%20object-relation%20package%20for%20Go.%20It%20supports%20the%20following%20databases%3a%0a%20FoundationDB%20PostgreSQL%20MySQL%20SQLite%20%20Installation%20It%20is%20easy%20to%20install%20by%20invoking%20go%20get%20command%3a}&source=Software%20adventures%20and%20thoughts" target="_blank"><i class="fa fa-linkedin"><span>Share on LinkedIn</span></i></a>
+	<a class="share-button-twitter" onClick="return popupShare(this.href);" href="http://twitter.com/share?text=Object%20relation%20mapping%20with%20GORM&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-object-relation-mapping-with-gorm%2f" target="_blank"><i class="fa fa-twitter"><span>Tweet</span></i></a>	
+</div>
+<script type="text/javascript">
+    function popupShare(url) {
+        window.open(url, '_blank', 'scrollbars,resizable,height=525,width=600');
+        return false;
+    }
+</script>
+
+
+
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+
+
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+  </div>
+  </div>
+  </body>
+</html>

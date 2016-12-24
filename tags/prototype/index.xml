@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/prototype/index.xml</link>
+    <language>en-us</language>
+    <author>Svett Ralchev</author>
+
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+
+    <item>
+      <title>Design Patterns in Golang: Prototype</title>
+      <link>http://blog.ralch.com/tutorial/design-patterns/golang-prototype/</link>
+      <pubDate>Sat, 06 Feb 2016 16:01:29 UTC</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-prototype/</guid>
+      <description>
+
+&lt;h4 id=&#34;preface&#34;&gt;Preface&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;The Prototype Pattern&lt;/code&gt; creates duplicate objects while keeping performance
+in mind. It&amp;rsquo;s a part of the creational patterns and provides one of the best
+ways to create an object.&lt;/p&gt;
+
+&lt;p&gt;In the mainstream languages (like C# and JAVA), it requires implementing a
+prototype interface which tells to create a clone of the current object. It is
+used when creation of object directly is costly.&lt;/p&gt;
+
+&lt;p&gt;For instance, an object is to be created after a costly database operation. We
+can cache the object, returns its clone on next request and update the database
+as and when needed thus reducing database calls.&lt;/p&gt;
+
+&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Specify the kind of objects to create using a prototypical instance, and
+create new objects by copying this prototype.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
+
+
+&lt;figure &gt;
+
+        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/prototype.gif&#34; alt=&#34;Prototype Class Diagram&#34; /&gt;
+
+
+&lt;/figure&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Prototype&lt;/code&gt; declares an interface for cloning itself&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ConcretePrototype&lt;/code&gt; implements an operation for cloning itself&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Client&lt;/code&gt; creates a new object by asking a prototype to clone itself&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
+
+&lt;p&gt;In Golang, the pattern is applicable only in situation that we want to
+customize how the object is cloned. We will explore two examples regarding
+both situations.&lt;/p&gt;
+
+&lt;p&gt;Lets build a system that generates a different configuration files depending on
+our needs. In first place, we have a struct &lt;code&gt;Config&lt;/code&gt; that looks like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;package configurer
+
+// Config provides a configuration of microservice
+type Config struct {
+	workDir string
+	user    string
+}
+
+// NewConfig create a new config
+func NewConfig(user string, workDir string) Config {
+	return Config{
+		user:    user,
+		workDir: workDir,
+	}
+}
+
+// WithWorkDir creates a copy of Config with the provided working directory
+func (c Config) WithWorkDir(dir string) Config {
+	c.workDir = dir
+	return c
+}
+
+// WithUser creates a copy of Config with the provided user
+func (c Config) WithUser(user string) Config {
+	c.user = user
+	return c
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We want to be able to mutate the object without affecting its initial instance.
+The goal is to be able to generate different configuration files without loosing
+the flexibility of customizing them without mutation of the initial default
+configuration.&lt;/p&gt;
+
+&lt;p&gt;As you can see the functions &lt;code&gt;WithWorkDir&lt;/code&gt;, &lt;code&gt;WithUser&lt;/code&gt; are declared for the
+struct &lt;code&gt;Config&lt;/code&gt; (not for &lt;code&gt;*Config&lt;/code&gt;). At the time, when they are called the
+object is copied by the &lt;code&gt;Golang&lt;/code&gt; runtime. This allows us to modify it
+without affecting the original object.&lt;/p&gt;
+
+&lt;p&gt;Lets see it&amp;rsquo;s usage in action:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;config := configurer.NewConfig(&amp;quot;guest&amp;quot;, &amp;quot;/home/guest&amp;quot;)
+rootConfig := config.WithUser(&amp;quot;root&amp;quot;).WithWorkDir(&amp;quot;/root&amp;quot;)
+
+fmt.Println(&amp;quot;Guest Config&amp;quot;, config)
+fmt.Println(&amp;quot;Root Config&amp;quot;, rootConfig)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now lets explore the classic implementation of &lt;code&gt;The Prototype Design Pattern&lt;/code&gt;.
+We will assume that we are developing again document object model for a custom
+document format. The core object is an &lt;code&gt;Element&lt;/code&gt; structure which has parent and
+children.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Element represents an element in document object model
+type Element struct {
+	text     string
+	parent   Node
+	children []Node
+}
+
+// NewElement makes a new element
+func NewElement(text string) *Element {
+	return &amp;amp;Element{
+		text:     text,
+		parent:   nil,
+		children: make([]Node, 0),
+	}
+}
+
+// Parent returns the element parent
+func (e *Element) Parent() Node {
+	return e.parent
+}
+
+// SetParent sets the element parent
+func (e *Element) SetParent(node Node) {
+	e.parent = node
+}
+
+// Children returns the element children elements
+func (e *Element) Children() []Node {
+	return e.children
+}
+
+// AddChild adds a child element
+func (e *Element) AddChild(child Node) {
+	copy := child.Clone()
+	copy.SetParent(e)
+	e.children = append(e.children, copy)
+}
+
+// Clone makes a copy of particular element. Note that the element becomes a
+// root of new orphan tree
+func (e *Element) Clone() Node {
+	copy := &amp;amp;Element{
+		text:     e.text,
+		parent:   nil,
+		children: make([]Node, 0),
+	}
+	for _, child := range e.children {
+		copy.AddChild(child)
+	}
+	return copy
+}
+
+// String returns string representation of element
+func (e *Element) String() string {
+	buffer := bytes.NewBufferString(e.text)
+
+	for _, c := range e.Children() {
+		text := c.String()
+		fmt.Fprintf(buffer, &amp;quot;\n %s&amp;quot;, text)
+	}
+
+	return buffer.String()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The contract that exposes the &lt;code&gt;Clone&lt;/code&gt; funcion is the &lt;code&gt;Node&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Node a document object model node
+type Node interface {
+	// Strings returns nodes text representation
+	String() string
+	// Parent returns the node parent
+	Parent() Node
+	// SetParent sets the node parent
+	SetParent(node Node)
+	// Children returns the node children nodes
+	Children() []Node
+	// AddChild adds a child node
+	AddChild(child Node)
+	// Clone clones a node
+	Clone() Node
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We want to extract a particular subtree of concrete element hierary. We want to
+use it as independent document object model. In order to do that, we should use
+the clone function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;directorNode := dom.NewElement(&amp;quot;Director of Engineering&amp;quot;)
+
+engManagerNode := dom.NewElement(&amp;quot;Engineering Manager&amp;quot;)
+engManagerNode.AddChild(dom.NewElement(&amp;quot;Lead Software Engineer&amp;quot;))
+
+directorNode.AddChild(engManagerNode)
+directorNode.AddChild(engManagerNode)
+
+officeManagerNode := dom.NewElement(&amp;quot;Office Manager&amp;quot;)
+directorNode.AddChild(officeManagerNode)
+
+fmt.Println(&amp;quot;&amp;quot;)
+fmt.Println(&amp;quot;# Company Hierarchy&amp;quot;)
+fmt.Print(directorNode)
+fmt.Println(&amp;quot;&amp;quot;)
+fmt.Println(&amp;quot;# Team Hiearachy&amp;quot;)
+fmt.Print(engManagerNode.Clone())
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The sample above creates a tree from the subtree pointed by &lt;code&gt;engManagerNode&lt;/code&gt;
+variable.&lt;/p&gt;
+
+&lt;p&gt;You can get the full source code from
+&lt;a href=&#34;https://github.com/svett/golang-design-patterns/tree/master/creational-patterns/prototype&#34;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
+
+&lt;p&gt;One of the disadvantages of this pattern is that the process of copying an object
+can be complicated. In addition, structs that have circular references to other
+classes are difficult to clone. Its overuse could affect performance, as the
+prototype object itself would need to be instantiated if you use a registry of
+prototypes.&lt;/p&gt;
+
+&lt;p&gt;In the context of &lt;code&gt;Golang&lt;/code&gt;, I don&amp;rsquo;t see any particular reason to adopt it.
+&lt;code&gt;Golang&lt;/code&gt; already provides builtin mechanism for cloning objects.&lt;/p&gt;
+</description>
+    </item>
+
+  </channel>
+</rss>

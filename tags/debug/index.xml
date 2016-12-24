@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/debug/index.xml</link>
+    <language>en-us</language>
+    <author>Svett Ralchev</author>
+
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+
+    <item>
+      <title>Delve: Next generation debugger for Golang</title>
+      <link>http://blog.ralch.com/tutorial/golang-debug-with-delve/</link>
+      <pubDate>Sat, 08 Aug 2015 20:42:49 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-debug-with-delve/</guid>
+      <description>
+
+&lt;p&gt;In my previous &lt;a href=&#34;http://bit.ly/1DjLPNp&#34;&gt;post&lt;/a&gt; I demonstrated how you can debug
+golang applications with &lt;code&gt;LLDB&lt;/code&gt;. In this article I will illustrate
+the most recent debugger for Go: &lt;a href=&#34;https://github.com/derekparker/delve&#34;&gt;Delve&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;The debugger is a community effort to bring a debugger in the toolchain of every &lt;code&gt;Go&lt;/code&gt; developer.&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s written in &lt;code&gt;Go&lt;/code&gt; to debug &lt;code&gt;Go&lt;/code&gt; code. It&amp;rsquo;s still in active development, but
+we can still benefit from its basic features.&lt;/p&gt;
+
+&lt;h3 id=&#34;installation&#34;&gt;Installation&lt;/h3&gt;
+
+&lt;p&gt;You should install &lt;code&gt;Delve&lt;/code&gt; with the following command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ go get -u github.com/derekparker/delve/cmd/dlv
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note that you need at least &lt;code&gt;Go 1.4&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;installation-linux&#34;&gt;Installation: Linux&lt;/h4&gt;
+
+&lt;p&gt;In Linux you should NOT do anything else further. You are ready.&lt;/p&gt;
+
+&lt;h4 id=&#34;installation-macosx&#34;&gt;Installation: MacOSX&lt;/h4&gt;
+
+&lt;p&gt;If you are using &lt;code&gt;MacOSX&lt;/code&gt; as me, you need a self-signed certificate to sign the delve binary.&lt;/p&gt;
+
+&lt;p&gt;You should create a new certificate by using application &amp;ldquo;Keychain Access&amp;rdquo;.&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Choose a certificate name, set &amp;ldquo;Identity Type&amp;rdquo; to &amp;ldquo;Self Signed Root&amp;rdquo;, set &amp;ldquo;Certificate Type&amp;rdquo;
+to &lt;code&gt;Code Signing&lt;/code&gt; and select the &lt;code&gt;Let me override defaults&lt;/code&gt;:
+
+&lt;figure &gt;
+
+        &lt;img src=&#34;http://blog.ralch.com/media/debugger/certificate-name.png&#34; alt=&#34;Certificate Name&#34; /&gt;
+
+
+&lt;/figure&gt;
+&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Continue to a certificate information wizard step. If you email address is missing, please
+fill the required field:
+
+&lt;figure &gt;
+
+        &lt;img src=&#34;http://blog.ralch.com/media/debugger/certificate-info.png&#34; alt=&#34;Certificate Info&#34; /&gt;
+
+
+&lt;/figure&gt;
+&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Click several times on “Continue” until you get to
+the &amp;ldquo;Specify a Location For The Certificate&amp;rdquo; screen, then set &amp;ldquo;Keychain to System&amp;rdquo;.
+
+&lt;figure &gt;
+
+        &lt;img src=&#34;http://blog.ralch.com/media/debugger/certificate-keychain.png&#34; alt=&#34;Certificate Keychain&#34; /&gt;
+
+
+&lt;/figure&gt;
+&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Then we need sign the binary by using the created certificate. In order to do that we should
+execute the following command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# CERT=&amp;lt;your_ceriticate_name&amp;gt; make install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you need more detailed guidelines, you should follow &lt;a href=&#34;https://github.com/derekparker/delve/wiki/Building&#34;&gt;the official documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can watch the following video that demonstrates the installation process:&lt;/p&gt;
+
+&lt;div class=&#34;embed video-player&#34;&gt;
+  &lt;iframe class=&#34;youtube-player&#34; type=&#34;text/html&#34; width=&#34;640&#34; height=&#34;385&#34; src=&#34;http://www.youtube.com/embed/4ndjybtBg74&#34; allowfullscreen frameborder=&#34;0&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;h3 id=&#34;integration&#34;&gt;Integration&lt;/h3&gt;
+
+&lt;p&gt;Right now the debugger does not have integration with any IDE. Nevertheless, the contributors
+are working hard to release an API interface that will allow that. For now &lt;code&gt;Delve&lt;/code&gt; can
+be started from a command line.&lt;/p&gt;
+
+&lt;h3 id=&#34;getting-started&#34;&gt;Getting started&lt;/h3&gt;
+
+&lt;p&gt;Compile, run, and attach in one step:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dlv run
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Run program with tracepoints set at functions matching [regexp]:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dlv trace [regexp]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Compile test binary, start and attach:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dlv test
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Provide the application path you want to debug:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dlv path/to/program
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Provide the running application process id:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo dlv attach 47478
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Delve will pass any arguments after &lt;code&gt;dlv run|test|trace&lt;/code&gt; to the newly created process:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dlv run -- -http=:6060
+$ dlv run arg1 -- -flag1 -flag2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;commands&#34;&gt;Commands&lt;/h3&gt;
+
+&lt;p&gt;In debug session, you can use the following commands:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;help&lt;/code&gt; - Prints the help message.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;restart&lt;/code&gt; - Restarts the process, killing the current one if it is running.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;break (break &amp;lt;address&amp;gt; [-stack &amp;lt;n&amp;gt;|-goroutine|&amp;lt;variable name&amp;gt;]*)&lt;/code&gt; - Set a breakpoint. Example: &lt;code&gt;break foo.go:13&lt;/code&gt; or &lt;code&gt;break main.main&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;trace&lt;/code&gt; - Set a tracepoint. Syntax identical to breakpoints.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;continue&lt;/code&gt; - Run until breakpoint or program termination.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;step&lt;/code&gt; - Single step through program.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;next&lt;/code&gt; - Step over to next source line.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;threads&lt;/code&gt; - Print status of all traced threads.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;thread $tid&lt;/code&gt; - Switch to another thread.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;goroutines&lt;/code&gt; - Print status of all goroutines.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;breakpoints&lt;/code&gt; - Print information on all active breakpoints.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;print $var&lt;/code&gt; - Evaluate a variable.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;info $type [regex]&lt;/code&gt; - Outputs information about the symbol table. An optional regex filters the list. Example &lt;code&gt;info funcs unicode&lt;/code&gt;. Valid types are:
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;args&lt;/code&gt; - Prints the name and value of all arguments to the current function&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;funcs&lt;/code&gt; - Prints the name of all defined functions&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;locals&lt;/code&gt; - Prints the name and value of all local variables in the current context&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sources&lt;/code&gt; - Prints the path of all source files&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;vars&lt;/code&gt; - Prints the name and value of all package variables in the app. Any variable that is not local or arg is considered a package variables&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;regs&lt;/code&gt; - Prints the contents of CPU registers.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;stack [ &amp;lt;depth&amp;gt; [ &amp;lt;goroutine id&amp;gt; ] ]&lt;/code&gt; - Prints the stacktrace of the current goroutine, up to &lt;code&gt;&amp;lt;depth&amp;gt;&lt;/code&gt;. &lt;code&gt;&amp;lt;depth&amp;gt;&lt;/code&gt; defaults to 10, pass a second argument to print the stacktrace of a different goroutine.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;exit&lt;/code&gt; - Exit the debugger.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;demo&#34;&gt;Demo&lt;/h3&gt;
+
+&lt;p&gt;In the demo video, I am using the &lt;a href=&#34;https://gist.github.com/svett/4b95e8d1631fd0a93dfe&#34;&gt;same application&lt;/a&gt; that I debugged in &lt;a href=&#34;http://bit.ly/1DjLPNp&#34;&gt;the LLDB article&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&#34;embed video-player&#34;&gt;
+  &lt;iframe class=&#34;youtube-player&#34; type=&#34;text/html&#34; width=&#34;640&#34; height=&#34;385&#34; src=&#34;http://www.youtube.com/embed/zgLjVD5ZSOc&#34; allowfullscreen frameborder=&#34;0&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;&lt;em&gt;Note that parts of this article are taken from the official &lt;code&gt;Delve&lt;/code&gt;
+&lt;a href=&#34;https://github.com/derekparker/delve/wiki/Commands&#34;&gt;commands&lt;/a&gt; documentation and
+&lt;a href=&#34;https://github.com/derekparker/delve/wiki/Usage&#34;&gt;usage&lt;/a&gt; documentation.&lt;/em&gt;&lt;/p&gt;
+</description>
+    </item>
+
+    <item>
+      <title>Debug Golang applications: LLDB</title>
+      <link>http://blog.ralch.com/tutorial/golang-debug-with-lldb/</link>
+      <pubDate>Sat, 01 Aug 2015 16:47:06 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-debug-with-lldb/</guid>
+      <description>
+
+&lt;p&gt;Even that ease and simplicity of using &lt;code&gt;go&lt;/code&gt; are one of its main advanatages,
+there are difficulties in debugging applications written in &lt;code&gt;go&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The lack of mature tools (like supported &lt;code&gt;vim&lt;/code&gt; plugin) push most of us to use
+logging techniques to inspect and track down issues.&lt;/p&gt;
+
+&lt;p&gt;In this article, I will demonstrates how you can use &lt;code&gt;vim&lt;/code&gt; and &lt;code&gt;lldb&lt;/code&gt; to debug
+a go application. Before that you should make the application capable for debugging.&lt;/p&gt;
+
+&lt;h3 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h3&gt;
+
+&lt;p&gt;You should compile the application by emitting the debug information and disable inlining.
+The &lt;code&gt;-N&lt;/code&gt; flag enables debug information emitting and &lt;code&gt;-l&lt;/code&gt; disables compiler inlining:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;go build -gcflag &#39;-N -l&#39; &amp;lt;file_or_package&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The compiled binary supports &lt;a href=&#34;https://en.wikipedia.org/wiki/DWARF&#34;&gt;DWARF&lt;/a&gt; debugging
+data format, which is supported by debuggers as &lt;a href=&#34;https://en.wikipedia.org/wiki/GNU_Debugger&#34;&gt;GDB&lt;/a&gt;
+and &lt;a href=&#34;https://goo.gl/fgiab0&#34;&gt;LLDB&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You should install &lt;code&gt;vim-lldb&lt;/code&gt; plugin from &lt;a href=&#34;https://github.com/gilligan/vim-lldb&#34;&gt;here&lt;/a&gt;.
+The easiest way to install it by using package manager as &lt;code&gt;bundle&lt;/code&gt;. You should
+add &lt;code&gt;Bundle &amp;quot;gilligan/vim-lldb&amp;quot;&lt;/code&gt; in your bundle list.&lt;/p&gt;
+
+&lt;p&gt;Then you can use the following commands and shortcuts:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Ltarget&lt;/code&gt; specifies the binary that we are going to debug&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Lbreakpoint&lt;/code&gt; sets a breakpoint in file on particular line (&lt;code&gt;&amp;lt;leader&amp;gt;lb&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Lrun&lt;/code&gt; starts the debugger (&lt;code&gt;&amp;lt;leader&amp;gt;lr&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Lstep&lt;/code&gt; does a source level single step in the current thread. (&lt;code&gt;&amp;lt;leader&amp;gt;ls&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Lfinish&lt;/code&gt; steps out of the currently selected frame. (&lt;code&gt;&amp;lt;leader&amp;gt;lo&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Lnext&lt;/code&gt; does a source level single step over in the current thread. (&lt;code&gt;&amp;lt;leader&amp;gt;ln&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Lcontinue&lt;/code&gt; continues execution until next breakpoint. (&lt;code&gt;&amp;lt;leader&amp;gt;lc&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Lprint&lt;/code&gt; evaluates a generalized expression in the current frame. (&lt;code&gt;&amp;lt;leader&amp;gt;lp&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Lframe variable&lt;/code&gt; prints the frame local variables (&lt;code&gt;&amp;lt;leader&amp;gt;lv&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;You can add my extra shortcuts in your &lt;code&gt;.vimrc&lt;/code&gt; file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;nnoremap &amp;lt;silent&amp;gt; &amp;lt;leader&amp;gt;lr :Lrun&amp;lt;CR&amp;gt;
+nnoremap &amp;lt;silent&amp;gt; &amp;lt;leader&amp;gt;lb :Lbreakpoint&amp;lt;CR&amp;gt;
+nnoremap &amp;lt;silent&amp;gt; &amp;lt;leader&amp;gt;lc :Lcontinue&amp;lt;CR&amp;gt;
+nnoremap &amp;lt;silent&amp;gt; &amp;lt;leader&amp;gt;ln :Lnext&amp;lt;CR&amp;gt;
+nnoremap &amp;lt;silent&amp;gt; &amp;lt;leader&amp;gt;ls :Lstep&amp;lt;CR&amp;gt;
+nnoremap &amp;lt;silent&amp;gt; &amp;lt;leader&amp;gt;li :Lstepin&amp;lt;CR&amp;gt;
+nnoremap &amp;lt;silent&amp;gt; &amp;lt;leader&amp;gt;lo :Lfinish&amp;lt;CR&amp;gt;
+nnoremap &amp;lt;silent&amp;gt; &amp;lt;leader&amp;gt;lp :Lprint&amp;lt;CR&amp;gt;
+nnoremap &amp;lt;silent&amp;gt; &amp;lt;leader&amp;gt;lv :Lframe variable&amp;lt;CR&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Lets have the following source code that we are aiming to debug:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// main.go
+package main
+
+import &amp;quot;fmt&amp;quot;
+
+type User struct {
+	FirstName string
+	LastName  string
+}
+
+func (user User) String() string {
+	return fmt.Sprintf(&amp;quot;%s %s&amp;quot;, user.FirstName, user.LastName)
+}
+
+func main() {
+	user := User{
+		FirstName: &amp;quot;John&amp;quot;,
+		LastName:  &amp;quot;Smith&amp;quot;,
+	}
+
+	message := FormatMessage(user, &amp;quot;Golang Weekly Newsletter #756&amp;quot;)
+
+	for index := 0; index &amp;lt; 3; index++ {
+		fmt.Printf(&amp;quot;Sending #%d message with %s\n&amp;quot;, index, message)
+	}
+}
+
+func FormatMessage(user User, message string) string {
+	return fmt.Sprintf(&amp;quot;body: %s by %s&amp;quot;, message, user.String())
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Compile the application:
+&lt;code&gt;
+$ go build -gcflag &#39;-N -l&#39; -o app main.go
+&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Open the source code:
+&lt;code&gt;
+$ vim main.go
+&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Set the &lt;code&gt;LLDB&lt;/code&gt; target to be the compiled binary:
+&lt;code&gt;
+:Ltarget app
+&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Set a breakpoint on desired line by using &lt;code&gt;Lbreakpoint&lt;/code&gt; command or &lt;code&gt;&amp;lt;leader&amp;gt;lb&lt;/code&gt;
+shortcut.&lt;/li&gt;
+&lt;li&gt;Then you can run the application in debug mode by using &lt;code&gt;Lrun&lt;/code&gt; command or &lt;code&gt;&amp;lt;leader&amp;gt;lr&lt;/code&gt; shortcut.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;You can watch the illustrates steps in the following video:&lt;/p&gt;
+
+&lt;div class=&#34;embed video-player&#34;&gt;
+  &lt;iframe class=&#34;youtube-player&#34; type=&#34;text/html&#34; width=&#34;640&#34; height=&#34;385&#34; src=&#34;http://www.youtube.com/embed/Efk2OImodO0&#34; allowfullscreen frameborder=&#34;0&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;h3 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;Even though &lt;code&gt;LLDB&lt;/code&gt; is very powerful and commonly used debugger, it does not work properly in the context of &lt;code&gt;Go&lt;/code&gt;.
+It crashes sometimes. It made for &lt;code&gt;C\C++&lt;/code&gt; not for &lt;code&gt;Go&lt;/code&gt;.  It cannot follow the execution
+flow properly due to the fact that the debugger is not aware about &lt;code&gt;defer&lt;/code&gt; statement.
+In addition sometimes &lt;code&gt;go scheduler&lt;/code&gt; changes the context of current executing &lt;code&gt;go routine&lt;/code&gt;.
+It changes the stack frame by moving &lt;code&gt;go routine&lt;/code&gt; from one thread to another.&lt;/p&gt;
+</description>
+    </item>
+
+    <item>
+      <title>PINVOKE: Getting all child handles of window</title>
+      <link>http://blog.ralch.com/2015/04/pinvoke-getting-all-child-handles-of-window/</link>
+      <pubDate>Sat, 11 Apr 2015 21:51:58 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/2015/04/pinvoke-getting-all-child-handles-of-window/</guid>
+      <description>&lt;p&gt;If you don’t know I have a new job in Bulgaria. I went away form Web Development and now I’m working as Windows Developer.
+However, we had a client that exceed the number of window handles (more than 10 000) due to bad design of application.
+While diagnosing his application, we needed to understand how many handles are created per window.&lt;/p&gt;
+
+&lt;p&gt;Windows API provide the availability to get all child handles for specified handle.
+We should use &lt;code&gt;EnumChildWindows&lt;/code&gt; function provided by &lt;code&gt;user32.dll&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;EnumChildWindows&lt;/code&gt; function enumerates the child windows that belong to the specified parent window by passing the handle to each child window, in turn,
+to an application-defined callback function. &lt;code&gt;EnumChildWindows&lt;/code&gt; continues until the last child window is enumerated or the callback function returns FALSE.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;BOOL EnumChildWindows(
+         HWND hWndParent,
+         WNDENUMPROC lpEnumFunc,
+         LPARAM lParam
+);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;hWndParent&lt;/code&gt; - [in] Handle to the parent window whose child windows are to be enumerated.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lpEnumFunc&lt;/code&gt; - [in] Pointer to an application-defined callback function.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lParam&lt;/code&gt; - [in] Specifies an application-defined value to be passed to the callback function.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If a child window has created child windows of its own, &lt;code&gt;EnumChildWindows&lt;/code&gt; enumerates those windows as well.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class WindowHandleInfo
+{
+    private delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
+
+    [DllImport(&amp;quot;user32&amp;quot;)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool EnumChildWindows(IntPtr window, EnumWindowProc callback, IntPtr lParam);
+
+    private IntPtr _MainHandle;
+
+    public WindowHandleInfo(IntPtr handle)
+    {
+        this._MainHandle = handle;
+    }
+
+    public List&amp;lt;IntPtr&amp;gt; GetAllChildHandles()
+    {
+        List&amp;lt;IntPtr&amp;gt; childHandles = new List&amp;lt;IntPtr&amp;gt;();
+
+        GCHandle gcChildhandlesList = GCHandle.Alloc(childHandles);
+        IntPtr pointerChildHandlesList = GCHandle.ToIntPtr(gcChildhandlesList);
+
+        try
+        {
+            EnumWindowProc childProc = new EnumWindowProc(EnumWindow);
+            EnumChildWindows(this._MainHandle, childProc, pointerChildHandlesList);
+        }
+        finally
+        {
+            gcChildhandlesList.Free();
+        }
+
+        return childHandles;
+    }
+
+    private bool EnumWindow(IntPtr hWnd, IntPtr lParam)
+    {
+        GCHandle gcChildhandlesList = GCHandle.FromIntPtr(lParam);
+
+        if (gcChildhandlesList == null || gcChildhandlesList.Target == null)
+        {
+            return false;
+        }
+
+        List&amp;lt;IntPtr&amp;gt; childHandles = gcChildhandlesList.Target as List&amp;lt;IntPtr&amp;gt;;
+        childHandles.Add(hWnd);
+
+        return true;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+
+  </channel>
+</rss>

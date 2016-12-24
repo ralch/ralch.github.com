@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="description" content="">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+
+<meta name="keywords" content="go, clang, preprocessor, compilation, ">
+
+
+<meta property="og:type" content="article"/>
+<meta property="og:description" content=""/>
+<meta property="og:title" content="Conditional compilation in Golang : blog.ralch.com"/>
+<meta property="og:site_name" content="Svett Ralchev"/>
+<meta property="og:image" content="" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="" />
+<meta property="og:image:height" content="" />
+<meta property="og:url" content="http://blog.ralch.com/tutorial/golang-conditional-compilation/">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-08-16"/>
+<meta property="article:modified_time" content="2015-08-16"/>
+
+
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="clang">
+<meta property="article:tag" content="preprocessor">
+<meta property="article:tag" content="compilation">
+
+
+
+  <title> Conditional compilation in Golang &middot; Software adventures and thoughts </title>
+
+
+  <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
+
+
+  <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
+
+
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+
+<body>
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
+      <p class="lead">
+       Software adventures and thoughts
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a></li>
+      <li><a href="/tutorial">Tutorials</a></li>
+
+      <li><a href="/about/">About </a></li>
+
+    </ul>
+      <a href="http://uk.linkedin.com/in/svettralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
+      <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+
+      <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
+
+      <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
+
+    <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
+      &copy; 2016 Svett Ralchev. All rights reserved.</p>
+
+  </div>
+</div>
+
+  <div class="content container">
+  <div class="post">
+    <h1 class="post-title">Conditional compilation in Golang</h1>
+    <span class="post-date">Sun, Aug 16, 2015</span>
+
+
+<div class="post-categories">
+
+    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
+
+    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
+
+</div>
+
+
+
+
+
+<p>When developing Go package or application that depends on specific features
+of the underlying platform or architecture it is often necessary
+to use a specialised implementation.</p>
+
+<p>There are two parts of Go conditional compilation system, which we will now
+explore in more detail.</p>
+
+<h2 id="build-constraints">Build constraints</h2>
+
+<p>A build constraints (known as build tags) is an optional top line comment that
+starts with</p>
+
+<pre><code>// +build
+
+package api
+</code></pre>
+
+<p>Declaration of build constraints follows the following rules:</p>
+
+<ol>
+<li>Each tag is alphanumeric word</li>
+<li>Tag preceded by <code>!</code> defines its negation.</li>
+<li>A build constraint is evaluated as the OR of space-separated options.</li>
+<li>Each option evaluates as the AND of its comma-separated terms.</li>
+</ol>
+
+<p>That means if we have the following build constraint:</p>
+
+<pre><code>// +build linux,386 darwin,!cgo
+</code></pre>
+
+<p>It will be evaluated by the compilation system as:</p>
+
+<pre><code>(linux AND 386) OR (darwin AND (NOT cgo))
+</code></pre>
+
+<p>A file can have multiple build constraints:</p>
+
+<pre><code>// +build linux freebsd
+// +build 386
+
+package api
+</code></pre>
+
+<p>The evaluated constraint is a logical <code>AND</code> of the individual build tags:</p>
+
+<pre><code>(linux OR freebsd) AND 386
+</code></pre>
+
+<p><em>Note that the build tags do not have strict validation. Be aware that they
+should be formatted as the provided samples. In addition the last build tags should
+be associated with a trailing new line. That makes it non-associated with any declaration.
+Fortunately you can verify them by using <code>go vet</code> tool.</em></p>
+
+<h2 id="file-suffixes">File suffixes</h2>
+
+<p>The second option for conditional compilation is the name of the
+source file itself. This approach is simpler than build tags, and allows
+the Go build system to exclude files without having to process the file.</p>
+
+<p>We should add one of the following suffixes to desired files:</p>
+
+<pre><code>*_GOOS // operation system
+*_GOARCH // platform architecture
+*_GOOS_GOARCH // both combined
+</code></pre>
+
+<p>These are all available architectures and operation system supported by Go
+build system:</p>
+
+<table>
+<thead>
+<tr>
+<th>GOOS</th>
+<th>GOARCH</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>darwin</td>
+<td>386</td>
+</tr>
+
+<tr>
+<td>darwin</td>
+<td>amd64</td>
+</tr>
+
+<tr>
+<td>dragonfly</td>
+<td>386</td>
+</tr>
+
+<tr>
+<td>dragonfly</td>
+<td>amd64</td>
+</tr>
+
+<tr>
+<td>freebsd</td>
+<td>386</td>
+</tr>
+
+<tr>
+<td>freebsd</td>
+<td>amd64</td>
+</tr>
+
+<tr>
+<td>freebsd</td>
+<td>arm</td>
+</tr>
+
+<tr>
+<td>linux</td>
+<td>386</td>
+</tr>
+
+<tr>
+<td>linux</td>
+<td>amd64</td>
+</tr>
+
+<tr>
+<td>linux</td>
+<td>arm</td>
+</tr>
+
+<tr>
+<td>netbsd</td>
+<td>386</td>
+</tr>
+
+<tr>
+<td>netbsd</td>
+<td>amd64</td>
+</tr>
+
+<tr>
+<td>netbsd</td>
+<td>arm</td>
+</tr>
+
+<tr>
+<td>openbsd</td>
+<td>386</td>
+</tr>
+
+<tr>
+<td>openbsd</td>
+<td>amd64</td>
+</tr>
+
+<tr>
+<td>plan9</td>
+<td>386</td>
+</tr>
+
+<tr>
+<td>plan9</td>
+<td>amd64</td>
+</tr>
+
+<tr>
+<td>solaris</td>
+<td>amd64</td>
+</tr>
+
+<tr>
+<td>windows</td>
+<td>386</td>
+</tr>
+
+<tr>
+<td>windows</td>
+<td>amd64</td>
+</tr>
+</tbody>
+</table>
+
+<p>Examples for such a files:</p>
+
+<pre><code>container_windows.go // only builds on windows system
+container_linux.go // only builds on linux system
+container_freebsd_386.go // only builds on FreeBSD system with 386 architecture
+</code></pre>
+
+<p>If you want to exclude a file from compilation, you should use <code>ignore</code> build
+constraint:</p>
+
+<pre><code>// +build ignore
+
+package api
+</code></pre>
+
+<h3 id="test-files">Test files</h3>
+
+<p>Test files also support build constraints and file suffixes. They behave in the same
+manner as other Go source files.</p>
+
+<pre><code>container_windows_test.go // windows specific container tests
+container_linux_test.go // linux specific container tests
+</code></pre>
+
+<h2 id="experimenting-with-c-c-preprocessor-and-go">Experimenting with C/C++ preprocessor and Go</h2>
+
+<p>Go does not have a preprocessor to control the inclusion of platform specific code.
+Even though C preprocessor is intended to be used only with C, C++, and Objective-C source code,
+we will use it as a general text processor of Go source code.</p>
+
+<p>Lets have the following code snippet:</p>
+
+<pre><code>// filename: app.pgo
+package main
+
+import &quot;fmt&quot;
+#ifdef PRINT_DATE
+import &quot;time&quot;
+#endif
+
+func main() {
+  fmt.Println(&quot;Application is executed.&quot;)
+#ifdef PRINT_DATE
+  fmt.Printf(&quot;Current Date: %s\n&quot;, time.Now().String())
+#endif
+}
+</code></pre>
+
+<p>If we execute the C preprocessor on <code>app.pgo</code> file:</p>
+
+<pre><code>// -P disable linemaker output.
+$ cpp -P app.pgo app.go
+</code></pre>
+
+<p>We will produce a new file <code>app.go</code>:</p>
+
+<pre><code>// filename: app.go
+package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;Application is executed.&quot;)
+}
+</code></pre>
+
+<p>If we define <code>PRINT_DATE</code> variable for the preprocessor by using <code>-D</code> flag:</p>
+
+<pre><code>cpp -DPRINT_DATE -P app.pgo app.go
+</code></pre>
+
+<p>We will produce a new file that includes additional print statment:</p>
+
+<pre><code>// filename: app.go
+package main
+
+import &quot;fmt&quot;
+import &quot;time&quot;
+
+func main() {
+  fmt.Println(&quot;Application is executed.&quot;)
+  fmt.Printf(&quot;Current Date: %s\n&quot;, time.Now().String())
+}
+</code></pre>
+
+<p>We can combine the preprocessor operation with go build step:</p>
+
+<pre><code>$ cpp -DPRINT_DATE -P app.pgo app.go | go build app.go
+</code></pre>
+
+<h2 id="verdict">Verdict</h2>
+
+<p>We should aim to develop and build our Go applications by following Go idioms.
+If the source file targets a specific platform, we should choose file suffix
+approach. Otherwise, if the source file is applicable for multiple platforms and
+we want to exclude a specific feature or platform, we should use build constraints instead.</p>
+
+
+<div class="social-sharing">
+	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-conditional-compilation%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
+	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-conditional-compilation%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
+	<a class="share-button-linkedin" onClick="return popupShare(this.href);" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-conditional-compilation%2f&title=Conditional%20compilation%20in%20Golang&summary=When%20developing%20Go%20package%20or%20application%20that%20depends%20on%20specific%20features%20of%20the%20underlying%20platform%20or%20architecture%20it%20is%20often%20necessary%20to%20use%20a%20specialised%20implementation.%0aThere%20are%20two%20parts%20of%20Go%20conditional%20compilation%20system%2c%20which%20we%20will%20now%20explore%20in%20more%20detail.%0aBuild%20constraints%20A%20build%20constraints%20%28known%20as%20build%20tags%29%20is%20an%20optional%20top%20line%20comment%20that%20starts%20with%0a%2f%2f%20%2bbuild%20package%20api%20%20Declaration%20of%20build%20constraints%20follows%20the%20following%20rules%3a}&source=Software%20adventures%20and%20thoughts" target="_blank"><i class="fa fa-linkedin"><span>Share on LinkedIn</span></i></a>
+	<a class="share-button-twitter" onClick="return popupShare(this.href);" href="http://twitter.com/share?text=Conditional%20compilation%20in%20Golang&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-conditional-compilation%2f" target="_blank"><i class="fa fa-twitter"><span>Tweet</span></i></a>	
+</div>
+<script type="text/javascript">
+    function popupShare(url) {
+        window.open(url, '_blank', 'scrollbars,resizable,height=525,width=600');
+        return false;
+    }
+</script>
+
+
+
+
+<div class="tags-list">
+    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
+
+    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
+
+    <a class="post-tag post-tag-clang" href="http://blog.ralch.com/tags/clang">clang</a>,
+
+    <a class="post-tag post-tag-preprocessor" href="http://blog.ralch.com/tags/preprocessor">preprocessor</a>,
+
+    <a class="post-tag post-tag-compilation" href="http://blog.ralch.com/tags/compilation">compilation</a>,
+
+</div>
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+
+
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+  </div>
+  </div>
+  </body>
+</html>

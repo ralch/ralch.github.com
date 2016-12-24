@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/ssl/index.xml</link>
+    <language>en-us</language>
+    <author>Svett Ralchev</author>
+
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+
+    <item>
+      <title>SSL support for Busybox docker containers</title>
+      <link>http://blog.ralch.com/tutorial/devop-busybox-ca-certificates/</link>
+      <pubDate>Thu, 23 Apr 2015 21:50:49 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/devop-busybox-ca-certificates/</guid>
+      <description>&lt;p&gt;I am running my &lt;a href=&#34;http://www.ralch.com&#34;&gt;official website&lt;/a&gt; and this blog on busybox
+docker containers. I noticed today that this image does not support
+certificate trust stores and therefore cannot request an SSL-enabled web services.&lt;/p&gt;
+
+&lt;p&gt;My website is using &lt;a href=&#34;https://www.google.com/recaptcha/intro/index.html&#34;&gt;Google recaptcha&lt;/a&gt;
+to handle spam requests on its contact form. However, the website throws the following
+exception when recaptch API is requested:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;x509: failed to load system roots and no roots provided&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;First approach would be to use &lt;a href=&#34;https://docs.docker.com/reference/builder/#copy&#34;&gt;COPY&lt;/a&gt;
+command to load the certificate store bundle in to the image.&lt;/p&gt;
+
+&lt;p&gt;I do not want to keep the certificates on docker image, so I fixed the issue
+by mounting the host&amp;rsquo;s certificate store in to the container file system.&lt;/p&gt;
+
+&lt;p&gt;The following command is solving the issue for me:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;CERT_DIR=/etc/ssl/certs
+
+docker run -v $CERT_DIR:$CERT_DIR --name web -d busybox
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+
+  </channel>
+</rss>

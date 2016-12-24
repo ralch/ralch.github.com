@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="description" content="">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+
+<meta name="keywords" content="go, cgo, c, compilation, ">
+
+
+<meta property="og:type" content="article"/>
+<meta property="og:description" content=""/>
+<meta property="og:title" content="Sharing Golang packages to C and Go : blog.ralch.com"/>
+<meta property="og:site_name" content="Svett Ralchev"/>
+<meta property="og:image" content="" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="" />
+<meta property="og:image:height" content="" />
+<meta property="og:url" content="http://blog.ralch.com/tutorial/golang-sharing-libraries/">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-08-23"/>
+<meta property="article:modified_time" content="2015-08-23"/>
+
+
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="cgo">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="compilation">
+
+
+
+  <title> Sharing Golang packages to C and Go &middot; Software adventures and thoughts </title>
+
+
+  <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
+
+
+  <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
+
+
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+
+<body>
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
+      <p class="lead">
+       Software adventures and thoughts
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a></li>
+      <li><a href="/tutorial">Tutorials</a></li>
+
+      <li><a href="/about/">About </a></li>
+
+    </ul>
+      <a href="http://uk.linkedin.com/in/svettralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
+      <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+
+      <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
+
+      <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
+
+    <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
+      &copy; 2016 Svett Ralchev. All rights reserved.</p>
+
+  </div>
+</div>
+
+  <div class="content container">
+  <div class="post">
+    <h1 class="post-title">Sharing Golang packages to C and Go</h1>
+    <span class="post-date">Sun, Aug 23, 2015</span>
+
+
+<div class="post-categories">
+
+    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
+
+    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
+
+</div>
+
+
+
+
+
+<p>The latest <a href="https://blog.golang.org/go1.5">Go 1.5</a> version is out. As part of
+the <a href="https://golang.org/doc/go1.5">new features</a>, <code>Go compiler</code> can compile
+packages as a shared libraries.</p>
+
+<p>It accepts <code>-buildmode</code> argument that determines how a package is compiled.
+These are the following options:</p>
+
+<ul>
+<li><code>archive</code>: Build the listed non-main packages into .a files. Packages named
+main are ignored.</li>
+<li><code>c-archive</code>: Build the listed main package, plus all packages it imports,
+into a C archive file.</li>
+<li><code>c-shared</code>: Build the listed main packages, plus all packages that they import,
+into C shared libraries.</li>
+<li><code>shared</code>: Combine all the listed non-main packages into a single shared library.</li>
+<li><code>exe</code>: Build the listed main packages and everything they import into executables.
+Packages not named main are ignored.</li>
+</ul>
+
+<p>By default, listed main packages are built into executables
+and listed non-main packages are built into .a files.</p>
+
+<p>In this article we will explore two major ways to share libraries between Go and C:</p>
+
+<h2 id="using-shared-library-in-go">Using shared library in Go</h2>
+
+<p>Assume that <code>GOPATH</code> contains this structure:</p>
+
+<pre><code>.
+├── calc
+│   └── calc.go
+└── cashier
+    └── main.go
+</code></pre>
+
+<p>The <code>calc</code> package contains a set of functions that do arithmetic opertaions:</p>
+
+<pre><code>// filename: calc.go
+package calc
+
+func Sum(x, y int) int {
+    return x + y
+}
+</code></pre>
+
+<p>Before compile any shared library, the standard builtin packages should be installed
+as shared library. This will allow any other shared library to link with them.</p>
+
+<pre><code>$ go install -buildmode=shared -linkshared std
+</code></pre>
+
+<p>Then the <code>calc</code> package can be compiled as shared library linked to <code>std</code> libraries:</p>
+
+<pre><code>$ go install -buildmode=shared -linkshared calc
+</code></pre>
+
+<p><em>Due to a <a href="https://github.com/golang/go/issues/12236">issue</a>, building and installing
+shared library should be from <code>$GOPATH/src</code>.</em></p>
+
+<p>Lets use the shared library <code>calc</code> in the <code>cashier</code> application:</p>
+
+<pre><code>// package: cashier
+// filename: main.go
+package main
+
+import &quot;calc&quot;
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;Cashier Application&quot;)
+    fmt.Printf(&quot;Result: %d\n&quot;, calc.Sum(5, 10))
+}
+</code></pre>
+
+<p>The application should be compiled and linked with <code>calc</code> library
+with the following command:</p>
+
+<pre><code>$ go build -linkshared -o app cashier
+</code></pre>
+
+<p>The output of executing the application is:</p>
+
+<pre><code>$ ./app
+Cashier Application
+Result: 15
+</code></pre>
+
+<p><em>Note that this feature is available on <code>linux/amd64</code> platform or when <code>gccgo</code>
+compiler is used.</em></p>
+
+<h2 id="using-shared-go-library-in-c">Using shared Go library in C</h2>
+
+<p>Go functions can be executed from C applications. They should be
+exported by using the following comment line:</p>
+
+<pre><code>//export &lt;your_function_name&gt;
+</code></pre>
+
+<p>In the code snippet below, the function <code>SayHello</code> and <code>SayBye</code> are exported:</p>
+
+<pre><code>// package name: nautilus
+package main
+
+import &quot;C&quot;
+import &quot;fmt&quot;
+
+//export SayHello
+func SayHello(name string) {
+	fmt.Printf(&quot;Nautilus says: Hello, %s!\n&quot;, name)
+}
+
+//export SayBye
+func SayBye() {
+	fmt.Println(&quot;Nautilus says: Bye!&quot;)
+}
+
+func main() {
+	// We need the main function to make possible
+	// CGO compiler to compile the package as C shared library
+}
+</code></pre>
+
+<p>The packaged should be compiled with <code>buildmode</code> flags <code>c-shared</code> or <code>c-archive</code>:</p>
+
+<pre><code>// as c-shared library
+$ go build -buildmode=c-shared -o nautilus.a nautilus.go
+</code></pre>
+
+<pre><code>// as c-archive
+$ go build -buildmode=c-archive -o nautilus.a nautilus.go
+</code></pre>
+
+<p>As result the <code>GO</code> compiler will produce a static/dynamic <code>C</code> library <code>nautilus.a</code> and
+header file <code>nautilus.h</code>. The header file contains type definitions that marshall
+and unmarshall data between <code>Go</code> and <code>C</code>:</p>
+
+<pre><code>typedef signed char GoInt8;
+typedef unsigned char GoUint8;
+typedef short GoInt16;
+typedef unsigned short GoUint16;
+typedef int GoInt32;
+typedef unsigned int GoUint32;
+typedef long long GoInt64;
+typedef unsigned long long GoUint64;
+typedef GoInt64 GoInt;
+typedef GoUint64 GoUint;
+typedef __SIZE_TYPE__ GoUintptr;
+typedef float GoFloat32;
+typedef double GoFloat64;
+typedef __complex float GoComplex64;
+typedef __complex double GoComplex128;
+typedef struct { char *p; GoInt n; } GoString;
+typedef void *GoMap;
+typedef void *GoChan;
+typedef struct { void *t; void *v; } GoInterface;
+typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
+
+#endif
+
+/* End of boilerplate cgo prologue.  */
+
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+
+
+extern void SayHello(GoString p0);
+
+extern void SayBye();
+
+#ifdef __cplusplus
+}
+#endif
+</code></pre>
+
+<p>The header file <code>nautilus.h</code> shoulde be imported from every <code>C</code> application
+that executed <code>SayHello</code> and <code>SayBye</code> functions.</p>
+
+<p>In the example below, the <code>SayHello</code> function is called with parameter of type
+<code>GoString</code>. It includes <code>char*</code> field and its length.</p>
+
+<pre><code>// filename: _wale.c
+#include &quot;nautilus.h&quot;
+#include &lt;stdio.h&gt;
+
+int main() {
+  printf(&quot;This is a C Application.\n&quot;);
+  GoString name = {&quot;Jack&quot;, 4};
+  SayHello(name);
+  SayBye();
+  return 0;
+}
+</code></pre>
+
+<p>The <code>_wale.c</code> file is compiled with the following command:</p>
+
+<pre><code>$ gcc -o _wale _wale.c nautilus.a
+</code></pre>
+
+<p>Execution produce the following output:</p>
+
+<pre><code>$ ./wale
+This is a C Application.
+Nautilus says: Hello, Jack!
+Nautilus says: Bye!
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Sharing libraries between <code>C</code> and <code>Go</code> gives opportunity to build greater and better
+application by using the best from both worlds. This provides to a legacy system
+a modern language that can improve their maintainance costs and business needs.
+It maximize code reusability in the <code>Go</code> ecosystem.</p>
+
+
+<div class="social-sharing">
+	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-sharing-libraries%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
+	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-sharing-libraries%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
+	<a class="share-button-linkedin" onClick="return popupShare(this.href);" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-sharing-libraries%2f&title=Sharing%20Golang%20packages%20to%20C%20and%20Go&summary=The%20latest%20Go%201.5%20version%20is%20out.%20As%20part%20of%20the%20new%20features%2c%20Go%20compiler%20can%20compile%20packages%20as%20a%20shared%20libraries.%0aIt%20accepts%20-buildmode%20argument%20that%20determines%20how%20a%20package%20is%20compiled.%20These%20are%20the%20following%20options%3a%0a%20archive%3a%20Build%20the%20listed%20non-main%20packages%20into%20.a%20files.%20Packages%20named%20main%20are%20ignored.%20c-archive%3a%20Build%20the%20listed%20main%20package%2c%20plus%20all%20packages%20it%20imports%2c%20into%20a%20C%20archive%20file.%20c-shared%3a%20Build%20the%20listed%20main%20packages%2c%20plus%20all%20packages%20that%20they%20import%2c%20into%20C%20shared%20libraries.}&source=Software%20adventures%20and%20thoughts" target="_blank"><i class="fa fa-linkedin"><span>Share on LinkedIn</span></i></a>
+	<a class="share-button-twitter" onClick="return popupShare(this.href);" href="http://twitter.com/share?text=Sharing%20Golang%20packages%20to%20C%20and%20Go&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-sharing-libraries%2f" target="_blank"><i class="fa fa-twitter"><span>Tweet</span></i></a>	
+</div>
+<script type="text/javascript">
+    function popupShare(url) {
+        window.open(url, '_blank', 'scrollbars,resizable,height=525,width=600');
+        return false;
+    }
+</script>
+
+
+
+
+<div class="tags-list">
+    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
+
+    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
+
+    <a class="post-tag post-tag-cgo" href="http://blog.ralch.com/tags/cgo">cgo</a>,
+
+    <a class="post-tag post-tag-c" href="http://blog.ralch.com/tags/c">c</a>,
+
+    <a class="post-tag post-tag-compilation" href="http://blog.ralch.com/tags/compilation">compilation</a>,
+
+</div>
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+
+
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+  </div>
+  </div>
+  </body>
+</html>
