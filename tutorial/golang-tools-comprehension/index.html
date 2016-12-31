@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="description" content="">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+
+<meta name="keywords" content="go, ">
+
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:description" content=""/>
+<meta property="og:title" content="Golang code comprehension tools : blog.ralch.com"/>
+<meta property="og:site_name" content="Svett Ralchev"/>
+<meta property="og:image" content="" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="" />
+<meta property="og:image:height" content="" />
+<meta property="og:url" content="http://blog.ralch.com/tutorial/golang-tools-comprehension/">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-09-06"/>
+<meta property="article:modified_time" content="2015-09-06"/>
+
+
+<meta property="article:tag" content="go">
+
+
+
+  <title> Golang code comprehension tools &middot; Software adventures and thoughts </title>
+
+  
+  <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
+
+  
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+  
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+
+<body>
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
+      <p class="lead">
+       Software adventures and thoughts 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a></li>
+      <li><a href="/tutorial">Tutorials</a></li>
+      
+      <li><a href="/about/">About </a></li>
+      
+    </ul>
+      <a href="http://uk.linkedin.com/in/ralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
+      <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+      
+      <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
+      
+      <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
+
+    <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
+      &copy; 2016 Svett Ralchev. All rights reserved.</p>
+    
+  </div>
+</div>
+
+  <div class="content container">
+  <div class="post">
+    <h1 class="post-title">Golang code comprehension tools</h1>
+    <span class="post-date">Sun, Sep 6, 2015</span>
+    
+
+<div class="post-categories">
+    
+    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
+    
+    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
+    
+    <a class="post-category post-category-tools" href="http://blog.ralch.com/categories/tools">tools</a>
+    
+</div>
+
+
+
+    
+
+<p>Software engineers spend a greater part of time reading and understanding programs.
+Indeed, most of the time it takes to develop a program is spent reading it and
+making logical conclusion about what it does.</p>
+
+<p><code>Go</code> programmers are no exception. Thanks to <a href="http://blog.ralch.com/tutorial/golang-tools-refactoring/">gofmt</a>
+they should not worry about source code formatting. The machines are
+better suited to analyse source code and accomplish comprehension tasks than us.</p>
+
+<p>In this article we will explore several of <code>Go</code> comprehension tools that are
+responsible for locating definitions, ascertaining types of expressions, deducing implementation
+relation, computing method sets, finding callers/callees, jumping through channels,
+understanding aliasing.</p>
+
+<h2 id="oracle">Oracle</h2>
+
+<p>The <code>oralce</code> is a source analysis tool that answers question about your Go source code.
+It is installed by executing this command:</p>
+
+<pre><code>$ go get golang.org/x/tools/cmd/oracle
+</code></pre>
+
+<p>A <code>-pos</code> flag is always required. It defines the current cursor position that
+should be analysed. The expected value is a bytes offset from the beginning of
+the file.</p>
+
+<p>These are the subcommands that determines the query to perform:</p>
+
+<ul>
+<li><code>callees</code> show possible targets of selected function call</li>
+<li><code>callers</code> show possible callers of selected function</li>
+<li><code>callstack</code> show path from callgraph root to selected function</li>
+<li><code>definition</code> show declaration of selected identifier</li>
+<li><code>describe</code> describe selected syntax: definition, methods, etc</li>
+<li><code>freevars</code> show free variables of selection</li>
+<li><code>implements</code> show relation for selected type or method</li>
+<li><code>peers</code> show send/receive corresponding to selected channel op</li>
+<li><code>referrers</code> show all refs to entity denoted by selected identifier</li>
+<li><code>what</code> show basic information about the selected syntax node</li>
+</ul>
+
+<p>The <code>-format</code> flag set the output format to:</p>
+
+<ul>
+<li><code>plain</code> an editor-friendly format in which every line of output</li>
+<li><code>json</code> structured data in JSON syntax.</li>
+<li><code>xml</code> structured data in XML syntax.</li>
+</ul>
+
+<p>Overall, the tools provides an friendly interface for adopting it in different
+development editor: <a href="https://github.com/fatih/vim-go">Vim</a>, <a href="https://www.gnu.org/software/emacs/">Emacs</a>,
+<a href="https://atom.io">Atom</a>, IntelliJ and etc.</p>
+
+<p>Let see <code>oracle</code> in action:</p>
+
+<div class="embed video-player">
+  <iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/F0ZLIxKWSYo" allowfullscreen frameborder="0">
+  </iframe>
+</div>
+
+
+<h2 id="pythia">Pythia</h2>
+
+<p><code>Pythia</code> is a browser based user interface for oracle. It is based on
+the following packages:</p>
+
+<ul>
+<li><a href="https://godoc.org/golang.org/x/tools/oracle">oracle</a></li>
+<li><a href="https://godoc.org/golang.org/x/tools/godoc/static">godoc</a></li>
+</ul>
+
+<p><code>Pythia</code> is installed with the following command:</p>
+
+<pre><code>$ go get github.com/fzipp/pythia
+</code></pre>
+
+<p>The <code>pythia</code> command tool now can be found in <code>$GOPATH/bin/pythia</code>. A specific
+package can be opened with the following command:</p>
+
+<pre><code>$ pythia net/http 
+</code></pre>
+
+<p>By default the command opens your default browser:</p>
+
+
+<figure >
+    
+        <img src="/media/golang/golang-pythia-in-action.png" alt="Pythia in Action" />
+    
+    
+</figure>
+
+
+<p>This can be disabled with <code>-open</code> flag:</p>
+
+<pre><code>$ pythia -open=false net/http
+</code></pre>
+
+<p>The default listening port is <code>:8080</code>. It can be changed via <code>-http</code> flag:</p>
+
+<pre><code>$ pythia -http :9876 net/http
+</code></pre>
+
+<p>The packages can be filtered out on their <a href="http://blog.ralch.com/tutorial/golang-conditional-compilation/">build tags</a>:</p>
+
+<pre><code>$ pythia -tags=unix net/http
+</code></pre>
+
+<h2 id="godepgraph">Godepgraph</h2>
+
+<p><code>Godepgraph</code> is a program for generating a dependency graph of Go packages.
+Use <code>go get</code> command to install it:</p>
+
+<pre><code>$ go get github.com/kisielk/godepgraph
+</code></pre>
+
+<p>Usually the tool is combined with <code>dot</code> command (graphviz CLI):</p>
+
+<pre><code>// this command will generate dependency graph as svg image
+// -s ingores the builtin packages
+// -horizontal layout the graphics horizontally
+$ godepgraph -s -horizontal github.com/codegangsta/gin | dot -Tsvg -o gin-godepgraph.svg
+</code></pre>
+
+<p>The command above will produce the following graphics:</p>
+
+
+<figure >
+    
+        <img src="/media/golang/golang-godepgraph.svg" alt="Godepgraph in Action" />
+    
+    
+</figure>
+
+
+<p>The <code>godepgraph</code> tools can be controlled with these flags:</p>
+
+<ul>
+<li><code>-d</code> show dependencies of packages in the Go standard library</li>
+<li><code>-horizontal</code> lay out the dependency graph horizontally instead of vertically</li>
+<li><code>-i</code> string a comma-separated list of packages to ignore</li>
+<li><code>-p</code> string a comma-separated list of prefixes to ignore</li>
+<li><code>-s</code> ignore packages in the Go standard library</li>
+<li><code>-t</code> include test packages</li>
+<li><code>-tags</code> string a comma-separated list of build tags to consider satisfied during the build</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Even though Golang does not have dedicated development environment, software engineers
+can be very product by adopting some of the comprehensive tools mentioned in this article.</p>
+
+    
+<div class="social-sharing">
+	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-comprehension%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
+	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-comprehension%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
+	<a class="share-button-linkedin" onClick="return popupShare(this.href);" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-comprehension%2f&title=Golang%20code%20comprehension%20tools&summary=Software%20engineers%20spend%20a%20greater%20part%20of%20time%20reading%20and%20understanding%20programs.%20Indeed%2c%20most%20of%20the%20time%20it%20takes%20to%20develop%20a%20program%20is%20spent%20reading%20it%20and%20making%20logical%20conclusion%20about%20what%20it%20does.%0aGo%20programmers%20are%20no%20exception.%20Thanks%20to%20gofmt%20they%20should%20not%20worry%20about%20source%20code%20formatting.%20The%20machines%20are%20better%20suited%20to%20analyse%20source%20code%20and%20accomplish%20comprehension%20tasks%20than%20us.%0aIn%20this%20article%20we%20will%20explore%20several%20of%20Go%20comprehension%20tools%20that%20are%20responsible%20for%20locating%20definitions%2c%20ascertaining%20types%20of%20expressions%2c%20deducing%20implementation%20relation%2c%20computing%20method%20sets%2c%20finding%20callers%2fcallees%2c%20jumping%20through%20channels%2c%20understanding%20aliasing.}&source=Software%20adventures%20and%20thoughts" target="_blank"><i class="fa fa-linkedin"><span>Share on LinkedIn</span></i></a>
+	<a class="share-button-twitter" onClick="return popupShare(this.href);" href="http://twitter.com/share?text=Golang%20code%20comprehension%20tools&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-comprehension%2f" target="_blank"><i class="fa fa-twitter"><span>Tweet</span></i></a>	
+</div>
+<script type="text/javascript">
+    function popupShare(url) {
+        window.open(url, '_blank', 'scrollbars,resizable,height=525,width=600');
+        return false;
+    }
+</script>
+
+
+    
+
+<div class="tags-list">
+    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
+    
+    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
+    
+</div>
+
+
+
+    <div class="banner">
+    <h3 class="masthead-title">Who's afraid of next big idea? Consult with the experts.</h3>
+    <p class="lead">Hire <a href="https://www.phogolabs.com">Phogo Labs</a> to help you build brilliant software.</p>
+    <a href="http://www.phogolabs.com/#contact" class="btn">Get your free consultation</a>
+</div>
+
+    
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost") 
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+  </div>
+  </div>
+  </body>
+</html>

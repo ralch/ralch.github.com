@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="description" content="">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+
+<meta name="keywords" content="go, ">
+
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:description" content=""/>
+<meta property="og:title" content="Golang refactoring tools : blog.ralch.com"/>
+<meta property="og:site_name" content="Svett Ralchev"/>
+<meta property="og:image" content="" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="" />
+<meta property="og:image:height" content="" />
+<meta property="og:url" content="http://blog.ralch.com/tutorial/golang-tools-refactoring/">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-08-30"/>
+<meta property="article:modified_time" content="2015-08-30"/>
+
+
+<meta property="article:tag" content="go">
+
+
+
+  <title> Golang refactoring tools &middot; Software adventures and thoughts </title>
+
+  
+  <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
+  <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
+
+  
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+  
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+
+<body>
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
+      <p class="lead">
+       Software adventures and thoughts 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a></li>
+      <li><a href="/tutorial">Tutorials</a></li>
+      
+      <li><a href="/about/">About </a></li>
+      
+    </ul>
+      <a href="http://uk.linkedin.com/in/ralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
+      <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+      
+      <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
+      
+      <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
+
+    <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
+      &copy; 2016 Svett Ralchev. All rights reserved.</p>
+    
+  </div>
+</div>
+
+  <div class="content container">
+  <div class="post">
+    <h1 class="post-title">Golang refactoring tools</h1>
+    <span class="post-date">Sun, Aug 30, 2015</span>
+    
+
+<div class="post-categories">
+    
+    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
+    
+    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
+    
+    <a class="post-category post-category-tools" href="http://blog.ralch.com/categories/tools">tools</a>
+    
+</div>
+
+
+
+    
+
+<p><a href="https://golang.org">Go</a> language provides many useful tools as part of its
+development eco system. We will explore most of them in the upcoming blog posts.
+But in the article lets focus on refactoring tools.</p>
+
+<h2 id="gofmt">Gofmt</h2>
+
+<p>In average programming languages developers can adapt to different formatting
+styles. Common problem is how to approach unknown code base without a long
+prescriptive style guide.</p>
+
+<p>Go takes an unusual approach and keep this responsibility to format the source code
+for you. The <code>gofmt</code> program (available as <code>go fmt</code>, which examines
+on the package level rather than source file level) reads a Go syntax and reformat
+your program in a standard coding style. In addition, it provides some additional
+refactoring capabilities, which will explore in detail.</p>
+
+<pre><code>// The -w flag overwrites the files instead of prints out the result on the screen
+$ gofmt -w message.go
+</code></pre>
+
+<p>It formats the following code snippet:</p>
+
+<pre><code>// filename: message.go
+package message
+import &quot;fmt&quot;
+func FormatMessage(name string) string{
+if len(name) == 0 { return &quot;Welcome&quot; } else { return fmt.Sprintf(&quot;Hi, %s&quot;, name) }
+}
+</code></pre>
+
+<p>Output:</p>
+
+<pre><code>// filename: message.go
+package message
+
+import &quot;fmt&quot;
+
+func FormatMessage(name string) string {
+	if len(name) == 0 {
+		return &quot;Welcome&quot;
+	} else {
+		return fmt.Sprintf(&quot;Hi, %s&quot;, name)
+	}
+}
+</code></pre>
+
+<p><em>Note that <code>gofmt</code> uses tabs for indentation and
+blanks for alignment.</em></p>
+
+<p>The code is reformatted to obey all <code>Go</code> coding style standards. It does not rename
+any variables and functions. There is a tool that do static analyses on your code.
+We will talk about it in one of the next articles.</p>
+
+<p>These are the flags supported by <code>gofmt</code>:</p>
+
+<ul>
+<li><code>-d</code> prints diffs to standard out when file formatting is changed</li>
+<li><code>-e</code> print all errors</li>
+<li><code>-l</code> prints the filename to standard out when file formatting is changed</li>
+<li><code>-r</code> applies the rewrite rule to the source before reformatting.</li>
+<li><code>-s</code> simplifies code</li>
+<li><code>-w</code> overwrites file with its formatted version</li>
+</ul>
+
+<p>In the next two paragraphs we will explore how to simplify and apply rewrites rules
+to a source code.</p>
+
+<p>Simplifing source code is applied when <code>-s</code> flag is presented. It improves the
+code readability by replacing blocks of code with their sipliefied syntax version.</p>
+
+<p>Executing <code>go fmt -s -w transport.go</code>:</p>
+
+<pre><code>// filename: transport.go
+package transport
+
+import &quot;fmt&quot;
+
+type Endpoint struct {
+	Protocol string
+	Host     string
+	Port     int
+}
+
+var endpoints []Endpoint = []Endpoint{
+	Endpoint{
+		Protocol: &quot;HTTP&quot;,
+		Host:     &quot;localhost&quot;,
+		Port:     80},
+	Endpoint{
+		Protocol: &quot;SSH&quot;,
+		Host:     &quot;10.10.5.9.xip.io&quot;,
+		Port:     22}}
+
+func ListEndpoints(startIndex int) {
+	for index, _ := range endpoints[startIndex:len(endpoints)] {
+		endpoint := endpoints[index]
+		fmt.Printf(&quot;Priority: %d Procotol: %s Address: %s:%d\n&quot;,
+			index, endpoint.Protocol, endpoint.Host, endpoint.Port)
+	}
+}
+</code></pre>
+
+<p>The package will be simplified to:</p>
+
+<pre><code>// filename: transport.go
+package transport
+
+import &quot;fmt&quot;
+
+type Endpoint struct {
+	Protocol string
+	Host     string
+	Port     int
+}
+
+var endpoints []Endpoint = []Endpoint{
+	{Protocol: &quot;HTTP&quot;,
+		Host: &quot;localhost&quot;,
+		Port: 80},
+	{Protocol: &quot;SSH&quot;,
+		Host: &quot;10.10.5.9.xip.io&quot;,
+		Port: 22}}
+
+func ListEndpoints(startIndex int) {
+	for index := range endpoints[startIndex:] {
+		endpoint := endpoints[index]
+		fmt.Printf(&quot;Priority: %d Procotol: %s Address: %s:%d\n&quot;,
+			index, endpoint.Protocol, endpoint.Host, endpoint.Port)
+	}
+}
+</code></pre>
+
+<p>These are the applied rules:</p>
+
+<ul>
+<li>An array, slice, or map composite literal of the form <code>[]T{T{}, T{}}</code>
+will be simplified to <code>[]T{{}, {}}</code>.</li>
+<li>A slice expression of the form <code>s[a:len(s)]</code> will be simplified to <code>s[a:]</code>.</li>
+<li>A range of the form <code>for x, _ = range v {...}</code> will be simplified to <code>for x = range v {...}</code>.</li>
+<li>A range of the form <code>for _ = range v {...}</code> will be simplified to <code>for range v {...}</code>.</li>
+</ul>
+
+<p>To define specified rewrite rule the <code>-r</code> flag must be used. It should be in
+the following format:</p>
+
+<pre><code>pattern -&gt; replacement
+</code></pre>
+
+<p>Both pattern and replacement must be valid <code>Go</code> expressions. The pattern serves
+as wildcards matching arbitrary sub-expressions. They will be substituted for
+the same identifiers in the replacement.</p>
+
+<p>Lets rename <code>Endpoint</code> struct to <code>Server</code> in <code>transport</code> package:</p>
+
+<pre><code>$ gofmt -r 'Endpoint -&gt; Server' -w transport.go
+$ gofmt -r 'endpoints -&gt; servers' -w transport.go
+$ gofmt -r 'ListEndpoints -&gt; ListServers' -w transport.go
+</code></pre>
+
+<p>The result of this operation:</p>
+
+<pre><code>// filename: transport.go
+package transport
+
+import &quot;fmt&quot;
+
+type Server struct {
+	Protocol string
+	Host     string
+	Port     int
+}
+
+var servers []Server = []Server{
+	{Protocol: &quot;HTTP&quot;,
+		Host: &quot;localhost&quot;,
+		Port: 80},
+	{Protocol: &quot;SSH&quot;,
+		Host: &quot;10.10.5.9.xip.io&quot;,
+		Port: 22}}
+
+func ListServers(startIndex int) {
+	for index := range servers[startIndex:] {
+		endpoint := servers[index]
+		fmt.Printf(&quot;Priority: %d Procotol: %s Address: %s:%d\n&quot;,
+			index, endpoint.Protocol, endpoint.Host, endpoint.Port)
+	}
+}
+</code></pre>
+
+<h2 id="gorename">Gorename</h2>
+
+<p>The <code>gorename</code> is another tool for code refactoring. It command performs precise
+type-safe renaming of identifiers in Go source code. It is installed with
+the following command:</p>
+
+<pre><code>$ go get golang.org/x/tools/refactor/rename
+</code></pre>
+
+<p>Lets use the tool with the following code snippet:</p>
+
+<pre><code>// package: university
+package main
+
+import &quot;fmt&quot;
+
+type Student struct {
+	Firstname string
+	Surename  string
+}
+
+func (s *Student) Fullname() string {
+	return fmt.Sprintf(&quot;%s %s&quot;, s.Firstname, s.Surename)
+}
+
+func main() {
+	students := []Student{
+		{Firstname: &quot;John&quot;,
+			Surename: &quot;Freeman&quot;},
+		{Firstname: &quot;Jack&quot;,
+			Surename: &quot;Numan&quot;},
+	}
+
+	for _, s := range students {
+		fmt.Println(s.Fullname())
+	}
+}
+</code></pre>
+
+<p>Renaming <code>Fullname</code> function of <code>Student</code> struct to <code>String</code> can be done by
+executing <code>gorename</code>:</p>
+
+<pre><code>$ gorename -from '&quot;university&quot;.Student.Fullname' -to String
+</code></pre>
+
+<p>The <code>-from</code> flag must obey the following format specifies the object to rename
+using a query notation like that:</p>
+
+<pre><code>&quot;encoding/json&quot;.Decoder.Decode        method of package-level named type
+(*&quot;encoding/json&quot;.Decoder).Decode     ditto, alternative syntax
+&quot;encoding/json&quot;.Decoder.buf           field of package-level named struct type
+&quot;encoding/json&quot;.HTMLEscape            package member (const, func, var, type)
+&quot;encoding/json&quot;.Decoder.Decode::x     local object x within a method
+&quot;encoding/json&quot;.HTMLEscape::x         local object x within a function
+&quot;encoding/json&quot;::x                    object x anywhere within a package
+json.go::x                            object x within file json.go
+</code></pre>
+
+<p>The <code>-to</code> flag defines the new name of the object.</p>
+
+<h2 id="eg">Eg</h2>
+
+<p>The <code>Eg</code> command is a tool that implements example-based refactoring of expressions.
+The transformation is specified as a Go file defining two functions,
+<code>before</code> and <code>after</code> of identical types. The parameters of both functions are
+wildcards that may match any expression assignable to that type:</p>
+
+<pre><code>package P
+import ( &quot;errors&quot;; &quot;fmt&quot; )
+// specifies a match pattern like:
+func before(s string) error { return fmt.Errorf(&quot;%s&quot;, s) }
+// specifies its replacement like:
+func after(s string)  error { return errors.New(s) }
+</code></pre>
+
+<p>The tool analyses all Go code in the packages specified by the
+arguments, replacing all occurrences of the pattern with the
+substitution.</p>
+
+<p>Lets apply the below example to <code>university</code> package:</p>
+
+<pre><code>// filename: stringfix.go
+package P
+
+import &quot;fmt&quot;
+
+// specifies a match pattern like:
+func before(x, y string) string { return fmt.Sprintf(&quot;%s %s&quot;, x, y) }
+
+// specifies its replacement like:
+func after(x, y string) string { return x + &quot; &quot; + y }
+</code></pre>
+
+<p>To do that we should execute <code>eg</code> command:</p>
+
+<pre><code>// -t specifies the template file
+// -w specifies that the matched files must be overwritten
+$ eg -t stringfix.go -w  -- university
+</code></pre>
+
+<p>The tool changes the implementation of <code>String</code> function of <code>Student</code> package:</p>
+
+<pre><code>// package: university
+// struct: Student
+// filename: main.go
+func (s *Student) Fullname() string {
+	return s.Firstname + &quot; &quot; + s.Surename
+}
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>As part of our job is not only to develop new features, but also improve
+existing code base. <code>Gofmt</code>, <code>gorename</code> and <code>eg</code> are tools that can help to
+boost the productivity and keep source code in well formatted shape
+that fits the <code>Go</code> coding style standard.</p>
+
+    
+<div class="social-sharing">
+	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-refactoring%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
+	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-refactoring%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
+	<a class="share-button-linkedin" onClick="return popupShare(this.href);" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-refactoring%2f&title=Golang%20refactoring%20tools&summary=Go%20language%20provides%20many%20useful%20tools%20as%20part%20of%20its%20development%20eco%20system.%20We%20will%20explore%20most%20of%20them%20in%20the%20upcoming%20blog%20posts.%20But%20in%20the%20article%20lets%20focus%20on%20refactoring%20tools.%0aGofmt%20In%20average%20programming%20languages%20developers%20can%20adapt%20to%20different%20formatting%20styles.%20Common%20problem%20is%20how%20to%20approach%20unknown%20code%20base%20without%20a%20long%20prescriptive%20style%20guide.%0aGo%20takes%20an%20unusual%20approach%20and%20keep%20this%20responsibility%20to%20format%20the%20source%20code%20for%20you.}&source=Software%20adventures%20and%20thoughts" target="_blank"><i class="fa fa-linkedin"><span>Share on LinkedIn</span></i></a>
+	<a class="share-button-twitter" onClick="return popupShare(this.href);" href="http://twitter.com/share?text=Golang%20refactoring%20tools&url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-refactoring%2f" target="_blank"><i class="fa fa-twitter"><span>Tweet</span></i></a>	
+</div>
+<script type="text/javascript">
+    function popupShare(url) {
+        window.open(url, '_blank', 'scrollbars,resizable,height=525,width=600');
+        return false;
+    }
+</script>
+
+
+    
+
+<div class="tags-list">
+    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
+    
+    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
+    
+</div>
+
+
+
+    <div class="banner">
+    <h3 class="masthead-title">Who's afraid of next big idea? Consult with the experts.</h3>
+    <p class="lead">Hire <a href="https://www.phogolabs.com">Phogo Labs</a> to help you build brilliant software.</p>
+    <a href="http://www.phogolabs.com/#contact" class="btn">Get your free consultation</a>
+</div>
+
+    
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost") 
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+  </div>
+  </div>
+  </body>
+</html>
