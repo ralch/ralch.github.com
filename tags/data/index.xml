@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/data/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Data validation in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-model-validation/</link>
@@ -131,6 +131,6 @@ documentation&lt;/a&gt; for the rest of the
 functions.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

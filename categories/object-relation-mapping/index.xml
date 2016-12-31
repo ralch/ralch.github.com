@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/categories/object-relation-mapping/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Object relation mapping with GORM</title>
       <link>http://blog.ralch.com/tutorial/golang-object-relation-mapping-with-gorm/</link>
@@ -56,10 +56,10 @@ Every model is representent as table and every field is column in this table.&lt
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/gorm-diagram.png&#34; alt=&#34;ORM Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -311,6 +311,6 @@ with in &lt;code&gt;SQL&lt;/code&gt; like languages. I would like to see a code 
 that generates a models from existing data base.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

@@ -13,7 +13,7 @@
 
 <meta name="keywords" content="go, ">
 
-
+ 
 <meta property="og:type" content="article"/>
 <meta property="og:description" content=""/>
 <meta property="og:title" content="Golang code inspection tools : blog.ralch.com"/>
@@ -34,25 +34,25 @@
 
   <title> Golang code inspection tools &middot; Software adventures and thoughts </title>
 
-
+  
   <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
   <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
   <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
   <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
   <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
 
-
+  
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
   <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
 
-
+  
   <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
 
-
+  
   <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
-
+  
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
 
@@ -67,28 +67,28 @@
     <div class="sidebar-about">
       <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
       <p class="lead">
-       Software adventures and thoughts
+       Software adventures and thoughts 
       </p>
     </div>
 
     <ul class="sidebar-nav">
       <li><a href="/">Home</a></li>
       <li><a href="/tutorial">Tutorials</a></li>
-
+      
       <li><a href="/about/">About </a></li>
-
+      
     </ul>
-      <a href="http://uk.linkedin.com/in/svettralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://uk.linkedin.com/in/ralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
       <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
       <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
-
+      
       <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
-
+      
       <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
 
     <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
       &copy; 2016 Svett Ralchev. All rights reserved.</p>
-
+    
   </div>
 </div>
 
@@ -96,21 +96,21 @@
   <div class="post">
     <h1 class="post-title">Golang code inspection tools</h1>
     <span class="post-date">Sun, Sep 13, 2015</span>
-
+    
 
 <div class="post-categories">
-
+    
     <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-
+    
     <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-
+    
     <a class="post-category post-category-tools" href="http://blog.ralch.com/categories/tools">tools</a>
-
+    
 </div>
 
 
 
-
+    
 
 <p>As a software engineer, you always try to improve the quality of your programs.
 We are looking for the best software development practices and TDD techniques.</p>
@@ -179,8 +179,8 @@ import &quot;fmt&quot;
 
 func main() {
 	a := 0
-	if a != 1 || a != 2 {
-		 a++
+	if a != 1 || a != 2 { 
+		 a++ 
 	}
 
 	fmt.Printf(&quot;a = %s\n&quot;, a)
@@ -220,9 +220,9 @@ It will never be trustworthy enough to be enforced automatically as part of a bu
 <pre><code>// analysis a particular package
 $ golint package
 // analysis a particular directory
-$ golint directory
+$ golint directory 
 // analyses a particualr files
-$ golint files
+$ golint files 
 </code></pre>
 
 <p>Lets <code>lint</code> the following code snippet:</p>
@@ -284,7 +284,7 @@ unhandled errors.</p>
 <p>Lets have the following snippet:</p>
 
 <pre><code>// filename: logger.go
-package logger
+package logger 
 
 import &quot;os&quot;
 
@@ -401,7 +401,7 @@ instead of building queries from strings.
 
 <p>Lets check the <code>hr</code> codesnippet that we used previously.</p>
 
-<pre><code>$ structcheck -e hr
+<pre><code>$ structcheck -e hr 
 </code></pre>
 
 <p>Available command line flags are:</p>
@@ -432,7 +432,7 @@ variables and constants.</p>
 <p>Lets inspect the <code>hr</code> package again:</p>
 
 <pre><code>// -e Report exported variables and constants
-$ varcheck -e hr
+$ varcheck -e hr 
 </code></pre>
 
 <p>It finds that the <code>Age</code> constant is not used:</p>
@@ -455,7 +455,7 @@ that will bring our source code to the next level.</p>
 <li><a href="http://blog.ralch.com/tutorial/golang-tools-comprehension/">Golang code comprehension tools</a></li>
 </ul>
 
-
+    
 <div class="social-sharing">
 	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-inspection%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
 	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-tools-inspection%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
@@ -470,25 +470,31 @@ that will bring our source code to the next level.</p>
 </script>
 
 
-
+    
 
 <div class="tags-list">
     <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-
+    
     <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-
+    
 </div>
 
 
 
+    <div class="banner">
+    <h3 class="masthead-title">Who's afraid of next big idea? Consult with the experts.</h3>
+    <p class="lead">Hire <a href="https://www.phogolabs.com">Phogo Labs</a> to help you build brilliant software.</p>
+    <a href="http://www.phogolabs.com/#contact" class="btn">Get your free consultation</a>
+</div>
 
+    
 <div id="disqus_thread"></div>
 <script type="text/javascript">
 
 (function() {
-
-
-    if (window.location.hostname == "localhost")
+    
+    
+    if (window.location.hostname == "localhost") 
         return;
 
     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

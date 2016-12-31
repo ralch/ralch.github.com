@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/categories/tutorial/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Errors handling in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-handling-errors/</link>
@@ -164,7 +164,7 @@ idiomatic way of handling errors and provides us with additional contextual info
 about the file and the line where the error occurred.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Develop code generation tool for Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/</link>
@@ -367,7 +367,7 @@ blog post will encourage more go developers to build such a tools that will boos
 our productivity.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Query data with Golang and LINQ</title>
       <link>http://blog.ralch.com/tutorial/golang-query-data-with-linq/</link>
@@ -396,7 +396,7 @@ queries to slices and collections using SQL-like methods.&lt;/p&gt;
 
 &lt;p&gt;As any other &lt;code&gt;go package&lt;/code&gt; we should execute &lt;code&gt;go get&lt;/code&gt; command:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ go get ahmetalpbalkan.github.io/go-linq
+&lt;pre&gt;&lt;code&gt;$ go get ahmetalpbalkan.github.io/go-linq 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;usage&#34;&gt;Usage&lt;/h4&gt;
@@ -563,11 +563,11 @@ companiesWithCountryInfo := From(companies).Join(countries, func(comp T) T {
 &lt;p&gt;The code snippet above produces a slice of objects that have &lt;code&gt;Company&lt;/code&gt; and &lt;code&gt;CountryInfo&lt;/code&gt;
 properties:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;{[{Microsoft https://en.wikipedia.org/wiki/United_States}
-{Google https://en.wikipedia.org/wiki/United_States}
-{Facebook https://en.wikipedia.org/wiki/United_States}
-{Uber https://en.wikipedia.org/wiki/United_States}
-{Tweeter https://en.wikipedia.org/wiki/United_States}
+&lt;pre&gt;&lt;code&gt;{[{Microsoft https://en.wikipedia.org/wiki/United_States} 
+{Google https://en.wikipedia.org/wiki/United_States} 
+{Facebook https://en.wikipedia.org/wiki/United_States} 
+{Uber https://en.wikipedia.org/wiki/United_States} 
+{Tweeter https://en.wikipedia.org/wiki/United_States} 
 {SoundCloud https://en.wikipedia.org/wiki/Germany}] &amp;lt;nil&amp;gt;}
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -600,7 +600,7 @@ us with great set of features which does not require any code generation and can
 use out of the box.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Generics in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-and-generics/</link>
@@ -628,7 +628,7 @@ project, filter, sort and group slices of the annotated types.&lt;/p&gt;
 
 &lt;p&gt;We should use &lt;code&gt;go get&lt;/code&gt; command to install &lt;code&gt;gen&lt;/code&gt;:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ go get clipperhouse.github.io/gen
+&lt;pre&gt;&lt;code&gt;$ go get clipperhouse.github.io/gen 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;usage&#34;&gt;Usage&lt;/h4&gt;
@@ -1000,7 +1000,7 @@ comment should be placed in the actual template. This can be avoid by executing
 template nature, we can focus on what should be generated instead of how to generate it.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Reusing source code with Go templates</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-with-gotemplates/</link>
@@ -1180,7 +1180,7 @@ All &lt;code&gt;TValue&lt;/code&gt; occurances are replaced with &lt;code&gt;Stu
 extensibility, we can focus on what should be generated instead of how to generate it.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang code generation</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation/</link>
@@ -1196,7 +1196,7 @@ it easier to run such tools.&lt;/p&gt;
 &lt;p&gt;It&amp;rsquo;s called &lt;code&gt;go generate&lt;/code&gt;. It scans for special comments in Go
 source code that identify general commands to run:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;//go:generate &amp;lt;subcommand&amp;gt; &amp;lt;arguments&amp;gt;
+&lt;pre&gt;&lt;code&gt;//go:generate &amp;lt;subcommand&amp;gt; &amp;lt;arguments&amp;gt; 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;code&gt;Go generate&lt;/code&gt; is not part of go build. It does not do dependency analysis and
@@ -1205,7 +1205,7 @@ the author of the Go package, not its consumers.&lt;/p&gt;
 
 &lt;p&gt;The &lt;code&gt;go generate&lt;/code&gt; command is easy to use. Usually it is executed in the following way:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;// it scans all
+&lt;pre&gt;&lt;code&gt;// it scans all 
 $ go generate ./...
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -1270,7 +1270,7 @@ According to the author notes, it is generally 2 to 3 times faster than
 
 &lt;h4 id=&#34;installing-1&#34;&gt;Installing&lt;/h4&gt;
 
-&lt;pre&gt;&lt;code&gt;$ go get github.com/pquerna/ffjson
+&lt;pre&gt;&lt;code&gt;$ go get github.com/pquerna/ffjson 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;usage-1&#34;&gt;Usage&lt;/h4&gt;
@@ -1380,7 +1380,7 @@ that are very common in our day to day job. I am really pleased to see more and
 more tools coming up.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang: Working with Gzip and Tar</title>
       <link>http://blog.ralch.com/tutorial/golang-working-with-tar-and-gzip/</link>
@@ -1525,7 +1525,7 @@ of the returned header to provide the full path name of the file.&lt;/p&gt;
 		baseDir = filepath.Base(source)
 	}
 
-	return filepath.Walk(source,
+	return filepath.Walk(source, 
 	func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -1612,7 +1612,7 @@ untar(&amp;quot;/tmp/utils.tar&amp;quot;, &amp;quot;/tmp&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang: Working with ZIP archives</title>
       <link>http://blog.ralch.com/tutorial/golang-working-with-zip/</link>
@@ -1757,7 +1757,7 @@ unzip(&amp;quot;/tmp/report-2015.zip&amp;quot;, &amp;quot;/tmp/reports/&amp;quot
 &lt;p&gt;You can download the samples from &lt;a href=&#34;https://gist.github.com/svett/424e6784facc0ba907ae&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang code inspection tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-inspection/</link>
@@ -1833,8 +1833,8 @@ import &amp;quot;fmt&amp;quot;
 
 func main() {
 	a := 0
-	if a != 1 || a != 2 {
-		 a++
+	if a != 1 || a != 2 { 
+		 a++ 
 	}
 
 	fmt.Printf(&amp;quot;a = %s\n&amp;quot;, a)
@@ -1874,9 +1874,9 @@ It will never be trustworthy enough to be enforced automatically as part of a bu
 &lt;pre&gt;&lt;code&gt;// analysis a particular package
 $ golint package
 // analysis a particular directory
-$ golint directory
+$ golint directory 
 // analyses a particualr files
-$ golint files
+$ golint files 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Lets &lt;code&gt;lint&lt;/code&gt; the following code snippet:&lt;/p&gt;
@@ -1938,7 +1938,7 @@ unhandled errors.&lt;/p&gt;
 &lt;p&gt;Lets have the following snippet:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;// filename: logger.go
-package logger
+package logger 
 
 import &amp;quot;os&amp;quot;
 
@@ -2055,7 +2055,7 @@ instead of building queries from strings.
 
 &lt;p&gt;Lets check the &lt;code&gt;hr&lt;/code&gt; codesnippet that we used previously.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ structcheck -e hr
+&lt;pre&gt;&lt;code&gt;$ structcheck -e hr 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Available command line flags are:&lt;/p&gt;
@@ -2086,7 +2086,7 @@ variables and constants.&lt;/p&gt;
 &lt;p&gt;Lets inspect the &lt;code&gt;hr&lt;/code&gt; package again:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;// -e Report exported variables and constants
-$ varcheck -e hr
+$ varcheck -e hr 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;It finds that the &lt;code&gt;Age&lt;/code&gt; constant is not used:&lt;/p&gt;
@@ -2110,7 +2110,7 @@ that will bring our source code to the next level.&lt;/p&gt;
 &lt;/ul&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang code comprehension tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-comprehension/</link>
@@ -2197,17 +2197,17 @@ the following packages:&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;pythia&lt;/code&gt; command tool now can be found in &lt;code&gt;$GOPATH/bin/pythia&lt;/code&gt;. A specific
 package can be opened with the following command:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ pythia net/http
+&lt;pre&gt;&lt;code&gt;$ pythia net/http 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;By default the command opens your default browser:&lt;/p&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/golang-pythia-in-action.png&#34; alt=&#34;Pythia in Action&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -2246,10 +2246,10 @@ $ godepgraph -s -horizontal github.com/codegangsta/gin | dot -Tsvg -o gin-godepg
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/golang-godepgraph.svg&#34; alt=&#34;Godepgraph in Action&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -2271,7 +2271,7 @@ $ godepgraph -s -horizontal github.com/codegangsta/gin | dot -Tsvg -o gin-godepg
 can be very product by adopting some of the comprehensive tools mentioned in this article.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang refactoring tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-refactoring/</link>
@@ -2587,7 +2587,7 @@ boost the productivity and keep source code in well formatted shape
 that fits the &lt;code&gt;Go&lt;/code&gt; coding style standard.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Sharing Golang packages to C and Go</title>
       <link>http://blog.ralch.com/tutorial/golang-sharing-libraries/</link>
@@ -2724,7 +2724,7 @@ func main() {
 $ go build -buildmode=c-shared -o nautilus.a nautilus.go
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code&gt;// as c-archive
+&lt;pre&gt;&lt;code&gt;// as c-archive 
 $ go build -buildmode=c-archive -o nautilus.a nautilus.go
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -2811,7 +2811,7 @@ a modern language that can improve their maintainance costs and business needs.
 It maximize code reusability in the &lt;code&gt;Go&lt;/code&gt; ecosystem.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Conditional compilation in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-conditional-compilation/</link>
@@ -2834,7 +2834,7 @@ starts with&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;// +build
 
-package api
+package api 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Declaration of build constraints follows the following rules:&lt;/p&gt;
@@ -3099,7 +3099,7 @@ approach. Otherwise, if the source file is applicable for multiple platforms and
 we want to exclude a specific feature or platform, we should use build constraints instead.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Delve: Next generation debugger for Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-debug-with-delve/</link>
@@ -3121,7 +3121,7 @@ we can still benefit from its basic features.&lt;/p&gt;
 
 &lt;p&gt;You should install &lt;code&gt;Delve&lt;/code&gt; with the following command:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ go get -u github.com/derekparker/delve/cmd/dlv
+&lt;pre&gt;&lt;code&gt;$ go get -u github.com/derekparker/delve/cmd/dlv 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Note that you need at least &lt;code&gt;Go 1.4&lt;/code&gt;.&lt;/p&gt;
@@ -3141,10 +3141,10 @@ we can still benefit from its basic features.&lt;/p&gt;
 to &lt;code&gt;Code Signing&lt;/code&gt; and select the &lt;code&gt;Let me override defaults&lt;/code&gt;:
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/debugger/certificate-name.png&#34; alt=&#34;Certificate Name&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 &lt;/p&gt;&lt;/li&gt;
 
@@ -3152,10 +3152,10 @@ to &lt;code&gt;Code Signing&lt;/code&gt; and select the &lt;code&gt;Let me overr
 fill the required field:
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/debugger/certificate-info.png&#34; alt=&#34;Certificate Info&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 &lt;/p&gt;&lt;/li&gt;
 
@@ -3163,10 +3163,10 @@ fill the required field:
 the &amp;ldquo;Specify a Location For The Certificate&amp;rdquo; screen, then set &amp;ldquo;Keychain to System&amp;rdquo;.
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/debugger/certificate-keychain.png&#34; alt=&#34;Certificate Keychain&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 &lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -3174,7 +3174,7 @@ the &amp;ldquo;Specify a Location For The Certificate&amp;rdquo; screen, then se
 &lt;p&gt;Then we need sign the binary by using the created certificate. In order to do that we should
 execute the following command:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;# CERT=&amp;lt;your_ceriticate_name&amp;gt; make install
+&lt;pre&gt;&lt;code&gt;# CERT=&amp;lt;your_ceriticate_name&amp;gt; make install 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;If you need more detailed guidelines, you should follow &lt;a href=&#34;https://github.com/derekparker/delve/wiki/Building&#34;&gt;the official documentation&lt;/a&gt;.&lt;/p&gt;
@@ -3217,7 +3217,7 @@ be started from a command line.&lt;/p&gt;
 
 &lt;p&gt;Provide the running application process id:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ sudo dlv attach 47478
+&lt;pre&gt;&lt;code&gt;$ sudo dlv attach 47478 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Delve will pass any arguments after &lt;code&gt;dlv run|test|trace&lt;/code&gt; to the newly created process:&lt;/p&gt;
@@ -3272,7 +3272,7 @@ $ dlv run arg1 -- -flag1 -flag2
 &lt;a href=&#34;https://github.com/derekparker/delve/wiki/Usage&#34;&gt;usage&lt;/a&gt; documentation.&lt;/em&gt;&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Debug Golang applications: LLDB</title>
       <link>http://blog.ralch.com/tutorial/golang-debug-with-lldb/</link>
@@ -3403,6 +3403,6 @@ In addition sometimes &lt;code&gt;go scheduler&lt;/code&gt; changes the context 
 It changes the stack frame by moving &lt;code&gt;go routine&lt;/code&gt; from one thread to another.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

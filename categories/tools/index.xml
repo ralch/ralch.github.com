@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/categories/tools/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Develop code generation tool for Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/</link>
@@ -211,7 +211,7 @@ blog post will encourage more go developers to build such a tools that will boos
 our productivity.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang code inspection tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-inspection/</link>
@@ -287,8 +287,8 @@ import &amp;quot;fmt&amp;quot;
 
 func main() {
 	a := 0
-	if a != 1 || a != 2 {
-		 a++
+	if a != 1 || a != 2 { 
+		 a++ 
 	}
 
 	fmt.Printf(&amp;quot;a = %s\n&amp;quot;, a)
@@ -328,9 +328,9 @@ It will never be trustworthy enough to be enforced automatically as part of a bu
 &lt;pre&gt;&lt;code&gt;// analysis a particular package
 $ golint package
 // analysis a particular directory
-$ golint directory
+$ golint directory 
 // analyses a particualr files
-$ golint files
+$ golint files 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Lets &lt;code&gt;lint&lt;/code&gt; the following code snippet:&lt;/p&gt;
@@ -392,7 +392,7 @@ unhandled errors.&lt;/p&gt;
 &lt;p&gt;Lets have the following snippet:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;// filename: logger.go
-package logger
+package logger 
 
 import &amp;quot;os&amp;quot;
 
@@ -509,7 +509,7 @@ instead of building queries from strings.
 
 &lt;p&gt;Lets check the &lt;code&gt;hr&lt;/code&gt; codesnippet that we used previously.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ structcheck -e hr
+&lt;pre&gt;&lt;code&gt;$ structcheck -e hr 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Available command line flags are:&lt;/p&gt;
@@ -540,7 +540,7 @@ variables and constants.&lt;/p&gt;
 &lt;p&gt;Lets inspect the &lt;code&gt;hr&lt;/code&gt; package again:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;// -e Report exported variables and constants
-$ varcheck -e hr
+$ varcheck -e hr 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;It finds that the &lt;code&gt;Age&lt;/code&gt; constant is not used:&lt;/p&gt;
@@ -564,7 +564,7 @@ that will bring our source code to the next level.&lt;/p&gt;
 &lt;/ul&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang code comprehension tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-comprehension/</link>
@@ -651,17 +651,17 @@ the following packages:&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;pythia&lt;/code&gt; command tool now can be found in &lt;code&gt;$GOPATH/bin/pythia&lt;/code&gt;. A specific
 package can be opened with the following command:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ pythia net/http
+&lt;pre&gt;&lt;code&gt;$ pythia net/http 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;By default the command opens your default browser:&lt;/p&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/golang-pythia-in-action.png&#34; alt=&#34;Pythia in Action&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -700,10 +700,10 @@ $ godepgraph -s -horizontal github.com/codegangsta/gin | dot -Tsvg -o gin-godepg
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/golang-godepgraph.svg&#34; alt=&#34;Godepgraph in Action&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -725,7 +725,7 @@ $ godepgraph -s -horizontal github.com/codegangsta/gin | dot -Tsvg -o gin-godepg
 can be very product by adopting some of the comprehensive tools mentioned in this article.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang refactoring tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-refactoring/</link>
@@ -1041,6 +1041,6 @@ boost the productivity and keep source code in well formatted shape
 that fits the &lt;code&gt;Go&lt;/code&gt; coding style standard.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

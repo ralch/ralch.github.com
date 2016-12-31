@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/linq/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Query data with Golang and LINQ</title>
       <link>http://blog.ralch.com/tutorial/golang-query-data-with-linq/</link>
@@ -37,7 +37,7 @@ queries to slices and collections using SQL-like methods.&lt;/p&gt;
 
 &lt;p&gt;As any other &lt;code&gt;go package&lt;/code&gt; we should execute &lt;code&gt;go get&lt;/code&gt; command:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ go get ahmetalpbalkan.github.io/go-linq
+&lt;pre&gt;&lt;code&gt;$ go get ahmetalpbalkan.github.io/go-linq 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;usage&#34;&gt;Usage&lt;/h4&gt;
@@ -204,11 +204,11 @@ companiesWithCountryInfo := From(companies).Join(countries, func(comp T) T {
 &lt;p&gt;The code snippet above produces a slice of objects that have &lt;code&gt;Company&lt;/code&gt; and &lt;code&gt;CountryInfo&lt;/code&gt;
 properties:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;{[{Microsoft https://en.wikipedia.org/wiki/United_States}
-{Google https://en.wikipedia.org/wiki/United_States}
-{Facebook https://en.wikipedia.org/wiki/United_States}
-{Uber https://en.wikipedia.org/wiki/United_States}
-{Tweeter https://en.wikipedia.org/wiki/United_States}
+&lt;pre&gt;&lt;code&gt;{[{Microsoft https://en.wikipedia.org/wiki/United_States} 
+{Google https://en.wikipedia.org/wiki/United_States} 
+{Facebook https://en.wikipedia.org/wiki/United_States} 
+{Uber https://en.wikipedia.org/wiki/United_States} 
+{Tweeter https://en.wikipedia.org/wiki/United_States} 
 {SoundCloud https://en.wikipedia.org/wiki/Germany}] &amp;lt;nil&amp;gt;}
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -241,7 +241,7 @@ us with great set of features which does not require any code generation and can
 use out of the box.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>LINQ to SQL: Create generic method to load entity by primary key</title>
       <link>http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/</link>
@@ -367,71 +367,71 @@ use out of the box.&lt;/p&gt;
     List&amp;lt;object&amp;gt; primaryKeys = new List&amp;lt;object&amp;gt;();
     primaryKeys.Add(pkKey);
     primaryKeys.AddRange(pkKeys);
-
+ 
     TEntity entity = null;
     Type entityType = typeof(TEntity);
-
+ 
     using (DataContext dataContext = new DataContext(this._DbConnection))
     {
         dataContext.Log = new DebuggerWriter();
         dataContext.ObjectTrackingEnabled = false;
-
+ 
         Table&amp;lt;TEntity&amp;gt; table = dataContext.GetTable&amp;lt;TEntity&amp;gt;();
-
+ 
         MetaType metaEntityType = dataContext.Mapping.GetMetaType(entityType);
-
+ 
         var primaryKeyColumns = from pkColumn in metaEntityType.DataMembers
                                 where pkColumn.IsPrimaryKey
                                 select pkColumn;
-
+ 
         int pkColumnsCount = 0;
-
+ 
         if (primaryKeyColumns != null)
             pkColumnsCount = primaryKeyColumns.Count();
-
+ 
         if (pkColumnsCount == 0)
             throw new InvalidOperationException(&amp;quot;Table doesn’t have primary key&amp;quot;);
-
+ 
         if (pkColumnsCount != primaryKeys.Count)
             throw new InvalidOperationException(&amp;quot;Primary key value doesn’t match primary key columns.&amp;quot;);
-
+ 
         ParameterExpression paramExpression = Expression.Parameter(entityType, &amp;quot;entity&amp;quot;);
-
+ 
         BinaryExpression whereExpression = null;
-
+ 
         int index = 0;
-
+ 
         foreach (MetaDataMember pkColumn in primaryKeyColumns)
         {
             object value = primaryKeys[index];
             string columnName = pkColumn.Name;
-
+ 
             if (value != null &amp;amp;&amp;amp; value.GetType() != pkColumn.Type)
             {
                 Type paramType = value.GetType();
                 string exceptionMsg = String.Format(&amp;quot;The type ‘{0}’ of parameter ‘{1}’ is different than its column ‘{2}’ type ‘{3}’&amp;quot;, paramType, value, columnName, pkColumn.Type);
                 throw new InvalidOperationException(exceptionMsg);
             }
-
+ 
             BinaryExpression condition = Expression.Equal(Expression.Property(paramExpression, columnName), Expression.Constant(value));
-
+ 
             if (whereExpression != null)
                 whereExpression = Expression.And(whereExpression, condition);
             else
                 whereExpression = condition;
-
+ 
             index++;
         }
-
+ 
         Expression&amp;lt;Func&amp;lt;TEntity, bool&amp;gt;&amp;gt; predicate = Expression.Lambda&amp;lt;Func&amp;lt;TEntity, bool&amp;gt;&amp;gt;(whereExpression, new ParameterExpression[] { paramExpression });
         entity = table.SingleOrDefault(predicate);
     }
-
+ 
     return entity;
 }
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/clang/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Conditional compilation in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-conditional-compilation/</link>
@@ -31,7 +31,7 @@ starts with&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;// +build
 
-package api
+package api 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Declaration of build constraints follows the following rules:&lt;/p&gt;
@@ -296,6 +296,6 @@ approach. Otherwise, if the source file is applicable for multiple platforms and
 we want to exclude a specific feature or platform, we should use build constraints instead.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/prototype/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Design Patterns in Golang: Prototype</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-prototype/</link>
@@ -42,10 +42,10 @@ create new objects by copying this prototype.&lt;/li&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/prototype.gif&#34; alt=&#34;Prototype Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -242,6 +242,6 @@ prototypes.&lt;/p&gt;
 &lt;code&gt;Golang&lt;/code&gt; already provides builtin mechanism for cloning objects.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

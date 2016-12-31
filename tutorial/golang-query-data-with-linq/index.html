@@ -13,7 +13,7 @@
 
 <meta name="keywords" content="go, LINQ, query, ">
 
-
+ 
 <meta property="og:type" content="article"/>
 <meta property="og:description" content=""/>
 <meta property="og:title" content="Query data with Golang and LINQ : blog.ralch.com"/>
@@ -36,25 +36,25 @@
 
   <title> Query data with Golang and LINQ &middot; Software adventures and thoughts </title>
 
-
+  
   <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
   <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
   <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
   <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
   <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
 
-
+  
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
   <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
 
-
+  
   <link href="" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
 
-
+  
   <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
-
+  
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
 
@@ -69,28 +69,28 @@
     <div class="sidebar-about">
       <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
       <p class="lead">
-       Software adventures and thoughts
+       Software adventures and thoughts 
       </p>
     </div>
 
     <ul class="sidebar-nav">
       <li><a href="/">Home</a></li>
       <li><a href="/tutorial">Tutorials</a></li>
-
+      
       <li><a href="/about/">About </a></li>
-
+      
     </ul>
-      <a href="http://uk.linkedin.com/in/svettralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://uk.linkedin.com/in/ralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
       <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
       <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
-
+      
       <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
-
+      
       <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
 
     <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
       &copy; 2016 Svett Ralchev. All rights reserved.</p>
-
+    
   </div>
 </div>
 
@@ -98,19 +98,19 @@
   <div class="post">
     <h1 class="post-title">Query data with Golang and LINQ</h1>
     <span class="post-date">Sun, Oct 25, 2015</span>
-
+    
 
 <div class="post-categories">
-
+    
     <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-
+    
     <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-
+    
 </div>
 
 
 
-
+    
 
 <p>Query langauges provide a set of features to querying, projecting and retrieving
 data (usually relational data). But how to introduces these standard,
@@ -132,7 +132,7 @@ queries to slices and collections using SQL-like methods.</p>
 
 <p>As any other <code>go package</code> we should execute <code>go get</code> command:</p>
 
-<pre><code>$ go get ahmetalpbalkan.github.io/go-linq
+<pre><code>$ go get ahmetalpbalkan.github.io/go-linq 
 </code></pre>
 
 <h4 id="usage">Usage</h4>
@@ -299,11 +299,11 @@ companiesWithCountryInfo := From(companies).Join(countries, func(comp T) T {
 <p>The code snippet above produces a slice of objects that have <code>Company</code> and <code>CountryInfo</code>
 properties:</p>
 
-<pre><code>{[{Microsoft https://en.wikipedia.org/wiki/United_States}
-{Google https://en.wikipedia.org/wiki/United_States}
-{Facebook https://en.wikipedia.org/wiki/United_States}
-{Uber https://en.wikipedia.org/wiki/United_States}
-{Tweeter https://en.wikipedia.org/wiki/United_States}
+<pre><code>{[{Microsoft https://en.wikipedia.org/wiki/United_States} 
+{Google https://en.wikipedia.org/wiki/United_States} 
+{Facebook https://en.wikipedia.org/wiki/United_States} 
+{Uber https://en.wikipedia.org/wiki/United_States} 
+{Tweeter https://en.wikipedia.org/wiki/United_States} 
 {SoundCloud https://en.wikipedia.org/wiki/Germany}] &lt;nil&gt;}
 </code></pre>
 
@@ -335,7 +335,7 @@ pagedCompanies := From(companies).
 us with great set of features which does not require any code generation and can be
 use out of the box.</p>
 
-
+    
 <div class="social-sharing">
 	<a class="share-button-facebook" onClick="return popupShare(this.href);" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-query-data-with-linq%2f" target="_blank"><i class="fa fa-facebook"><span>Like</span></i></a>
 	<a class="share-button-google-plus" onClick="return popupShare(this.href);" href="https://plus.google.com/share?url=http%3a%2f%2fblog.ralch.com%2ftutorial%2fgolang-query-data-with-linq%2f" target="_blank"><i class="fa fa-google-plus"><span>Google +1</span></i></a>
@@ -350,29 +350,35 @@ use out of the box.</p>
 </script>
 
 
-
+    
 
 <div class="tags-list">
     <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-
+    
     <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-
+    
     <a class="post-tag post-tag-linq" href="http://blog.ralch.com/tags/linq">LINQ</a>,
-
+    
     <a class="post-tag post-tag-query" href="http://blog.ralch.com/tags/query">query</a>,
-
+    
 </div>
 
 
 
+    <div class="banner">
+    <h3 class="masthead-title">Who's afraid of next big idea? Consult with the experts.</h3>
+    <p class="lead">Hire <a href="https://www.phogolabs.com">Phogo Labs</a> to help you build brilliant software.</p>
+    <a href="http://www.phogolabs.com/#contact" class="btn">Get your free consultation</a>
+</div>
 
+    
 <div id="disqus_thread"></div>
 <script type="text/javascript">
 
 (function() {
-
-
-    if (window.location.hostname == "localhost")
+    
+    
+    if (window.location.hostname == "localhost") 
         return;
 
     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

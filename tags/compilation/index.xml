@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/compilation/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Sharing Golang packages to C and Go</title>
       <link>http://blog.ralch.com/tutorial/golang-sharing-libraries/</link>
@@ -145,7 +145,7 @@ func main() {
 $ go build -buildmode=c-shared -o nautilus.a nautilus.go
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code&gt;// as c-archive
+&lt;pre&gt;&lt;code&gt;// as c-archive 
 $ go build -buildmode=c-archive -o nautilus.a nautilus.go
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -232,7 +232,7 @@ a modern language that can improve their maintainance costs and business needs.
 It maximize code reusability in the &lt;code&gt;Go&lt;/code&gt; ecosystem.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Conditional compilation in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-conditional-compilation/</link>
@@ -255,7 +255,7 @@ starts with&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;// +build
 
-package api
+package api 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Declaration of build constraints follows the following rules:&lt;/p&gt;
@@ -520,6 +520,6 @@ approach. Otherwise, if the source file is applicable for multiple platforms and
 we want to exclude a specific feature or platform, we should use build constraints instead.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

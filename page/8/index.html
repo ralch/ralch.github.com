@@ -14,7 +14,7 @@
 
 <meta name="keywords" content="">
 
-
+ 
 <meta property="og:type" content="article"/>
 <meta property="og:description" content=""/>
 <meta property="og:title" content="Software adventures and thoughts : blog.ralch.com"/>
@@ -32,25 +32,25 @@
 
   <title> Software adventures and thoughts &middot; Software adventures and thoughts </title>
 
-
+  
   <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
   <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
   <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
   <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
   <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
 
-
+  
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
   <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
 
-
+  
   <link href="http://blog.ralch.com/index.xml" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
 
-
+  
   <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
-
+  
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
 
@@ -65,35 +65,35 @@
     <div class="sidebar-about">
       <h1 class="brand"><a href="http://blog.ralch.com">Svett Ralchev</a></h1>
       <p class="lead">
-       Software adventures and thoughts
+       Software adventures and thoughts 
       </p>
     </div>
 
     <ul class="sidebar-nav">
       <li><a href="/">Home</a></li>
       <li><a href="/tutorial">Tutorials</a></li>
-
+      
       <li><a href="/about/">About </a></li>
-
+      
     </ul>
-      <a href="http://uk.linkedin.com/in/svettralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
+      <a href="http://uk.linkedin.com/in/ralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
       <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
       <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
-
+      
       <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
-
+      
       <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
 
     <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
       &copy; 2016 Svett Ralchev. All rights reserved.</p>
-
+    
   </div>
 </div>
 
   <div class="content container">
     <div class="posts">
-
-
+     
+     
       <div class="post">
         <h1 class="post-title">
           <a href="http://blog.ralch.com/tutorial/golang-custom-flags/">
@@ -101,14 +101,14 @@
           </a>
         </h1>
         <span class="post-date">Mon, Jul 6, 2015</span>
-
+        
 
 <div class="post-categories">
-
+    
     <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-
+    
     <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-
+    
 </div>
 
 
@@ -119,24 +119,24 @@ In this post, I will show how you can develop a flag argument for user defined t
 Lets develop application that should be executed in the following ways:
 healthcheck -url=http://www.example.com,http://mail.example.com/inbox healthcheck -url=http://www.example.com -url=http://mail.example.com/inbox  We can use the predefined url.URL struct in net/url package as type of the arguments that are expected.
         </article>
-
+        
 
 <div class="tags-list">
     <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-
+    
     <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-
+    
 </div>
 
 
 
-
+        
         <div class="read-more-link">
           <a href="/tutorial/golang-custom-flags/">Read More...</a>
         </div>
-
+        
       </div>
-
+      
       <div class="post">
         <h1 class="post-title">
           <a href="http://blog.ralch.com/tutorial/golang-subcommands/">
@@ -144,14 +144,14 @@ healthcheck -url=http://www.example.com,http://mail.example.com/inbox healthchec
           </a>
         </h1>
         <span class="post-date">Sat, Jul 4, 2015</span>
-
+        
 
 <div class="post-categories">
-
+    
     <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-
+    
     <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-
+    
 </div>
 
 
@@ -161,24 +161,24 @@ healthcheck -url=http://www.example.com,http://mail.example.com/inbox healthchec
 Basic flags are available for most of the buildin data types (string, integer, boolean and time.Duration). To declare a string flag username with a default value root and short description, you should use the following code:
 package main import &quot;flag&quot; import &quot;fmt&quot; func main() { username := flag.String(&quot;user&quot;, &quot;root&quot;, &quot;Username for this server&quot;) flag.Parse() fmt.Printf(&quot;Your username is %q.&quot;, *username) }  Once all flags are declared, call flag.
         </article>
-
+        
 
 <div class="tags-list">
     <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-
+    
     <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-
+    
 </div>
 
 
 
-
+        
         <div class="read-more-link">
           <a href="/tutorial/golang-subcommands/">Read More...</a>
         </div>
-
+        
       </div>
-
+      
       <div class="post">
         <h1 class="post-title">
           <a href="http://blog.ralch.com/tutorial/devop-busybox-ca-certificates/">
@@ -186,14 +186,14 @@ package main import &quot;flag&quot; import &quot;fmt&quot; func main() { userna
           </a>
         </h1>
         <span class="post-date">Thu, Apr 23, 2015</span>
-
+        
 
 <div class="post-categories">
-
+    
     <a class="post-category post-category-devop" href="http://blog.ralch.com/categories/devop">devop</a>
-
+    
     <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-
+    
 </div>
 
 
@@ -204,26 +204,26 @@ My website is using Google recaptcha to handle spam requests on its contact form
 x509: failed to load system roots and no roots provided
 First approach would be to use COPY command to load the certificate store bundle in to the image.
         </article>
-
+        
 
 <div class="tags-list">
     <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-
+    
     <a class="post-tag post-tag-busybox" href="http://blog.ralch.com/tags/busybox">busybox</a>,
-
+    
     <a class="post-tag post-tag-ssl" href="http://blog.ralch.com/tags/ssl">ssl</a>,
-
+    
 </div>
 
 
 
-
+        
         <div class="read-more-link">
           <a href="/tutorial/devop-busybox-ca-certificates/">Read More...</a>
         </div>
-
+        
       </div>
-
+      
       <div class="post">
         <h1 class="post-title">
           <a href="http://blog.ralch.com/2015/04/fast-run-time-emitting-with-dynamic-methods/">
@@ -231,14 +231,14 @@ First approach would be to use COPY command to load the certificate store bundle
           </a>
         </h1>
         <span class="post-date">Sat, Apr 11, 2015</span>
-
+        
 
 <div class="post-categories">
-
+    
     <a class="post-category post-category-frameworks" href="http://blog.ralch.com/categories/frameworks">frameworks</a>
-
+    
     <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-
+    
 </div>
 
 
@@ -246,28 +246,28 @@ First approach would be to use COPY command to load the certificate store bundle
         <article class="post-summary">
           It was a long time since, I have blogged. Nevertheless, I did not loose the enthusiasm to share the interesting stuff that I face. As component software developer, you should know how to access the properties of data source, when you create bound able controls (such as list control, combo box control or even grid control). The performance has always been a issue due to the fact that the control should work with any type of data source (ex.
         </article>
-
+        
 
 <div class="tags-list">
     <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-
+    
     <a class="post-tag post-tag-msnet" href="http://blog.ralch.com/tags/msnet">msnet</a>,
-
+    
     <a class="post-tag post-tag-csharp" href="http://blog.ralch.com/tags/csharp">csharp</a>,
-
+    
     <a class="post-tag post-tag-reflection" href="http://blog.ralch.com/tags/reflection">reflection</a>,
-
+    
 </div>
 
 
 
-
+        
         <div class="read-more-link">
           <a href="/2015/04/fast-run-time-emitting-with-dynamic-methods/">Read More...</a>
         </div>
-
+        
       </div>
-
+      
       <div class="post">
         <h1 class="post-title">
           <a href="http://blog.ralch.com/2015/04/how-to-prevent-memory-leaks-when-we-are-using-events/">
@@ -275,14 +275,14 @@ First approach would be to use COPY command to load the certificate store bundle
           </a>
         </h1>
         <span class="post-date">Sat, Apr 11, 2015</span>
-
+        
 
 <div class="post-categories">
-
+    
     <a class="post-category post-category-frameworks" href="http://blog.ralch.com/categories/frameworks">frameworks</a>
-
+    
     <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-
+    
 </div>
 
 
@@ -291,35 +291,35 @@ First approach would be to use COPY command to load the certificate store bundle
           In the average development lifecycle is possible that event handlers that are attached to events of sources to not be destroyed in coordination with the listener object that attached the handler to the source. This can lead to memory leaks. The developers to take care about memory management not only when they use unmanaged resources but also when they attach new event handlers to specified event.
 This problem was solved by Microsoft in Windows Presentation Foundation.
         </article>
-
+        
 
 <div class="tags-list">
     <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-
+    
     <a class="post-tag post-tag-msnet" href="http://blog.ralch.com/tags/msnet">msnet</a>,
-
+    
     <a class="post-tag post-tag-wpf" href="http://blog.ralch.com/tags/wpf">wpf</a>,
-
+    
 </div>
 
 
 
-
+        
         <div class="read-more-link">
           <a href="/2015/04/how-to-prevent-memory-leaks-when-we-are-using-events/">Read More...</a>
         </div>
-
+        
       </div>
-
+      
     </div>
   </div>
   <div class="pagination">
-
+    
     <a class="pagination-item" href="/page/7/">Next</a>
-
-
+    
+    
     <a class="pagination-item" href="/page/9/">Previous</a>
-
+    
   </div>
   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

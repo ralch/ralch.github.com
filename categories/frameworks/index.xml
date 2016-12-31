@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/categories/frameworks/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Fast run time emitting with dynamic methods in .NET</title>
       <link>http://blog.ralch.com/2015/04/fast-run-time-emitting-with-dynamic-methods/</link>
@@ -59,7 +59,7 @@ protected delegate object GetValueHandler(object component);
 
     return getMethod.CreateDelegate(typeof(GetValueHandler)) as GetValueHandler;
 
-}
+}   
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Also, the body of the setter method should be created as it’s shown in the following code snippet:&lt;/p&gt;
@@ -138,17 +138,17 @@ protected delegate object GetValueHandler(object component);
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/dynamic_method_emit_diagram.png&#34; alt=&#34;Dynamic methods performance diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
 &lt;p&gt;Notice that the direct access approach followed by the Dynamic Methods implementation are the fastest.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>How to prevent memory leaks when we are using events?</title>
       <link>http://blog.ralch.com/2015/04/how-to-prevent-memory-leaks-when-we-are-using-events/</link>
@@ -163,7 +163,7 @@ care about memory management not only when they use unmanaged resources but also
 &lt;a href=&#34;http://msdn.microsoft.com/en-us/library/aa970850.aspx&#34;&gt;Weak Event Design Pattern&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>PINVOKE: Getting all child handles of window</title>
       <link>http://blog.ralch.com/2015/04/pinvoke-getting-all-child-handles-of-window/</link>
@@ -180,10 +180,10 @@ We should use &lt;code&gt;EnumChildWindows&lt;/code&gt; function provided by &lt
 &lt;p&gt;&lt;code&gt;EnumChildWindows&lt;/code&gt; function enumerates the child windows that belong to the specified parent window by passing the handle to each child window, in turn,
 to an application-defined callback function. &lt;code&gt;EnumChildWindows&lt;/code&gt; continues until the last child window is enumerated or the callback function returns FALSE.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;BOOL EnumChildWindows(
-         HWND hWndParent,
-         WNDENUMPROC lpEnumFunc,
-         LPARAM lParam
+&lt;pre&gt;&lt;code&gt;BOOL EnumChildWindows( 
+         HWND hWndParent, 
+         WNDENUMPROC lpEnumFunc, 
+         LPARAM lParam 
 );
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -198,25 +198,25 @@ to an application-defined callback function. &lt;code&gt;EnumChildWindows&lt;/co
 &lt;pre&gt;&lt;code&gt;public class WindowHandleInfo
 {
     private delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
-
+ 
     [DllImport(&amp;quot;user32&amp;quot;)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool EnumChildWindows(IntPtr window, EnumWindowProc callback, IntPtr lParam);
-
+ 
     private IntPtr _MainHandle;
-
+ 
     public WindowHandleInfo(IntPtr handle)
     {
         this._MainHandle = handle;
     }
-
+ 
     public List&amp;lt;IntPtr&amp;gt; GetAllChildHandles()
     {
         List&amp;lt;IntPtr&amp;gt; childHandles = new List&amp;lt;IntPtr&amp;gt;();
-
+ 
         GCHandle gcChildhandlesList = GCHandle.Alloc(childHandles);
         IntPtr pointerChildHandlesList = GCHandle.ToIntPtr(gcChildhandlesList);
-
+ 
         try
         {
             EnumWindowProc childProc = new EnumWindowProc(EnumWindow);
@@ -226,29 +226,29 @@ to an application-defined callback function. &lt;code&gt;EnumChildWindows&lt;/co
         {
             gcChildhandlesList.Free();
         }
-
+ 
         return childHandles;
     }
-
+ 
     private bool EnumWindow(IntPtr hWnd, IntPtr lParam)
     {
         GCHandle gcChildhandlesList = GCHandle.FromIntPtr(lParam);
-
+ 
         if (gcChildhandlesList == null || gcChildhandlesList.Target == null)
         {
             return false;
         }
-
+ 
         List&amp;lt;IntPtr&amp;gt; childHandles = gcChildhandlesList.Target as List&amp;lt;IntPtr&amp;gt;;
         childHandles.Add(hWnd);
-
+ 
         return true;
     }
 }
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
-
+    
     <item>
       <title>ADO.NET XmlSerialization of extended DataTable</title>
       <link>http://blog.ralch.com/2015/04/ado-net-xmlserialization-of-extended-datatable/</link>
@@ -265,15 +265,15 @@ Instead of binary serialization in .NET Remoting, XML serialization is used in W
 &lt;pre&gt;&lt;code&gt;public class WcfDataTable : DataTable
 {
     private string _ServerName;
-
+ 
     public WcfDataTable()
         : base()
     { }
-
+ 
     public WcfDataTable(string tableName)
         : base(tableName)
     { }
-
+ 
     public string ServerName
     {
         get { return this._ServerName; }
@@ -284,10 +284,10 @@ Instead of binary serialization in .NET Remoting, XML serialization is used in W
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/wcf_table_screen.jpg&#34; alt=&#34;WCF DataTable&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -300,38 +300,38 @@ The solution is really simple. You have to implement the interface &lt;code&gt;I
 &lt;pre&gt;&lt;code&gt;public class WcfDataTable : DataTable, IXmlSerializable
 {
     private string _ServerName;
-
+ 
     public WcfDataTable()
         : base()
     { }
-
+ 
     public WcfDataTable(string tableName)
         : base(tableName)
     { }
-
+ 
     public string ServerName
     {
         get { return this._ServerName; }
         set { this._ServerName = value; }
     }
-
+ 
     void IXmlSerializable.ReadXml(System.Xml.XmlReader reader)
     {
         base.ReadXmlSchema(reader);
-
+ 
         XmlSerializer xmlSerializer = new XmlSerializer(typeof(string));
         this._ServerName = xmlSerializer.Deserialize(reader) as string;
-
+ 
         base.ReadXml(reader);
     }
-
+ 
     void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer)
     {
         base.WriteXmlSchema(writer);
-
+ 
         XmlSerializer xmlSerializer = new XmlSerializer(typeof(string));
         xmlSerializer.Serialize(writer, this._ServerName);
-
+ 
         base.WriteXml(writer, XmlWriteMode.DiffGram);
     }
 }
@@ -343,14 +343,14 @@ Then we can write/read our new field and then to invoke basic logic for serializ
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/wcf_table_screen_done.jpg&#34; alt=&#34;WCF DataTable&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 </description>
     </item>
-
+    
   </channel>
 </rss>

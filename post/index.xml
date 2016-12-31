@@ -1,150 +1,624 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Phogo Labs Journal</title>
-    <link>http://blog.phogolabs.com/post/index.xml</link>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/post/index.xml</link>
     <language>en-us</language>
-    <author>Phogo Labs Ltd.</author>
-    <copyright>2016 Phogo Labs Ltd</copyright>
-    <updated>Tue, 20 Dec 2016 19:13:53 UTC</updated>
+    <author>Svett Ralchev</author>
+    
+    <updated>Sat, 11 Apr 2015 22:11:18 &#43;0100</updated>
     
     <item>
-      <title>Chicago Classical School vs London Mockist School</title>
-      <link>http://blog.phogolabs.com/post/tdd-school-types/</link>
-      <pubDate>Tue, 20 Dec 2016 19:13:53 UTC</pubDate>
-      <author>Houssem El Fekih</author>
-      <guid>http://blog.phogolabs.com/post/tdd-school-types/</guid>
-      <description>
+      <title>Fast run time emitting with dynamic methods in .NET</title>
+      <link>http://blog.ralch.com/2015/04/fast-run-time-emitting-with-dynamic-methods/</link>
+      <pubDate>Sat, 11 Apr 2015 22:11:18 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/2015/04/fast-run-time-emitting-with-dynamic-methods/</guid>
+      <description>&lt;p&gt;It was a long time since, I have blogged. Nevertheless, I did not loose the enthusiasm to share the interesting stuff that I face.
+As component software developer, you should know how to access the properties of data source, when you create bound able controls (such as list control, combo box control or even grid control).
+The performance has always been a issue due to the fact that the control should work with any type of data source (ex. DataSet, DataTable or Entity Objects).
+Such requirements cause usage of reflection to access all properties of unknown object type. Therefore, you should use the PropertyInfo or PropertyDescriptor  classes.
+The disadvantage of the reflection has been always the performance. However, there is good alterative that can give satisfactory speed and
+unlimited power of the reflection. The Dynamic Methods provide lightweight code generation and execution of method at run-time via delegates.&lt;/p&gt;
 
-&lt;p&gt;In the practice of modern TDD two main schools of thoughts among TDD gurus have
-emerged.&lt;/p&gt;
-
-&lt;p&gt;Let&amp;rsquo;s start by comparing the differing characteristics of each practice and
-present the key proponents of each approach.&lt;/p&gt;
-
-&lt;p&gt;As a first oversimplification, we can broadly describe &amp;ldquo;classical TDD&amp;rdquo; as
-&amp;ldquo;bottom-up&amp;rdquo; and &amp;ldquo;london mockist&amp;rdquo;  as top-down, as the name suggests mockist
-school relies on mock objects (actually doubles but who cares?) to test
-interactions on the unit level. Whereas classical school would almost never
-rely on mocks but might use some form of fake at the integration level if
-needed to simplify or speed up testing (eg. changing API/ slow database).
-Actually a unit is any cohesive responsibility or service and in the
-&amp;ldquo;classicist&amp;rdquo; view you are encouraged to view a service you&amp;rsquo;re integrating with
-as a unit outside your control.&lt;/p&gt;
-
-&lt;p&gt;In order to clear up some of the confusion around the different TDD schools,
-let&amp;rsquo;s examine the origin of the terms. The reason why the classical school is
-sometimes called chicago is because Kent Beck, author of &amp;ldquo;Test Driven
-Development: By Example&amp;rdquo; was based in Chicago and the practice naturally spread
-there. The authoritative book for the london school is &amp;ldquo;Growing Object-Oriented
-Software, Guided by Tests&amp;rdquo; by Steve Freeman and Nat Pryce. It really doesn&amp;rsquo;t
-help that they have similar looking covers and both mention &amp;ldquo;Kent Beck
-signature series&amp;rdquo; the book series.  You will find a lot of evangelism and
-training around TDD that promotes one idea or the other so don&amp;rsquo;t get bogged
-down with terminology and listen to &amp;ldquo;dos and don&amp;rsquo;ts&amp;rdquo; unless they make perfect
-sense to you.&lt;/p&gt;
-
-&lt;p&gt;The central schism between the two philosophies is the key focus of each. For
-the classical school it is the unit: tests will be state based tests of a class
-or unit. these tests will tend to be algorithmic, functional (testing
-functionality), state based tests.  When you hear test in this context, it is
-valid to imagine an engineer testing if his bicycle design will support a
-certain load or if its brakes will work.&lt;/p&gt;
-
-&lt;p&gt;On the other hand, you will find that, curiously, the proponents of the London
-school say that TDD is not about &amp;ldquo;testing&amp;rdquo; in the previously mentioned
-traditional engineering meaning. Instead TDD would be a lot more about driving
-the system and architectural design and hence a design tool for the behaviour
-and communication of those classes.&lt;/p&gt;
-
-&lt;p&gt;This key difference shows the biggest strengths and weaknesses respectively, in
-the &amp;ldquo;classical school&amp;rdquo; it easy to get bogged out in one class or unit in the
-classical school and miss an important detail in integration and have your
-classes not work well together. This might mean overall having a bad
-architectural design or having to start again more. This happens mostly when
-developers do not refactor in the red-green-REFACTOR phase.  However in London
-school, since the focus is always on the behaviour between units (interactions)
-this problem is avoided.&lt;/p&gt;
-
-&lt;p&gt;However solely focusing on interactions means it is easy to start
-over-engineering the design and lose focus of the core-features.  Let&amp;rsquo;s not
-forget that when following an evolutionary design, you are limiting yourself.
-Ygetou can easily  locked into a limited design weighed heavily by the early
-decisions you make.  Another downside to the london school is that it
-introduces a lot of baggage as well it makes the cost of refactoring higher
-(even just in terms of syntax changes/effort). This is mitigated by the fact
-that with the London way it is easy to find opporunities for
-&amp;ldquo;micro-refactoring&amp;rdquo; and to be constantly doing it which is encouraged by Nat
-Pryce and Steve Freemam.&lt;/p&gt;
-
-&lt;p&gt;Of course you can do architecture or interface refactoring at any time but this
-is a little harder and not always obvious in the &amp;ldquo;mockist&amp;rdquo; approach. The london
-approach is a layered approach and can introduce a lot of layers. Of course in
-any system this can be a  combinatorial explosion of tests, of course we only
-do interaction tests on &amp;ldquo;interesting&amp;rdquo; classes and we have to find a sensible
-set of tests spanning the total interactions. This still ends up being a lot of
-baggage and without spreading the cost of &amp;ldquo;micro-refactoring&amp;rdquo; by constantly
-doing it and taking the time for bigger refactoring you can actually end  up
-with terrible design, no serious testing value except the acceptance tests and
-some interaction tests.&lt;/p&gt;
-
-&lt;p&gt;There is another key difference on the integration level. Integration tests
-gain a new responsibility in the &amp;ldquo;classical school&amp;rdquo; because they are your
-guaranttree that the pieces fit well together. In my view , this is a more
-straightfoward contract and more true to the meaning of a test. Here&amp;rsquo;s my black
-box, give it the interesting inputs (with a little gadget on some ends), try to
-think up of all the tests that are useful, (reliability, performance, security
-etc.). In the the london school you write some acceptance tests for your
-walking skelefion that represent a tranche of user-facing functionality, the
-minimal possible integration tests possible because otherwise you dillute the
-&amp;ldquo;purity&amp;rdquo; of the &amp;ldquo;Test-Driven&amp;rdquo; evolutionary approach to the design.  To its
-merit, This is good to give you a measure of progress when you&amp;rsquo;re getting lost
-in your sea of interaction/unit tests and allow to do the minimum possible to
-satisfy most important constraints which is an important discipline for
-startups and entreprise alike.&lt;/p&gt;
-
-&lt;p&gt;At the end of the day what matters is the improvement in the maintainability of
-your software and user-value. My personal take is that if you&amp;rsquo;re exploring a
-new problem and you are confident of your software engineering skills the
-&amp;ldquo;classical&amp;rdquo; school is more natural and will produce better external quality of
-software; as long as you remember to refactor carefully. The &amp;ldquo;mockist&amp;rdquo; school
-produces, in the hands of good developers, consistently good design, and makes
-mediocre developers have an acceptable design but not necessarily high
-reliability. It works especially well for pairing and when developers are
-trained to do &amp;ldquo;micro-refactoring&amp;rdquo; and interface refactoring (no just API
-refactoring but identifying abstractions in the interfaces). Which breaks the
-beaten path of your initial evolutionary path and makes your design more
-interesting.&lt;/p&gt;
-
-&lt;p&gt;To me , and i hope i am not the only one here, it is still a significant
-handicap to the ways of thinking and working of a typical software engineer.
-The classical school tries less to intrude on my habits as a software developer
-but instead encourages more reliable software. It offers less opinions about
-system design so your skills in design can show, which of course is a douible
-edged sword.&lt;/p&gt;
-
-&lt;h4 id=&#34;videos&#34;&gt;videos&lt;/h4&gt;
-
-
-&lt;div style=&#34;position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;&#34;&gt;
-  &lt;iframe src=&#34;//www.youtube.com/embed/n62HN2DHDEU&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%;&#34; allowfullscreen frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;
- &lt;/div&gt;
-
-
-&lt;hr /&gt;
-
-
-&lt;div style=&#34;position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;&#34;&gt;
-  &lt;iframe src=&#34;//www.youtube.com/embed/8FarI3hpOIE&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%;&#34; allowfullscreen frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;
- &lt;/div&gt;
-
-
-&lt;h4 id=&#34;books&#34;&gt;books&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&#34;http://msdn.microsoft.com/en-us/library/sfk2s47t.aspx&#34;&gt;Dynamic methods&lt;/a&gt; expand the functionality of the types in the System.Reflection.Emit namespace in several ways:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.amazon.co.uk/Growing-Object-Oriented-Software-Guided-Signature/dp/0321503627&#34;&gt;&amp;ldquo;Growing Object-Oriented Software, Guided by Tests&amp;rdquo;&lt;/a&gt; by Steve Freeman and Nat Pryce.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.amazon.co.uk/d/cka/Test-Driven-Development-Addison-Wesley-Signature-Kent-Beck/0321146530&#34;&gt;&amp;ldquo;Test Driven Development: By Example&amp;rdquo;&lt;/a&gt; by Kent Beck.&lt;/li&gt;
+&lt;li&gt;They have less overhead, because there is no need to generate dynamic assemblies, modules, and types to contain the methods.&lt;/li&gt;
+&lt;li&gt;In long-running applications, they provide better resource utilization because the memory used by method bodies can be reclaimed when the method is no longer needed.&lt;/li&gt;
+&lt;li&gt;Given sufficient security permissions, they provide the ability to associate code with an existing assembly or type, and that code can have the same visibility as internal types or private members.&lt;/li&gt;
+&lt;li&gt;Given sufficient security permissions, they allow code to skip just-in-time (JIT) visibility checks and access the private and protected data of objects.&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;Before you define the method body, you should declare the delegate types that you should use to access the properties of the unknown type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;protected delegate void SetValueHandler(object component, object value);
+protected delegate object GetValueHandler(object component);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Implementation of this methods requires Microsoft Intermediate Language (IL):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;protected virtual GetValueHandler CreateGetValueHandler(PropertyInfo propertyInfo)
+{
+    MethodInfo getMethodInfo = propertyInfo.GetGetMethod();
+    DynamicMethod getMethod = new DynamicMethod(&amp;quot;GetValue&amp;quot;, typeof(object), new Type[] { typeof(object) }, typeof(PropertyAccessor), true);
+    ILGenerator ilGenerator = getMethod.GetILGenerator();
+
+    ilGenerator.Emit(OpCodes.Ldarg_0);
+    ilGenerator.Emit(OpCodes.Call, getMethodInfo);
+
+    Type returnType = getMethodInfo.ReturnType;
+
+    if (returnType.IsValueType)
+    {
+        ilGenerator.Emit(OpCodes.Box, returnType);
+    }
+
+    ilGenerator.Emit(OpCodes.Ret);
+
+    return getMethod.CreateDelegate(typeof(GetValueHandler)) as GetValueHandler;
+
+}   
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Also, the body of the setter method should be created as it’s shown in the following code snippet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;protected virtual SetValueHandler CreateSetValueHandler(PropertyInfo propertyInfo)
+{
+    MethodInfo setMethodInfo = propertyInfo.GetSetMethod(false);
+    DynamicMethod setPropertyValue = new DynamicMethod(&amp;quot;SetValue&amp;quot;, typeof(void), new Type[] { typeof(object), typeof(object) }, typeof(PropertyAccessor), true);
+    ILGenerator ilGenerator = setPropertyValue.GetILGenerator();
+
+    ilGenerator.Emit(OpCodes.Ldarg_0);
+    ilGenerator.Emit(OpCodes.Ldarg_1);
+
+    Type parameterType = setMethodInfo.GetParameters()[0].ParameterType;
+
+    if (parameterType.IsValueType)
+    {
+        ilGenerator.Emit(OpCodes.Unbox_Any, parameterType);
+    }
+
+    ilGenerator.Emit(OpCodes.Call, setMethodInfo);
+    ilGenerator.Emit(OpCodes.Ret);
+
+    return setPropertyValue.CreateDelegate(typeof(SetValueHandler)) as SetValueHandler;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I have encapsulated the dynamic method accesses in the &lt;code&gt;PropertyAccessor&lt;/code&gt; class, which declaration looks as follows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class PropertyAccessor
+{
+    protected delegate void SetValueHandler(object component, object value);
+    protected delegate object GetValueHandler(object component);
+
+    private SetValueHandler setValueHandler;
+    private GetValueHandler getValueHandler;
+
+    public PropertyAccessor(Type ownerType, string propertyName)
+    {
+        PropertyInfo propertyInfo = ownerType.GetProperty(propertyName);
+
+        if (propertyInfo.CanRead)
+        {
+            this.getValueHandler = this.CreateGetValueHandler(propertyInfo);
+        }
+
+        if (propertyInfo.CanWrite)
+        {
+            this.setValueHandler = this.CreateSetValueHandler(propertyInfo);
+        }
+    }
+
+    public object GetValue(object component)
+    {
+        if (this.getValueHandler == null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        return this.getValueHandler(component);
+    }
+
+    public void SetValue(object component, object value)
+    {
+        if (this.setValueHandler == null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        this.setValueHandler(component, value);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I measured the performance among the three approaches against 1 000 000 times invocation of the &lt;code&gt;Employee&lt;/code&gt; property:&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/dynamic_method_emit_diagram.png&#34; alt=&#34;Dynamic methods performance diagram&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;p&gt;Notice that the direct access approach followed by the Dynamic Methods implementation are the fastest.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>How to prevent memory leaks when we are using events?</title>
+      <link>http://blog.ralch.com/2015/04/how-to-prevent-memory-leaks-when-we-are-using-events/</link>
+      <pubDate>Sat, 11 Apr 2015 22:03:54 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/2015/04/how-to-prevent-memory-leaks-when-we-are-using-events/</guid>
+      <description>&lt;p&gt;In the average development lifecycle is possible that event handlers that are attached to events of sources to not be destroyed in
+coordination with the listener object that attached the handler to the source. This can lead to memory leaks. The developers to take
+care about memory management not only when they use unmanaged resources but also when they attach new event handlers to specified event.&lt;/p&gt;
+
+&lt;p&gt;This problem was solved by Microsoft in Windows Presentation Foundation. They implmented
+&lt;a href=&#34;http://msdn.microsoft.com/en-us/library/aa970850.aspx&#34;&gt;Weak Event Design Pattern&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>PINVOKE: Getting all child handles of window</title>
+      <link>http://blog.ralch.com/2015/04/pinvoke-getting-all-child-handles-of-window/</link>
+      <pubDate>Sat, 11 Apr 2015 21:51:58 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/2015/04/pinvoke-getting-all-child-handles-of-window/</guid>
+      <description>&lt;p&gt;If you don’t know I have a new job in Bulgaria. I went away form Web Development and now I’m working as Windows Developer.
+However, we had a client that exceed the number of window handles (more than 10 000) due to bad design of application.
+While diagnosing his application, we needed to understand how many handles are created per window.&lt;/p&gt;
+
+&lt;p&gt;Windows API provide the availability to get all child handles for specified handle.
+We should use &lt;code&gt;EnumChildWindows&lt;/code&gt; function provided by &lt;code&gt;user32.dll&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;EnumChildWindows&lt;/code&gt; function enumerates the child windows that belong to the specified parent window by passing the handle to each child window, in turn,
+to an application-defined callback function. &lt;code&gt;EnumChildWindows&lt;/code&gt; continues until the last child window is enumerated or the callback function returns FALSE.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;BOOL EnumChildWindows( 
+         HWND hWndParent, 
+         WNDENUMPROC lpEnumFunc, 
+         LPARAM lParam 
+);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;hWndParent&lt;/code&gt; - [in] Handle to the parent window whose child windows are to be enumerated.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lpEnumFunc&lt;/code&gt; - [in] Pointer to an application-defined callback function.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lParam&lt;/code&gt; - [in] Specifies an application-defined value to be passed to the callback function.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If a child window has created child windows of its own, &lt;code&gt;EnumChildWindows&lt;/code&gt; enumerates those windows as well.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class WindowHandleInfo
+{
+    private delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
+ 
+    [DllImport(&amp;quot;user32&amp;quot;)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool EnumChildWindows(IntPtr window, EnumWindowProc callback, IntPtr lParam);
+ 
+    private IntPtr _MainHandle;
+ 
+    public WindowHandleInfo(IntPtr handle)
+    {
+        this._MainHandle = handle;
+    }
+ 
+    public List&amp;lt;IntPtr&amp;gt; GetAllChildHandles()
+    {
+        List&amp;lt;IntPtr&amp;gt; childHandles = new List&amp;lt;IntPtr&amp;gt;();
+ 
+        GCHandle gcChildhandlesList = GCHandle.Alloc(childHandles);
+        IntPtr pointerChildHandlesList = GCHandle.ToIntPtr(gcChildhandlesList);
+ 
+        try
+        {
+            EnumWindowProc childProc = new EnumWindowProc(EnumWindow);
+            EnumChildWindows(this._MainHandle, childProc, pointerChildHandlesList);
+        }
+        finally
+        {
+            gcChildhandlesList.Free();
+        }
+ 
+        return childHandles;
+    }
+ 
+    private bool EnumWindow(IntPtr hWnd, IntPtr lParam)
+    {
+        GCHandle gcChildhandlesList = GCHandle.FromIntPtr(lParam);
+ 
+        if (gcChildhandlesList == null || gcChildhandlesList.Target == null)
+        {
+            return false;
+        }
+ 
+        List&amp;lt;IntPtr&amp;gt; childHandles = gcChildhandlesList.Target as List&amp;lt;IntPtr&amp;gt;;
+        childHandles.Add(hWnd);
+ 
+        return true;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>ADO.NET XmlSerialization of extended DataTable</title>
+      <link>http://blog.ralch.com/2015/04/ado-net-xmlserialization-of-extended-datatable/</link>
+      <pubDate>Sat, 11 Apr 2015 21:10:37 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/2015/04/ado-net-xmlserialization-of-extended-datatable/</guid>
+      <description>&lt;p&gt;We are migrating communication protocol from .NET Remoting to WCF.
+Due to legacy fo this project, domain object is a DataTable that has some additional fields.
+In .NET Remoting serialization of that kind of object works perfectly, but in WCF these additional fields are not serialized.
+Instead of binary serialization in .NET Remoting, XML serialization is used in WCF.&lt;/p&gt;
+
+&lt;p&gt;Lets have a class that derives DataTable type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class WcfDataTable : DataTable
+{
+    private string _ServerName;
+ 
+    public WcfDataTable()
+        : base()
+    { }
+ 
+    public WcfDataTable(string tableName)
+        : base(tableName)
+    { }
+ 
+    public string ServerName
+    {
+        get { return this._ServerName; }
+        set { this._ServerName = value; }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/wcf_table_screen.jpg&#34; alt=&#34;WCF DataTable&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+
+&lt;p&gt;As you can see I’m creating dummy &lt;code&gt;WcfDataTable&lt;/code&gt; object, which I’m cloning using xml serialization and deserialization.
+The cloned object is not identical with the original object, because this additional field is not initialized with the original value (it’s null).
+The existing xml serialization doesn’t catch the new field in the class.
+To make possible this field for xml serialization we should override the existing xml serialization, but how to do it?
+The solution is really simple. You have to implement the interface &lt;code&gt;IXmlSerializable&lt;/code&gt; with explicit override of all its methods.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class WcfDataTable : DataTable, IXmlSerializable
+{
+    private string _ServerName;
+ 
+    public WcfDataTable()
+        : base()
+    { }
+ 
+    public WcfDataTable(string tableName)
+        : base(tableName)
+    { }
+ 
+    public string ServerName
+    {
+        get { return this._ServerName; }
+        set { this._ServerName = value; }
+    }
+ 
+    void IXmlSerializable.ReadXml(System.Xml.XmlReader reader)
+    {
+        base.ReadXmlSchema(reader);
+ 
+        XmlSerializer xmlSerializer = new XmlSerializer(typeof(string));
+        this._ServerName = xmlSerializer.Deserialize(reader) as string;
+ 
+        base.ReadXml(reader);
+    }
+ 
+    void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer)
+    {
+        base.WriteXmlSchema(writer);
+ 
+        XmlSerializer xmlSerializer = new XmlSerializer(typeof(string));
+        xmlSerializer.Serialize(writer, this._ServerName);
+ 
+        base.WriteXml(writer, XmlWriteMode.DiffGram);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To make this workaround we have to override WriteXml and ReadXml method explicitly.
+The methods ReadXmlSchema and WriteXmlSchema are used to read and write the schema of data table.
+Then we can write/read our new field and then to invoke basic logic for serialization or deserializtion.&lt;/p&gt;
+
+
+&lt;figure &gt;
+    
+        &lt;img src=&#34;http://blog.ralch.com/media/wcf_table_screen_done.jpg&#34; alt=&#34;WCF DataTable&#34; /&gt;
+    
+    
+&lt;/figure&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>LINQ to SQL: Create generic method to load entity by primary key</title>
+      <link>http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/</link>
+      <pubDate>Sat, 11 Apr 2015 20:19:59 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/</guid>
+      <description>
+
+&lt;h1 id=&#34;scenario&#34;&gt;Scenario&lt;/h1&gt;
+
+&lt;p&gt;We are implementing our data access layer based on LINQ TO SQL. In the specifications that were created by our software architect is required to have generic method that load from the data base any record into entity object by primary key.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class LINQGateway&amp;lt;TEntity&amp;gt; where TEntity : class
+{
+    private IDbConnection _DbConnection;
+    public LINQGateway(IDbConnection connection)
+    {
+        this._DbConnection = connection;
+    }
+    public TEntity GetEntityByPrimaryKey(object pkKey, params object[] pkKeys)
+    {
+        // TO DO
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;problem&#34;&gt;Problem&lt;/h1&gt;
+
+&lt;p&gt;Every table has different primary key (count, name and data type of the primary key columns).&lt;/p&gt;
+
+&lt;h1 id=&#34;algorithm&#34;&gt;Algorithm&lt;/h1&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Get tha mapping of the entity type&lt;/li&gt;
+&lt;li&gt;Use information for the mapping
+2.1 to get the name of the columns
+2.2 to get the name of the columns included in the primary key&lt;/li&gt;
+&lt;li&gt;Generate the T-SQL Query&lt;/li&gt;
+&lt;li&gt;Execute the Query via LINQ Framework to retrive the result as entity object&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&#34;solutions&#34;&gt;Solutions&lt;/h1&gt;
+
+&lt;h2 id=&#34;building-t-sql-query&#34;&gt;Building T-SQL query&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;TEntity GetEntityByPrimaryKey(object pkKey, params object[] pkKeys)
+{
+    List&amp;lt;object&amp;gt; primaryKeys = new List&amp;lt;object&amp;gt;();
+    primaryKeys.Add(pkKey);
+    primaryKeys.AddRange(pkKeys);
+
+    TEntity entity = null;
+    Type entityType = typeof(TEntity);
+
+    using (DataContext dataContext = new DataContext(this._DbConnection))
+    {
+        dataContext.Log = new DebuggerWriter();
+        dataContext.ObjectTrackingEnabled = false;
+
+        Table&amp;lt;TEntity&amp;gt; table = dataContext.GetTable&amp;lt;TEntity&amp;gt;();
+
+        MetaType metaEntityType = dataContext.Mapping.GetMetaType(entityType);
+
+        var primaryKeyColumns = from pkColumn in metaEntityType.DataMembers
+                                where pkColumn.IsPrimaryKey
+                                select pkColumn;
+
+        var columns = from col in metaEntityType.DataMembers
+                      where col.IsPersistent &amp;amp;&amp;amp; !col.IsAssociation
+                      orderby col.Ordinal
+                      select &amp;quot;[t0].[&amp;quot; + col.MappedName + &amp;quot;]&amp;quot;;
+
+        string selectColumns = String.Join(&amp;quot;, &amp;quot;, columns.ToArray());
+
+        int pkColumnsCount = 0;
+
+        if (primaryKeyColumns != null)
+            pkColumnsCount = primaryKeyColumns.Count();
+
+        if (pkColumnsCount == 0)
+            throw new InvalidOperationException(&amp;quot;Table doesn’t have primary key&amp;quot;);
+
+        if (pkColumnsCount != primaryKeys.Count)
+            throw new InvalidOperationException(&amp;quot;Primary key values doesn’t match primary key columns.&amp;quot;);
+
+
+        string tableName = metaEntityType.Table.TableName;
+
+        if (tableName.Contains(‘.’))
+        {
+            string[] splittedTablename = metaEntityType.Table.TableName.Split(‘.’).Select(p =&amp;gt; &amp;quot;[&amp;quot; + p + &amp;quot;]&amp;quot;).ToArray();
+            tableName = String.Join(&amp;quot;.&amp;quot;, splittedTablename);
+        }
+
+        StringBuilder builder = new StringBuilder(&amp;quot;SELECT &amp;quot; + selectColumns + Environment.NewLine + &amp;quot;FROM &amp;quot; + tableName + &amp;quot; AS [t0]&amp;quot; + Environment.NewLine + &amp;quot;WHERE &amp;quot;);
+
+        int index = 0;
+
+        foreach (MetaDataMember pkColumn in primaryKeyColumns)
+        {
+            string columnName = pkColumn.Name;
+            string paramID = index.ToString(CultureInfo.InvariantCulture);
+            builder.Append(&amp;quot;[t0].[&amp;quot; + columnName + &amp;quot;] = {&amp;quot; + paramID + &amp;quot;}&amp;quot;);
+
+            if (index + 1 != pkColumnsCount)
+                builder.Append(&amp;quot; AND &amp;quot;);
+
+            index++;
+        }
+
+        string query = builder.ToString();
+        entity = dataContext.ExecuteQuery&amp;lt;TEntity&amp;gt;(query, primaryKeys.ToArray()).SingleOrDefault();
+    }
+
+    return entity;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;dynamic-linq-expression&#34;&gt;Dynamic LINQ expression&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;TEntity GetEntityByPrimaryKey(object pkKey, params object[] pkKeys)
+{
+    List&amp;lt;object&amp;gt; primaryKeys = new List&amp;lt;object&amp;gt;();
+    primaryKeys.Add(pkKey);
+    primaryKeys.AddRange(pkKeys);
+ 
+    TEntity entity = null;
+    Type entityType = typeof(TEntity);
+ 
+    using (DataContext dataContext = new DataContext(this._DbConnection))
+    {
+        dataContext.Log = new DebuggerWriter();
+        dataContext.ObjectTrackingEnabled = false;
+ 
+        Table&amp;lt;TEntity&amp;gt; table = dataContext.GetTable&amp;lt;TEntity&amp;gt;();
+ 
+        MetaType metaEntityType = dataContext.Mapping.GetMetaType(entityType);
+ 
+        var primaryKeyColumns = from pkColumn in metaEntityType.DataMembers
+                                where pkColumn.IsPrimaryKey
+                                select pkColumn;
+ 
+        int pkColumnsCount = 0;
+ 
+        if (primaryKeyColumns != null)
+            pkColumnsCount = primaryKeyColumns.Count();
+ 
+        if (pkColumnsCount == 0)
+            throw new InvalidOperationException(&amp;quot;Table doesn’t have primary key&amp;quot;);
+ 
+        if (pkColumnsCount != primaryKeys.Count)
+            throw new InvalidOperationException(&amp;quot;Primary key value doesn’t match primary key columns.&amp;quot;);
+ 
+        ParameterExpression paramExpression = Expression.Parameter(entityType, &amp;quot;entity&amp;quot;);
+ 
+        BinaryExpression whereExpression = null;
+ 
+        int index = 0;
+ 
+        foreach (MetaDataMember pkColumn in primaryKeyColumns)
+        {
+            object value = primaryKeys[index];
+            string columnName = pkColumn.Name;
+ 
+            if (value != null &amp;amp;&amp;amp; value.GetType() != pkColumn.Type)
+            {
+                Type paramType = value.GetType();
+                string exceptionMsg = String.Format(&amp;quot;The type ‘{0}’ of parameter ‘{1}’ is different than its column ‘{2}’ type ‘{3}’&amp;quot;, paramType, value, columnName, pkColumn.Type);
+                throw new InvalidOperationException(exceptionMsg);
+            }
+ 
+            BinaryExpression condition = Expression.Equal(Expression.Property(paramExpression, columnName), Expression.Constant(value));
+ 
+            if (whereExpression != null)
+                whereExpression = Expression.And(whereExpression, condition);
+            else
+                whereExpression = condition;
+ 
+            index++;
+        }
+ 
+        Expression&amp;lt;Func&amp;lt;TEntity, bool&amp;gt;&amp;gt; predicate = Expression.Lambda&amp;lt;Func&amp;lt;TEntity, bool&amp;gt;&amp;gt;(whereExpression, new ParameterExpression[] { paramExpression });
+        entity = table.SingleOrDefault(predicate);
+    }
+ 
+    return entity;
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Funny C# code</title>
+      <link>http://blog.ralch.com/2015/04/funny-csharp-code/</link>
+      <pubDate>Sat, 11 Apr 2015 20:10:50 &#43;0100</pubDate>
+      <author>Svett Ralchev</author>
+      <guid>http://blog.ralch.com/2015/04/funny-csharp-code/</guid>
+      <description>&lt;p&gt;Even though I don’t know the author of the lines below I would say “Thank you man. You made day”.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;try
+{
+ HOME:
+   do
+   {
+     Play(“World of Warcraft”);
+   }
+   while (!asleep);
+ 
+   Thread.Sleep(12 * 60 * 60 * 1000);
+ 
+   WakeUp(coffee);
+ 
+   if (you_still_give_a_shit())
+     goto WORK;
+   else
+     goto OUT;
+ 
+ WORK:
+   do
+   {
+     if (got_something_to_do())
+     {
+       LookAtTheMonitor();
+       Press_Some_Keys(new string[] { “Ctrl+C”, “Ctrl+V” });
+     }
+ 
+     Browse(“vbox7.com”);
+     Browse(“topsport.bg”);
+     Browse(“youtube.com”);
+ 
+     Have_a_Break();
+     Have_a_Kitkat();
+ 
+   }
+   while (DateTime.Now.Hour &amp;lt; 5);
+ 
+   if (DateTime.Now.Day == 1)
+   {
+     // at least
+     GetSomeCash(3000);
+   }
+ OUT:
+   switch (mood)
+   {
+ 
+     case Mood.Horny:
+       ChaseChicks(“hot!”);
+       break;
+     case Mood.Dull:
+       SmokeSomeStuff(new Stuff[] { “Grass”, “Serious Stuff” });
+       break;
+     default:
+       DrinkBeer(5);
+       break;
+ 
+   }
+   goto HOME;
+}
+catch (HealthException x)
+{
+    SeeTheDoctor(x);
+}
+catch (NoMoneyException)
+{
+    ShitHappens();
+}
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     

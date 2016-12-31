@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/coding/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Funny C# code</title>
       <link>http://blog.ralch.com/2015/04/funny-csharp-code/</link>
@@ -25,16 +25,16 @@
      Play(“World of Warcraft”);
    }
    while (!asleep);
-
+ 
    Thread.Sleep(12 * 60 * 60 * 1000);
-
+ 
    WakeUp(coffee);
-
+ 
    if (you_still_give_a_shit())
      goto WORK;
    else
      goto OUT;
-
+ 
  WORK:
    do
    {
@@ -43,17 +43,17 @@
        LookAtTheMonitor();
        Press_Some_Keys(new string[] { “Ctrl+C”, “Ctrl+V” });
      }
-
+ 
      Browse(“vbox7.com”);
      Browse(“topsport.bg”);
      Browse(“youtube.com”);
-
+ 
      Have_a_Break();
      Have_a_Kitkat();
-
+ 
    }
    while (DateTime.Now.Hour &amp;lt; 5);
-
+ 
    if (DateTime.Now.Day == 1)
    {
      // at least
@@ -62,7 +62,7 @@
  OUT:
    switch (mood)
    {
-
+ 
      case Mood.Horny:
        ChaseChicks(“hot!”);
        break;
@@ -72,7 +72,7 @@
      default:
        DrinkBeer(5);
        break;
-
+ 
    }
    goto HOME;
 }
@@ -87,6 +87,6 @@ catch (NoMoneyException)
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

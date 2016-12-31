@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/decorator/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Design Patterns in Golang: Decorator</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-decorator/</link>
@@ -41,10 +41,10 @@ functionality.&lt;/li&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/decorator.gif&#34; alt=&#34;Decorator Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -162,6 +162,6 @@ instead of entire structs at runtime. With decoration it is also possible to
 remove the added functionalities dynamically.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

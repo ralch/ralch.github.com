@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/reflection/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Reflection in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-reflection/</link>
@@ -289,7 +289,7 @@ particular cases. Do not forget to follow &lt;a href=&#34;http://blog.golang.org
 reflection&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Fast run time emitting with dynamic methods in .NET</title>
       <link>http://blog.ralch.com/2015/04/fast-run-time-emitting-with-dynamic-methods/</link>
@@ -340,7 +340,7 @@ protected delegate object GetValueHandler(object component);
 
     return getMethod.CreateDelegate(typeof(GetValueHandler)) as GetValueHandler;
 
-}
+}   
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Also, the body of the setter method should be created as it’s shown in the following code snippet:&lt;/p&gt;
@@ -419,16 +419,16 @@ protected delegate object GetValueHandler(object component);
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/dynamic_method_emit_diagram.png&#34; alt=&#34;Dynamic methods performance diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
 &lt;p&gt;Notice that the direct access approach followed by the Dynamic Methods implementation are the fastest.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

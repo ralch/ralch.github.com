@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/pprof/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Performance and memory analysis of Golang programs</title>
       <link>http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/</link>
@@ -191,10 +191,10 @@ Entering interactive mode (type &amp;quot;help&amp;quot; for commands)
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/pprof-heap.png&#34; alt=&#34;pprof heap profile&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -205,6 +205,6 @@ environment. Therefore profiling and metrics analysis are comming as part of
 the language runtime.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

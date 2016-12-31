@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/factory-method/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Desing Patterns in Golang: Factory Method</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</link>
@@ -42,10 +42,10 @@ method to produce one type of product related to its type.&lt;/p&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/factory-method.gif&#34; alt=&#34;Builder Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -201,6 +201,6 @@ The Factory Method is similar to Abstract Factory but without the emphasis on
 families.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

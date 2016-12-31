@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/code-generation/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Develop code generation tool for Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/</link>
@@ -211,7 +211,7 @@ blog post will encourage more go developers to build such a tools that will boos
 our productivity.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Generics in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-and-generics/</link>
@@ -239,7 +239,7 @@ project, filter, sort and group slices of the annotated types.&lt;/p&gt;
 
 &lt;p&gt;We should use &lt;code&gt;go get&lt;/code&gt; command to install &lt;code&gt;gen&lt;/code&gt;:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ go get clipperhouse.github.io/gen
+&lt;pre&gt;&lt;code&gt;$ go get clipperhouse.github.io/gen 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;usage&#34;&gt;Usage&lt;/h4&gt;
@@ -611,7 +611,7 @@ comment should be placed in the actual template. This can be avoid by executing
 template nature, we can focus on what should be generated instead of how to generate it.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Reusing source code with Go templates</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-with-gotemplates/</link>
@@ -791,7 +791,7 @@ All &lt;code&gt;TValue&lt;/code&gt; occurances are replaced with &lt;code&gt;Stu
 extensibility, we can focus on what should be generated instead of how to generate it.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Golang code generation</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation/</link>
@@ -807,7 +807,7 @@ it easier to run such tools.&lt;/p&gt;
 &lt;p&gt;It&amp;rsquo;s called &lt;code&gt;go generate&lt;/code&gt;. It scans for special comments in Go
 source code that identify general commands to run:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;//go:generate &amp;lt;subcommand&amp;gt; &amp;lt;arguments&amp;gt;
+&lt;pre&gt;&lt;code&gt;//go:generate &amp;lt;subcommand&amp;gt; &amp;lt;arguments&amp;gt; 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;code&gt;Go generate&lt;/code&gt; is not part of go build. It does not do dependency analysis and
@@ -816,7 +816,7 @@ the author of the Go package, not its consumers.&lt;/p&gt;
 
 &lt;p&gt;The &lt;code&gt;go generate&lt;/code&gt; command is easy to use. Usually it is executed in the following way:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;// it scans all
+&lt;pre&gt;&lt;code&gt;// it scans all 
 $ go generate ./...
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -881,7 +881,7 @@ According to the author notes, it is generally 2 to 3 times faster than
 
 &lt;h4 id=&#34;installing-1&#34;&gt;Installing&lt;/h4&gt;
 
-&lt;pre&gt;&lt;code&gt;$ go get github.com/pquerna/ffjson
+&lt;pre&gt;&lt;code&gt;$ go get github.com/pquerna/ffjson 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;usage-1&#34;&gt;Usage&lt;/h4&gt;
@@ -991,6 +991,6 @@ that are very common in our day to day job. I am really pleased to see more and
 more tools coming up.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

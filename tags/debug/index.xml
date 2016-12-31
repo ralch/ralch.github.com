@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/debug/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Delve: Next generation debugger for Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-debug-with-delve/</link>
@@ -30,7 +30,7 @@ we can still benefit from its basic features.&lt;/p&gt;
 
 &lt;p&gt;You should install &lt;code&gt;Delve&lt;/code&gt; with the following command:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ go get -u github.com/derekparker/delve/cmd/dlv
+&lt;pre&gt;&lt;code&gt;$ go get -u github.com/derekparker/delve/cmd/dlv 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Note that you need at least &lt;code&gt;Go 1.4&lt;/code&gt;.&lt;/p&gt;
@@ -50,10 +50,10 @@ we can still benefit from its basic features.&lt;/p&gt;
 to &lt;code&gt;Code Signing&lt;/code&gt; and select the &lt;code&gt;Let me override defaults&lt;/code&gt;:
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/debugger/certificate-name.png&#34; alt=&#34;Certificate Name&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 &lt;/p&gt;&lt;/li&gt;
 
@@ -61,10 +61,10 @@ to &lt;code&gt;Code Signing&lt;/code&gt; and select the &lt;code&gt;Let me overr
 fill the required field:
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/debugger/certificate-info.png&#34; alt=&#34;Certificate Info&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 &lt;/p&gt;&lt;/li&gt;
 
@@ -72,10 +72,10 @@ fill the required field:
 the &amp;ldquo;Specify a Location For The Certificate&amp;rdquo; screen, then set &amp;ldquo;Keychain to System&amp;rdquo;.
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/debugger/certificate-keychain.png&#34; alt=&#34;Certificate Keychain&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 &lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -83,7 +83,7 @@ the &amp;ldquo;Specify a Location For The Certificate&amp;rdquo; screen, then se
 &lt;p&gt;Then we need sign the binary by using the created certificate. In order to do that we should
 execute the following command:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;# CERT=&amp;lt;your_ceriticate_name&amp;gt; make install
+&lt;pre&gt;&lt;code&gt;# CERT=&amp;lt;your_ceriticate_name&amp;gt; make install 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;If you need more detailed guidelines, you should follow &lt;a href=&#34;https://github.com/derekparker/delve/wiki/Building&#34;&gt;the official documentation&lt;/a&gt;.&lt;/p&gt;
@@ -126,7 +126,7 @@ be started from a command line.&lt;/p&gt;
 
 &lt;p&gt;Provide the running application process id:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ sudo dlv attach 47478
+&lt;pre&gt;&lt;code&gt;$ sudo dlv attach 47478 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Delve will pass any arguments after &lt;code&gt;dlv run|test|trace&lt;/code&gt; to the newly created process:&lt;/p&gt;
@@ -181,7 +181,7 @@ $ dlv run arg1 -- -flag1 -flag2
 &lt;a href=&#34;https://github.com/derekparker/delve/wiki/Usage&#34;&gt;usage&lt;/a&gt; documentation.&lt;/em&gt;&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Debug Golang applications: LLDB</title>
       <link>http://blog.ralch.com/tutorial/golang-debug-with-lldb/</link>
@@ -312,7 +312,7 @@ In addition sometimes &lt;code&gt;go scheduler&lt;/code&gt; changes the context 
 It changes the stack frame by moving &lt;code&gt;go routine&lt;/code&gt; from one thread to another.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>PINVOKE: Getting all child handles of window</title>
       <link>http://blog.ralch.com/2015/04/pinvoke-getting-all-child-handles-of-window/</link>
@@ -329,10 +329,10 @@ We should use &lt;code&gt;EnumChildWindows&lt;/code&gt; function provided by &lt
 &lt;p&gt;&lt;code&gt;EnumChildWindows&lt;/code&gt; function enumerates the child windows that belong to the specified parent window by passing the handle to each child window, in turn,
 to an application-defined callback function. &lt;code&gt;EnumChildWindows&lt;/code&gt; continues until the last child window is enumerated or the callback function returns FALSE.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;BOOL EnumChildWindows(
-         HWND hWndParent,
-         WNDENUMPROC lpEnumFunc,
-         LPARAM lParam
+&lt;pre&gt;&lt;code&gt;BOOL EnumChildWindows( 
+         HWND hWndParent, 
+         WNDENUMPROC lpEnumFunc, 
+         LPARAM lParam 
 );
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -347,25 +347,25 @@ to an application-defined callback function. &lt;code&gt;EnumChildWindows&lt;/co
 &lt;pre&gt;&lt;code&gt;public class WindowHandleInfo
 {
     private delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
-
+ 
     [DllImport(&amp;quot;user32&amp;quot;)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool EnumChildWindows(IntPtr window, EnumWindowProc callback, IntPtr lParam);
-
+ 
     private IntPtr _MainHandle;
-
+ 
     public WindowHandleInfo(IntPtr handle)
     {
         this._MainHandle = handle;
     }
-
+ 
     public List&amp;lt;IntPtr&amp;gt; GetAllChildHandles()
     {
         List&amp;lt;IntPtr&amp;gt; childHandles = new List&amp;lt;IntPtr&amp;gt;();
-
+ 
         GCHandle gcChildhandlesList = GCHandle.Alloc(childHandles);
         IntPtr pointerChildHandlesList = GCHandle.ToIntPtr(gcChildhandlesList);
-
+ 
         try
         {
             EnumWindowProc childProc = new EnumWindowProc(EnumWindow);
@@ -375,28 +375,28 @@ to an application-defined callback function. &lt;code&gt;EnumChildWindows&lt;/co
         {
             gcChildhandlesList.Free();
         }
-
+ 
         return childHandles;
     }
-
+ 
     private bool EnumWindow(IntPtr hWnd, IntPtr lParam)
     {
         GCHandle gcChildhandlesList = GCHandle.FromIntPtr(lParam);
-
+ 
         if (gcChildhandlesList == null || gcChildhandlesList.Target == null)
         {
             return false;
         }
-
+ 
         List&amp;lt;IntPtr&amp;gt; childHandles = gcChildhandlesList.Target as List&amp;lt;IntPtr&amp;gt;;
         childHandles.Add(hWnd);
-
+ 
         return true;
     }
 }
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

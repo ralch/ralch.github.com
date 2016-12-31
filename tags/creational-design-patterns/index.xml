@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/creational-design-patterns/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Desing Patterns in Golang: Bridge</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-bridge/</link>
@@ -37,10 +37,10 @@ different classes.&lt;/p&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/bridge.gif&#34; alt=&#34;Bridge Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -150,7 +150,7 @@ implementation vary independently. That allows us to independently change the
 implementation from its abstraction.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Design Patterns in Golang: Prototype</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-prototype/</link>
@@ -184,10 +184,10 @@ create new objects by copying this prototype.&lt;/li&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/prototype.gif&#34; alt=&#34;Prototype Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -384,7 +384,7 @@ prototypes.&lt;/p&gt;
 &lt;code&gt;Golang&lt;/code&gt; already provides builtin mechanism for cloning objects.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Desing Patterns in Golang: Factory Method</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</link>
@@ -418,10 +418,10 @@ method to produce one type of product related to its type.&lt;/p&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/factory-method.gif&#34; alt=&#34;Builder Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -577,7 +577,7 @@ The Factory Method is similar to Abstract Factory but without the emphasis on
 families.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Desing Patterns in Golang: Builder</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-builder/</link>
@@ -609,10 +609,10 @@ concrete builder, a director and a product.&lt;/p&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/builder.gif&#34; alt=&#34;Builder Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -785,7 +785,7 @@ additional representations of the product to be added with ease. The pattern
 also encourages separation of concerns and promotes application extensibility&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Design Patterns in Golang: Singleton</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-singleton/</link>
@@ -815,10 +815,10 @@ not more than one instance. The same instance can be used from everywhere.&lt;/p
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/singleton.gif&#34; alt=&#34;Singleton Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -923,6 +923,6 @@ implementation used, the pattern provides a commonly understood concept that
 can be easily shared among design and development teams.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

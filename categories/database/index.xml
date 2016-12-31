@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/categories/database/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Object relation mapping with GORM</title>
       <link>http://blog.ralch.com/tutorial/golang-object-relation-mapping-with-gorm/</link>
@@ -56,10 +56,10 @@ Every model is representent as table and every field is column in this table.&lt
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/gorm-diagram.png&#34; alt=&#34;ORM Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -311,7 +311,7 @@ with in &lt;code&gt;SQL&lt;/code&gt; like languages. I would like to see a code 
 that generates a models from existing data base.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>LINQ to SQL: Create generic method to load entity by primary key</title>
       <link>http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/</link>
@@ -437,71 +437,71 @@ that generates a models from existing data base.&lt;/p&gt;
     List&amp;lt;object&amp;gt; primaryKeys = new List&amp;lt;object&amp;gt;();
     primaryKeys.Add(pkKey);
     primaryKeys.AddRange(pkKeys);
-
+ 
     TEntity entity = null;
     Type entityType = typeof(TEntity);
-
+ 
     using (DataContext dataContext = new DataContext(this._DbConnection))
     {
         dataContext.Log = new DebuggerWriter();
         dataContext.ObjectTrackingEnabled = false;
-
+ 
         Table&amp;lt;TEntity&amp;gt; table = dataContext.GetTable&amp;lt;TEntity&amp;gt;();
-
+ 
         MetaType metaEntityType = dataContext.Mapping.GetMetaType(entityType);
-
+ 
         var primaryKeyColumns = from pkColumn in metaEntityType.DataMembers
                                 where pkColumn.IsPrimaryKey
                                 select pkColumn;
-
+ 
         int pkColumnsCount = 0;
-
+ 
         if (primaryKeyColumns != null)
             pkColumnsCount = primaryKeyColumns.Count();
-
+ 
         if (pkColumnsCount == 0)
             throw new InvalidOperationException(&amp;quot;Table doesn’t have primary key&amp;quot;);
-
+ 
         if (pkColumnsCount != primaryKeys.Count)
             throw new InvalidOperationException(&amp;quot;Primary key value doesn’t match primary key columns.&amp;quot;);
-
+ 
         ParameterExpression paramExpression = Expression.Parameter(entityType, &amp;quot;entity&amp;quot;);
-
+ 
         BinaryExpression whereExpression = null;
-
+ 
         int index = 0;
-
+ 
         foreach (MetaDataMember pkColumn in primaryKeyColumns)
         {
             object value = primaryKeys[index];
             string columnName = pkColumn.Name;
-
+ 
             if (value != null &amp;amp;&amp;amp; value.GetType() != pkColumn.Type)
             {
                 Type paramType = value.GetType();
                 string exceptionMsg = String.Format(&amp;quot;The type ‘{0}’ of parameter ‘{1}’ is different than its column ‘{2}’ type ‘{3}’&amp;quot;, paramType, value, columnName, pkColumn.Type);
                 throw new InvalidOperationException(exceptionMsg);
             }
-
+ 
             BinaryExpression condition = Expression.Equal(Expression.Property(paramExpression, columnName), Expression.Constant(value));
-
+ 
             if (whereExpression != null)
                 whereExpression = Expression.And(whereExpression, condition);
             else
                 whereExpression = condition;
-
+ 
             index++;
         }
-
+ 
         Expression&amp;lt;Func&amp;lt;TEntity, bool&amp;gt;&amp;gt; predicate = Expression.Lambda&amp;lt;Func&amp;lt;TEntity, bool&amp;gt;&amp;gt;(whereExpression, new ParameterExpression[] { paramExpression });
         entity = table.SingleOrDefault(predicate);
     }
-
+ 
     return entity;
 }
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

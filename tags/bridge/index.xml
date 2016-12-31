@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/bridge/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Desing Patterns in Golang: Bridge</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-bridge/</link>
@@ -37,10 +37,10 @@ different classes.&lt;/p&gt;
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/bridge.gif&#34; alt=&#34;Bridge Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -150,6 +150,6 @@ implementation vary independently. That allows us to independently change the
 implementation from its abstraction.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

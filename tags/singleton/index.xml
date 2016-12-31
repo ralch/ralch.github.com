@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/singleton/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Design Patterns in Golang: Singleton</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-singleton/</link>
@@ -38,10 +38,10 @@ not more than one instance. The same instance can be used from everywhere.&lt;/p
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/singleton.gif&#34; alt=&#34;Singleton Class Diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -146,6 +146,6 @@ implementation used, the pattern provides a commonly understood concept that
 can be easily shared among design and development teams.&lt;/p&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>

@@ -6,9 +6,9 @@
     <link>http://blog.ralch.com/tags/csharp/index.xml</link>
     <language>en-us</language>
     <author>Svett Ralchev</author>
-
+    
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-
+    
     <item>
       <title>Fast run time emitting with dynamic methods in .NET</title>
       <link>http://blog.ralch.com/2015/04/fast-run-time-emitting-with-dynamic-methods/</link>
@@ -59,7 +59,7 @@ protected delegate object GetValueHandler(object component);
 
     return getMethod.CreateDelegate(typeof(GetValueHandler)) as GetValueHandler;
 
-}
+}   
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Also, the body of the setter method should be created as it’s shown in the following code snippet:&lt;/p&gt;
@@ -138,17 +138,17 @@ protected delegate object GetValueHandler(object component);
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/dynamic_method_emit_diagram.png&#34; alt=&#34;Dynamic methods performance diagram&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
 &lt;p&gt;Notice that the direct access approach followed by the Dynamic Methods implementation are the fastest.&lt;/p&gt;
 </description>
     </item>
-
+    
     <item>
       <title>ADO.NET XmlSerialization of extended DataTable</title>
       <link>http://blog.ralch.com/2015/04/ado-net-xmlserialization-of-extended-datatable/</link>
@@ -165,15 +165,15 @@ Instead of binary serialization in .NET Remoting, XML serialization is used in W
 &lt;pre&gt;&lt;code&gt;public class WcfDataTable : DataTable
 {
     private string _ServerName;
-
+ 
     public WcfDataTable()
         : base()
     { }
-
+ 
     public WcfDataTable(string tableName)
         : base(tableName)
     { }
-
+ 
     public string ServerName
     {
         get { return this._ServerName; }
@@ -184,10 +184,10 @@ Instead of binary serialization in .NET Remoting, XML serialization is used in W
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/wcf_table_screen.jpg&#34; alt=&#34;WCF DataTable&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 
@@ -200,38 +200,38 @@ The solution is really simple. You have to implement the interface &lt;code&gt;I
 &lt;pre&gt;&lt;code&gt;public class WcfDataTable : DataTable, IXmlSerializable
 {
     private string _ServerName;
-
+ 
     public WcfDataTable()
         : base()
     { }
-
+ 
     public WcfDataTable(string tableName)
         : base(tableName)
     { }
-
+ 
     public string ServerName
     {
         get { return this._ServerName; }
         set { this._ServerName = value; }
     }
-
+ 
     void IXmlSerializable.ReadXml(System.Xml.XmlReader reader)
     {
         base.ReadXmlSchema(reader);
-
+ 
         XmlSerializer xmlSerializer = new XmlSerializer(typeof(string));
         this._ServerName = xmlSerializer.Deserialize(reader) as string;
-
+ 
         base.ReadXml(reader);
     }
-
+ 
     void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer)
     {
         base.WriteXmlSchema(writer);
-
+ 
         XmlSerializer xmlSerializer = new XmlSerializer(typeof(string));
         xmlSerializer.Serialize(writer, this._ServerName);
-
+ 
         base.WriteXml(writer, XmlWriteMode.DiffGram);
     }
 }
@@ -243,15 +243,15 @@ Then we can write/read our new field and then to invoke basic logic for serializ
 
 
 &lt;figure &gt;
-
+    
         &lt;img src=&#34;http://blog.ralch.com/media/wcf_table_screen_done.jpg&#34; alt=&#34;WCF DataTable&#34; /&gt;
-
-
+    
+    
 &lt;/figure&gt;
 
 </description>
     </item>
-
+    
     <item>
       <title>LINQ to SQL: Create generic method to load entity by primary key</title>
       <link>http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/</link>
@@ -377,72 +377,72 @@ Then we can write/read our new field and then to invoke basic logic for serializ
     List&amp;lt;object&amp;gt; primaryKeys = new List&amp;lt;object&amp;gt;();
     primaryKeys.Add(pkKey);
     primaryKeys.AddRange(pkKeys);
-
+ 
     TEntity entity = null;
     Type entityType = typeof(TEntity);
-
+ 
     using (DataContext dataContext = new DataContext(this._DbConnection))
     {
         dataContext.Log = new DebuggerWriter();
         dataContext.ObjectTrackingEnabled = false;
-
+ 
         Table&amp;lt;TEntity&amp;gt; table = dataContext.GetTable&amp;lt;TEntity&amp;gt;();
-
+ 
         MetaType metaEntityType = dataContext.Mapping.GetMetaType(entityType);
-
+ 
         var primaryKeyColumns = from pkColumn in metaEntityType.DataMembers
                                 where pkColumn.IsPrimaryKey
                                 select pkColumn;
-
+ 
         int pkColumnsCount = 0;
-
+ 
         if (primaryKeyColumns != null)
             pkColumnsCount = primaryKeyColumns.Count();
-
+ 
         if (pkColumnsCount == 0)
             throw new InvalidOperationException(&amp;quot;Table doesn’t have primary key&amp;quot;);
-
+ 
         if (pkColumnsCount != primaryKeys.Count)
             throw new InvalidOperationException(&amp;quot;Primary key value doesn’t match primary key columns.&amp;quot;);
-
+ 
         ParameterExpression paramExpression = Expression.Parameter(entityType, &amp;quot;entity&amp;quot;);
-
+ 
         BinaryExpression whereExpression = null;
-
+ 
         int index = 0;
-
+ 
         foreach (MetaDataMember pkColumn in primaryKeyColumns)
         {
             object value = primaryKeys[index];
             string columnName = pkColumn.Name;
-
+ 
             if (value != null &amp;amp;&amp;amp; value.GetType() != pkColumn.Type)
             {
                 Type paramType = value.GetType();
                 string exceptionMsg = String.Format(&amp;quot;The type ‘{0}’ of parameter ‘{1}’ is different than its column ‘{2}’ type ‘{3}’&amp;quot;, paramType, value, columnName, pkColumn.Type);
                 throw new InvalidOperationException(exceptionMsg);
             }
-
+ 
             BinaryExpression condition = Expression.Equal(Expression.Property(paramExpression, columnName), Expression.Constant(value));
-
+ 
             if (whereExpression != null)
                 whereExpression = Expression.And(whereExpression, condition);
             else
                 whereExpression = condition;
-
+ 
             index++;
         }
-
+ 
         Expression&amp;lt;Func&amp;lt;TEntity, bool&amp;gt;&amp;gt; predicate = Expression.Lambda&amp;lt;Func&amp;lt;TEntity, bool&amp;gt;&amp;gt;(whereExpression, new ParameterExpression[] { paramExpression });
         entity = table.SingleOrDefault(predicate);
     }
-
+ 
     return entity;
 }
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
-
+    
     <item>
       <title>Funny C# code</title>
       <link>http://blog.ralch.com/2015/04/funny-csharp-code/</link>
@@ -459,16 +459,16 @@ Then we can write/read our new field and then to invoke basic logic for serializ
      Play(“World of Warcraft”);
    }
    while (!asleep);
-
+ 
    Thread.Sleep(12 * 60 * 60 * 1000);
-
+ 
    WakeUp(coffee);
-
+ 
    if (you_still_give_a_shit())
      goto WORK;
    else
      goto OUT;
-
+ 
  WORK:
    do
    {
@@ -477,17 +477,17 @@ Then we can write/read our new field and then to invoke basic logic for serializ
        LookAtTheMonitor();
        Press_Some_Keys(new string[] { “Ctrl+C”, “Ctrl+V” });
      }
-
+ 
      Browse(“vbox7.com”);
      Browse(“topsport.bg”);
      Browse(“youtube.com”);
-
+ 
      Have_a_Break();
      Have_a_Kitkat();
-
+ 
    }
    while (DateTime.Now.Hour &amp;lt; 5);
-
+ 
    if (DateTime.Now.Day == 1)
    {
      // at least
@@ -496,7 +496,7 @@ Then we can write/read our new field and then to invoke basic logic for serializ
  OUT:
    switch (mood)
    {
-
+ 
      case Mood.Horny:
        ChaseChicks(“hot!”);
        break;
@@ -506,7 +506,7 @@ Then we can write/read our new field and then to invoke basic logic for serializ
      default:
        DrinkBeer(5);
        break;
-
+ 
    }
    goto HOME;
 }
@@ -521,6 +521,6 @@ catch (NoMoneyException)
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
-
+    
   </channel>
 </rss>
