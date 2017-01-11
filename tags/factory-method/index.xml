@@ -5,7 +5,7 @@
     <generator uri="https://hugo.spf13.com">Hugo</generator>
     <link>http://blog.ralch.com/tags/factory-method/index.xml</link>
     <language>en-us</language>
-    <author>Svett Ralchev</author>
+    <author>Svetlin Ralchev</author>
     
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
@@ -13,7 +13,7 @@
       <title>Desing Patterns in Golang: Factory Method</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</link>
       <pubDate>Sun, 31 Jan 2016 08:46:53 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</guid>
       <description>
 

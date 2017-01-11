@@ -5,7 +5,7 @@
     <generator uri="https://hugo.spf13.com">Hugo</generator>
     <link>http://blog.ralch.com/categories/database/index.xml</link>
     <language>en-us</language>
-    <author>Svett Ralchev</author>
+    <author>Svetlin Ralchev</author>
     
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
@@ -13,7 +13,7 @@
       <title>Object relation mapping with GORM</title>
       <link>http://blog.ralch.com/tutorial/golang-object-relation-mapping-with-gorm/</link>
       <pubDate>Sun, 15 Nov 2015 08:54:02 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-object-relation-mapping-with-gorm/</guid>
       <description>
 
@@ -316,7 +316,7 @@ that generates a models from existing data base.&lt;/p&gt;
       <title>LINQ to SQL: Create generic method to load entity by primary key</title>
       <link>http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/</link>
       <pubDate>Sat, 11 Apr 2015 20:19:59 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/</guid>
       <description>
 

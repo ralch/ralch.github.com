@@ -5,7 +5,7 @@
     <generator uri="https://hugo.spf13.com">Hugo</generator>
     <link>http://blog.ralch.com/categories/tutorial/index.xml</link>
     <language>en-us</language>
-    <author>Svett Ralchev</author>
+    <author>Svetlin Ralchev</author>
     
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
@@ -13,7 +13,7 @@
       <title>Errors handling in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-handling-errors/</link>
       <pubDate>Thu, 10 Mar 2016 08:52:29 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-handling-errors/</guid>
       <description>
 
@@ -169,7 +169,7 @@ about the file and the line where the error occurred.&lt;/p&gt;
       <title>Develop code generation tool for Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/</link>
       <pubDate>Sat, 31 Oct 2015 08:41:39 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/</guid>
       <description>
 
@@ -372,7 +372,7 @@ our productivity.&lt;/p&gt;
       <title>Query data with Golang and LINQ</title>
       <link>http://blog.ralch.com/tutorial/golang-query-data-with-linq/</link>
       <pubDate>Sun, 25 Oct 2015 07:35:49 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-query-data-with-linq/</guid>
       <description>
 
@@ -605,7 +605,7 @@ use out of the box.&lt;/p&gt;
       <title>Generics in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-and-generics/</link>
       <pubDate>Sun, 18 Oct 2015 05:00:00 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-code-generation-and-generics/</guid>
       <description>
 
@@ -1005,7 +1005,7 @@ template nature, we can focus on what should be generated instead of how to gene
       <title>Reusing source code with Go templates</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-with-gotemplates/</link>
       <pubDate>Sun, 11 Oct 2015 20:42:57 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-code-generation-with-gotemplates/</guid>
       <description>
 
@@ -1185,7 +1185,7 @@ extensibility, we can focus on what should be generated instead of how to genera
       <title>Golang code generation</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation/</link>
       <pubDate>Sun, 04 Oct 2015 08:49:59 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-code-generation/</guid>
       <description>
 
@@ -1385,7 +1385,7 @@ more tools coming up.&lt;/p&gt;
       <title>Golang: Working with Gzip and Tar</title>
       <link>http://blog.ralch.com/tutorial/golang-working-with-tar-and-gzip/</link>
       <pubDate>Sun, 27 Sep 2015 14:58:56 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-working-with-tar-and-gzip/</guid>
       <description>
 
@@ -1617,7 +1617,7 @@ untar(&amp;quot;/tmp/utils.tar&amp;quot;, &amp;quot;/tmp&amp;quot;)
       <title>Golang: Working with ZIP archives</title>
       <link>http://blog.ralch.com/tutorial/golang-working-with-zip/</link>
       <pubDate>Sun, 20 Sep 2015 14:58:56 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-working-with-zip/</guid>
       <description>
 
@@ -1762,7 +1762,7 @@ unzip(&amp;quot;/tmp/report-2015.zip&amp;quot;, &amp;quot;/tmp/reports/&amp;quot
       <title>Golang code inspection tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-inspection/</link>
       <pubDate>Sun, 13 Sep 2015 08:55:41 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-tools-inspection/</guid>
       <description>
 
@@ -2115,7 +2115,7 @@ that will bring our source code to the next level.&lt;/p&gt;
       <title>Golang code comprehension tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-comprehension/</link>
       <pubDate>Sun, 06 Sep 2015 08:52:51 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-tools-comprehension/</guid>
       <description>
 
@@ -2276,7 +2276,7 @@ can be very product by adopting some of the comprehensive tools mentioned in thi
       <title>Golang refactoring tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-refactoring/</link>
       <pubDate>Sun, 30 Aug 2015 12:41:34 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-tools-refactoring/</guid>
       <description>
 
@@ -2592,7 +2592,7 @@ that fits the &lt;code&gt;Go&lt;/code&gt; coding style standard.&lt;/p&gt;
       <title>Sharing Golang packages to C and Go</title>
       <link>http://blog.ralch.com/tutorial/golang-sharing-libraries/</link>
       <pubDate>Sun, 23 Aug 2015 11:04:50 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-sharing-libraries/</guid>
       <description>
 
@@ -2816,7 +2816,7 @@ It maximize code reusability in the &lt;code&gt;Go&lt;/code&gt; ecosystem.&lt;/p
       <title>Conditional compilation in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-conditional-compilation/</link>
       <pubDate>Sun, 16 Aug 2015 08:40:35 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-conditional-compilation/</guid>
       <description>
 
@@ -3104,7 +3104,7 @@ we want to exclude a specific feature or platform, we should use build constrain
       <title>Delve: Next generation debugger for Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-debug-with-delve/</link>
       <pubDate>Sat, 08 Aug 2015 20:42:49 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-debug-with-delve/</guid>
       <description>
 
@@ -3277,7 +3277,7 @@ $ dlv run arg1 -- -flag1 -flag2
       <title>Debug Golang applications: LLDB</title>
       <link>http://blog.ralch.com/tutorial/golang-debug-with-lldb/</link>
       <pubDate>Sat, 01 Aug 2015 16:47:06 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-debug-with-lldb/</guid>
       <description>
 

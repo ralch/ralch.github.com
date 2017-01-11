@@ -5,7 +5,7 @@
     <generator uri="https://hugo.spf13.com">Hugo</generator>
     <link>http://blog.ralch.com/tags/ssh/index.xml</link>
     <language>en-us</language>
-    <author>Svett Ralchev</author>
+    <author>Svetlin Ralchev</author>
     
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
@@ -13,7 +13,7 @@
       <title>SSH tunneling in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-ssh-tunneling/</link>
       <pubDate>Sun, 26 Jul 2015 08:00:00 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-ssh-tunneling/</guid>
       <description>
 

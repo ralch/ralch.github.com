@@ -5,7 +5,7 @@
     <generator uri="https://hugo.spf13.com">Hugo</generator>
     <link>http://blog.ralch.com/index.xml</link>
     <language>en-us</language>
-    <author>Svett Ralchev</author>
+    <author>Svetlin Ralchev</author>
     
     <updated>Sun, 17 Apr 2016 18:33:52 &#43;0100</updated>
     
@@ -13,7 +13,7 @@
       <title>Design Patterns in Golang: Decorator</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-decorator/</link>
       <pubDate>Sun, 17 Apr 2016 18:33:52 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-decorator/</guid>
       <description>
 
@@ -167,7 +167,7 @@ remove the added functionalities dynamically.&lt;/p&gt;
       <title>Design Patterns in Golang: Composite</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-composite/</link>
       <pubDate>Thu, 31 Mar 2016 09:00:27 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-composite/</guid>
       <description>
 
@@ -341,7 +341,7 @@ that allows handling a set of object as a single unit.&lt;/p&gt;
       <title>Desing Patterns in Golang: Bridge</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-bridge/</link>
       <pubDate>Thu, 17 Mar 2016 17:26:46 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-bridge/</guid>
       <description>
 
@@ -483,7 +483,7 @@ implementation from its abstraction.&lt;/p&gt;
       <title>Errors handling in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-handling-errors/</link>
       <pubDate>Thu, 10 Mar 2016 08:52:29 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-handling-errors/</guid>
       <description>
 
@@ -639,7 +639,7 @@ about the file and the line where the error occurred.&lt;/p&gt;
       <title>Design Patterns in Golang: Adapter</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-adapter/</link>
       <pubDate>Mon, 22 Feb 2016 08:42:38 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-adapter/</guid>
       <description>
 
@@ -949,7 +949,7 @@ implemented by the Adaptee.&lt;/p&gt;
       <title>Design Patterns in Golang: Prototype</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-prototype/</link>
       <pubDate>Sat, 06 Feb 2016 16:01:29 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-prototype/</guid>
       <description>
 
@@ -1183,7 +1183,7 @@ prototypes.&lt;/p&gt;
       <title>Design Patterns in Golang: The Good, the Bad and the Ugly</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-design-patterns/</link>
       <pubDate>Wed, 03 Feb 2016 13:34:23 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-design-patterns/</guid>
       <description>
 
@@ -1351,7 +1351,7 @@ the one that we have used to see in the mainstream languages like C#, JAVA and e
       <title>Desing Patterns in Golang: Factory Method</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</link>
       <pubDate>Sun, 31 Jan 2016 08:46:53 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/</guid>
       <description>
 
@@ -1544,7 +1544,7 @@ families.&lt;/p&gt;
       <title>Desing Patterns in Golang: Builder</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-builder/</link>
       <pubDate>Sun, 24 Jan 2016 08:46:53 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-builder/</guid>
       <description>
 
@@ -1752,7 +1752,7 @@ also encourages separation of concerns and promotes application extensibility&lt
       <title>Design Patterns in Golang: Singleton</title>
       <link>http://blog.ralch.com/tutorial/design-patterns/golang-singleton/</link>
       <pubDate>Sun, 17 Jan 2016 13:35:05 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/design-patterns/golang-singleton/</guid>
       <description>
 
@@ -1890,7 +1890,7 @@ can be easily shared among design and development teams.&lt;/p&gt;
       <title>Serialization objects with protocol buffers in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-proto-buffer/</link>
       <pubDate>Tue, 12 Jan 2016 08:02:19 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-proto-buffer/</guid>
       <description>
 
@@ -2110,7 +2110,7 @@ protocol. It has better performance than standar serialization like JSON.&lt;/p&
       <title>Reflection in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-reflection/</link>
       <pubDate>Mon, 21 Dec 2015 08:15:16 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-reflection/</guid>
       <description>
 
@@ -2391,7 +2391,7 @@ reflection&lt;/a&gt;.&lt;/p&gt;
       <title>Performance and memory analysis of Golang programs</title>
       <link>http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/</link>
       <pubDate>Sun, 13 Dec 2015 13:39:32 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/</guid>
       <description>
 
@@ -2588,7 +2588,7 @@ the language runtime.&lt;/p&gt;
       <title>Expose application metrics with expvar</title>
       <link>http://blog.ralch.com/tutorial/golang-metrics-with-expvar/</link>
       <pubDate>Sun, 06 Dec 2015 08:47:15 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-metrics-with-expvar/</guid>
       <description>
 
@@ -2805,7 +2805,7 @@ and performan programs.&lt;/p&gt;
       <title>Concurrent patterns in Golang: Context</title>
       <link>http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/</link>
       <pubDate>Sun, 29 Nov 2015 08:50:48 UTC</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/</guid>
       <description>
 

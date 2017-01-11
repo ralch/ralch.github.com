@@ -5,7 +5,7 @@
     <generator uri="https://hugo.spf13.com">Hugo</generator>
     <link>http://blog.ralch.com/tags/csharp/index.xml</link>
     <language>en-us</language>
-    <author>Svett Ralchev</author>
+    <author>Svetlin Ralchev</author>
     
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
@@ -13,7 +13,7 @@
       <title>Fast run time emitting with dynamic methods in .NET</title>
       <link>http://blog.ralch.com/2015/04/fast-run-time-emitting-with-dynamic-methods/</link>
       <pubDate>Sat, 11 Apr 2015 22:11:18 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/2015/04/fast-run-time-emitting-with-dynamic-methods/</guid>
       <description>&lt;p&gt;It was a long time since, I have blogged. Nevertheless, I did not loose the enthusiasm to share the interesting stuff that I face.
 As component software developer, you should know how to access the properties of data source, when you create bound able controls (such as list control, combo box control or even grid control).
@@ -153,7 +153,7 @@ protected delegate object GetValueHandler(object component);
       <title>ADO.NET XmlSerialization of extended DataTable</title>
       <link>http://blog.ralch.com/2015/04/ado-net-xmlserialization-of-extended-datatable/</link>
       <pubDate>Sat, 11 Apr 2015 21:10:37 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/2015/04/ado-net-xmlserialization-of-extended-datatable/</guid>
       <description>&lt;p&gt;We are migrating communication protocol from .NET Remoting to WCF.
 Due to legacy fo this project, domain object is a DataTable that has some additional fields.
@@ -256,7 +256,7 @@ Then we can write/read our new field and then to invoke basic logic for serializ
       <title>LINQ to SQL: Create generic method to load entity by primary key</title>
       <link>http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/</link>
       <pubDate>Sat, 11 Apr 2015 20:19:59 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/</guid>
       <description>
 
@@ -447,7 +447,7 @@ Then we can write/read our new field and then to invoke basic logic for serializ
       <title>Funny C# code</title>
       <link>http://blog.ralch.com/2015/04/funny-csharp-code/</link>
       <pubDate>Sat, 11 Apr 2015 20:10:50 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/2015/04/funny-csharp-code/</guid>
       <description>&lt;p&gt;Even though I don’t know the author of the lines below I would say “Thank you man. You made day”.&lt;/p&gt;
 

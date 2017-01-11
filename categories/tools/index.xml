@@ -5,7 +5,7 @@
     <generator uri="https://hugo.spf13.com">Hugo</generator>
     <link>http://blog.ralch.com/categories/tools/index.xml</link>
     <language>en-us</language>
-    <author>Svett Ralchev</author>
+    <author>Svetlin Ralchev</author>
     
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
@@ -13,7 +13,7 @@
       <title>Develop code generation tool for Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/</link>
       <pubDate>Sat, 31 Oct 2015 08:41:39 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/</guid>
       <description>
 
@@ -216,7 +216,7 @@ our productivity.&lt;/p&gt;
       <title>Golang code inspection tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-inspection/</link>
       <pubDate>Sun, 13 Sep 2015 08:55:41 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-tools-inspection/</guid>
       <description>
 
@@ -569,7 +569,7 @@ that will bring our source code to the next level.&lt;/p&gt;
       <title>Golang code comprehension tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-comprehension/</link>
       <pubDate>Sun, 06 Sep 2015 08:52:51 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-tools-comprehension/</guid>
       <description>
 
@@ -730,7 +730,7 @@ can be very product by adopting some of the comprehensive tools mentioned in thi
       <title>Golang refactoring tools</title>
       <link>http://blog.ralch.com/tutorial/golang-tools-refactoring/</link>
       <pubDate>Sun, 30 Aug 2015 12:41:34 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-tools-refactoring/</guid>
       <description>
 

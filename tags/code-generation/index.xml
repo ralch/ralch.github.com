@@ -5,7 +5,7 @@
     <generator uri="https://hugo.spf13.com">Hugo</generator>
     <link>http://blog.ralch.com/tags/code-generation/index.xml</link>
     <language>en-us</language>
-    <author>Svett Ralchev</author>
+    <author>Svetlin Ralchev</author>
     
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
@@ -13,7 +13,7 @@
       <title>Develop code generation tool for Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/</link>
       <pubDate>Sat, 31 Oct 2015 08:41:39 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/</guid>
       <description>
 
@@ -216,7 +216,7 @@ our productivity.&lt;/p&gt;
       <title>Generics in Golang</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-and-generics/</link>
       <pubDate>Sun, 18 Oct 2015 05:00:00 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-code-generation-and-generics/</guid>
       <description>
 
@@ -616,7 +616,7 @@ template nature, we can focus on what should be generated instead of how to gene
       <title>Reusing source code with Go templates</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation-with-gotemplates/</link>
       <pubDate>Sun, 11 Oct 2015 20:42:57 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-code-generation-with-gotemplates/</guid>
       <description>
 
@@ -796,7 +796,7 @@ extensibility, we can focus on what should be generated instead of how to genera
       <title>Golang code generation</title>
       <link>http://blog.ralch.com/tutorial/golang-code-generation/</link>
       <pubDate>Sun, 04 Oct 2015 08:49:59 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/tutorial/golang-code-generation/</guid>
       <description>
 

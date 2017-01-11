@@ -5,7 +5,7 @@
     <generator uri="https://hugo.spf13.com">Hugo</generator>
     <link>http://blog.ralch.com/categories/api/index.xml</link>
     <language>en-us</language>
-    <author>Svett Ralchev</author>
+    <author>Svetlin Ralchev</author>
     
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
@@ -13,7 +13,7 @@
       <title>PINVOKE: Getting all child handles of window</title>
       <link>http://blog.ralch.com/2015/04/pinvoke-getting-all-child-handles-of-window/</link>
       <pubDate>Sat, 11 Apr 2015 21:51:58 &#43;0100</pubDate>
-      <author>Svett Ralchev</author>
+      <author>Svetlin Ralchev</author>
       <guid>http://blog.ralch.com/2015/04/pinvoke-getting-all-child-handles-of-window/</guid>
       <description>&lt;p&gt;If you don’t know I have a new job in Bulgaria. I went away form Web Development and now I’m working as Windows Developer.
 However, we had a client that exceed the number of window handles (more than 10 000) due to bad design of application.
