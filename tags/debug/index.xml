@@ -204,7 +204,7 @@ a go application. Before that you should make the application capable for debugg
 &lt;p&gt;You should compile the application by emitting the debug information and disable inlining.
 The &lt;code&gt;-N&lt;/code&gt; flag enables debug information emitting and &lt;code&gt;-l&lt;/code&gt; disables compiler inlining:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;go build -gcflag &#39;-N -l&#39; &amp;lt;file_or_package&amp;gt;
+&lt;pre&gt;&lt;code&gt;go build -gcflags &#39;-N -l&#39; &amp;lt;file_or_package&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;The compiled binary supports &lt;a href=&#34;https://en.wikipedia.org/wiki/DWARF&#34;&gt;DWARF&lt;/a&gt; debugging
@@ -280,7 +280,7 @@ func FormatMessage(user User, message string) string {
 &lt;ol&gt;
 &lt;li&gt;Compile the application:
 &lt;code&gt;
-$ go build -gcflag &#39;-N -l&#39; -o app main.go
+$ go build -gcflags &#39;-N -l&#39; -o app main.go
 &lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;Open the source code:
 &lt;code&gt;

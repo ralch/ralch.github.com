@@ -7,7 +7,177 @@
     <language>en-us</language>
     <author>Svetlin Ralchev</author>
     
-    <updated>Sun, 17 Apr 2016 18:33:52 &#43;0100</updated>
+    <updated>Tue, 21 Mar 2017 12:33:56 &#43;0100</updated>
+    
+    <item>
+      <title>Golang: Extending reflect.StructTag to support duplicates</title>
+      <link>http://blog.ralch.com/tutorial/golang-reflect-struct-tag/</link>
+      <pubDate>Tue, 21 Mar 2017 12:33:56 &#43;0100</pubDate>
+      <author>Svetlin Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-reflect-struct-tag/</guid>
+      <description>&lt;p&gt;Presently, &lt;a href=&#34;www.golang.org&#34;&gt;Golang&lt;/a&gt; has limited support of
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Reflection_(computer_programming)&#34;&gt;reflection&lt;/a&gt;
+comparing to the mainstream languages like C# and JAVA. It&amp;rsquo;s not intended to
+match or beat that languages.&lt;/p&gt;
+
+&lt;p&gt;In practice, we are using
+&lt;a href=&#34;https://golang.org/pkg/reflect/#StructTag&#34;&gt;StructTag&lt;/a&gt; to add some metadata for
+the defined struct fields. Such an example is
+&lt;a href=&#34;https://golang.org/pkg/encoding/json/#Marshal&#34;&gt;json&lt;/a&gt; package, where you can
+customize the field marshaling.&lt;/p&gt;
+
+&lt;p&gt;In example below, we customize the json representation of &lt;code&gt;User&lt;/code&gt; struct
+fields:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type User struct {
+  ID         string    `json:&amp;quot;id&amp;quot;`
+  Name       string    `json:&amp;quot;name&amp;quot;`
+  CreatedAt  time.Time `json:&amp;quot;created_at&amp;quot;`
+  UpdatedAt  time.Time `json:&amp;quot;updated_at&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The struct above is marshalled to the following &lt;code&gt;JSON&lt;/code&gt; object:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;data, err := json.Marshal(&amp;amp;User{
+	ID:        &amp;quot;root&amp;quot;,
+	Name:      &amp;quot;Phogo Robot&amp;quot;,
+	UpdatedAt: time.Now(),
+	CreatedAt: time.Now(),
+})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-JSON&#34;&gt;{
+  &amp;quot;id&amp;quot;: &amp;quot;root&amp;quot;,
+  &amp;quot;name&amp;quot;: &amp;quot;Phogo Robot&amp;quot;,
+  &amp;quot;created_at&amp;quot;: &amp;quot;2009-11-10T23:00:00Z&amp;quot;,
+  &amp;quot;updated_at&amp;quot;: &amp;quot;2009-11-10T23:00:00Z&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Internally, the JSON package uses
+&lt;a href=&#34;https://golang.org/pkg/reflect/#StructTag&#34;&gt;StructTag&lt;/a&gt; to read the json metadata
+and marshal fields based on that. However, presently the tags cannot be
+declared more than once per field. They are unique, which make sense in most cases.&lt;/p&gt;
+
+&lt;p&gt;At &lt;a href=&#34;www.phogolabs.com&#34;&gt;Phogo Labs&lt;/a&gt;, we faced that limitation when in development of
+&lt;a href=&#34;https://github.com/phogolabs/sqlutil&#34;&gt;sqlutil&lt;/a&gt; package for which we we will
+talk about in some of the next articles.&lt;/p&gt;
+
+&lt;p&gt;Briefly, &lt;a href=&#34;https://github.com/phogolabs/sqlutil&#34;&gt;sqlutil&lt;/a&gt; is lightweight
+minimalistic ORM package that allows CRUD operations and creation of tables
+(including constraints and indexes).&lt;/p&gt;
+
+&lt;p&gt;So we thought that will be much friendly if we allow the package user to define
+multiple SQL indexes by using tags. However, one column can be in more than one index.&lt;/p&gt;
+
+&lt;p&gt;So we wanted this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type User struct {
+  ID         string    `sqlindex:&amp;quot;search_idx&amp;quot;`
+  Name       string    `sqlindex:&amp;quot;name&amp;quot; sqlindex:&amp;quot;search_indx&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Fortunately, Golang is completely open source and didn&amp;rsquo;t have to reinvent the wheel
+to accomplish that. By changing the original implementation we accomplished the
+following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;package sqlutil
+
+import (
+	&amp;quot;reflect&amp;quot;
+	&amp;quot;strconv&amp;quot;
+)
+
+type Tag reflect.StructTag
+
+func (tag Tag) Get(key string) []string {
+	v, _ := tag.Lookup(key)
+	return v
+}
+
+func (tag Tag) Lookup(key string) ([]string, bool) {
+	// When modifying this code, also update the validateStructTag code
+	// in cmd/vet/structtag.go.
+
+	exist := false
+	values := []string{}
+
+	for tag != &amp;quot;&amp;quot; {
+		// Skip leading space.
+		i := 0
+		for i &amp;lt; len(tag) &amp;amp;&amp;amp; tag[i] == &#39; &#39; {
+			i++
+		}
+		tag = tag[i:]
+		if tag == &amp;quot;&amp;quot; {
+			break
+		}
+
+		i = 0
+		for i &amp;lt; len(tag) &amp;amp;&amp;amp; tag[i] &amp;gt; &#39; &#39; &amp;amp;&amp;amp; tag[i] != &#39;:&#39; &amp;amp;&amp;amp; tag[i] != &#39;&amp;quot;&#39; &amp;amp;&amp;amp; tag[i] != 0x7f {
+			i++
+		}
+		if i == 0 || i+1 &amp;gt;= len(tag) || tag[i] != &#39;:&#39; || tag[i+1] != &#39;&amp;quot;&#39; {
+			break
+		}
+		name := string(tag[:i])
+		tag = tag[i+1:]
+
+		// Scan quoted string to find value.
+		i = 1
+		for i &amp;lt; len(tag) &amp;amp;&amp;amp; tag[i] != &#39;&amp;quot;&#39; {
+			if tag[i] == &#39;\\&#39; {
+				i++
+			}
+			i++
+		}
+		if i &amp;gt;= len(tag) {
+			break
+		}
+		qvalue := string(tag[:i+1])
+		tag = tag[i+1:]
+
+		if key == name {
+			exist = true
+			value, err := strconv.Unquote(qvalue)
+			if err != nil {
+				break
+			}
+
+			values = append(values, value)
+		}
+	}
+
+	return values, exist
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The code can be found
+&lt;a href=&#34;https://github.com/phogolabs/sqlutil/blob/master/metadata_tag.go&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The LICENSE is removed in the code snippet above in order to lower its size.&lt;/p&gt;
+
+&lt;p&gt;So how to use it? Well, in the same way as the original implementation:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type User struct {
+	ID string `sqlindex:&amp;quot;gopher&amp;quot; sqlindex:&amp;quot;blue&amp;quot;`
+}
+
+u := User{}
+typ := reflect.TypeOf(u)
+field := typ.Field(0)
+tags:= field.Tag.Get(&amp;quot;sqlindex&amp;quot;)
+
+fmt.Println(tags[0])
+fmt.Println(tags[1])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We are looking for any other crazy ideas. &lt;a href=&#34;https://www.phogolabs.com/#contact&#34;&gt;Say
+HI&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Design Patterns in Golang: Decorator</title>
@@ -2798,159 +2968,6 @@ trending toward or away from its performance goals.&lt;/p&gt;
 &lt;p&gt;In &lt;code&gt;Golang&lt;/code&gt; this goal is considered as important part of every application. The
 ease of use and out of the box support give us confidence to build scalable
 and performan programs.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Concurrent patterns in Golang: Context</title>
-      <link>http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/</link>
-      <pubDate>Sun, 29 Nov 2015 08:50:48 UTC</pubDate>
-      <author>Svetlin Ralchev</author>
-      <guid>http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/</guid>
-      <description>
-
-&lt;h4 id=&#34;what-is-concurrency&#34;&gt;What is concurrency?&lt;/h4&gt;
-
-&lt;p&gt;Concurrent applications have multiple computations executing during overlapping
-periods of time. Respectively sequential programs in which no computations can
-be executed in overlapping periods of time.&lt;/p&gt;
-
-&lt;h4 id=&#34;getting-started-with-context-package&#34;&gt;Getting started with &lt;code&gt;Context&lt;/code&gt; package&lt;/h4&gt;
-
-&lt;p&gt;The &lt;a href=&#34;https://godoc.org/golang.org/x/net/context&#34;&gt;Context&lt;/a&gt; package is responsible
-for signal cancelation and operation deadlines for processes and server requests.&lt;/p&gt;
-
-&lt;p&gt;The package has an &lt;code&gt;context.Context&lt;/code&gt; interface:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type Context interface {
-	Deadline() (deadline time.Time, ok bool)
-	Done() &amp;lt;-chan struct{}
-	Err() error
-	Value(key interface{}) interface{}
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The interface provides four functions to observe the context state:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Deadline&lt;/code&gt; returns the time when work done on behalf of this context should be canceled. It returns &lt;code&gt;false&lt;/code&gt; when no deadline is set.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Done&lt;/code&gt; returns a channel that&amp;rsquo;s closed when work done on behalf of this context should be canceled.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Err&lt;/code&gt; returns a non-nil error value after Done is closed. It returns &lt;code&gt;Canceled&lt;/code&gt; if the context was canceled or &lt;code&gt;DeadlineExceeded&lt;/code&gt; if the context&amp;rsquo;s deadline passed.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Value&lt;/code&gt; returns the value associated with this context for key, or nil&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;There are two types of contexts:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;context.TODO&lt;/code&gt; should be used &lt;code&gt;context.TODO&lt;/code&gt; when it&amp;rsquo;s unclear which Context to use.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;context.Background&lt;/code&gt; is typically used by the main function, initialization, and tests, and as the top-level Context for incoming requests.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Both are never canceled, have no values, and has no deadline.&lt;/p&gt;
-
-&lt;p&gt;In order to setup a deadline you should use one of the following constructors:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;context.WithDeadline&lt;/code&gt; returns a copy of the parent context with the deadline adjusted
-to be no later than a specified &lt;code&gt;time.Time&lt;/code&gt;. The returned context&amp;rsquo;s Done
-channel is closed when the deadline expires, when the returned cancel function
-is called, or when the parent context&amp;rsquo;s Done channel is closed, whichever
-happens first.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;context.WithTimeout&lt;/code&gt; just calls &lt;code&gt;context.WithDeadline&lt;/code&gt; for particular &lt;code&gt;time.Duration&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;If you want to have a context that could be canceled only, you should use
-&lt;code&gt;context.WithCancel&lt;/code&gt; function. Canceling this context releases resources
-associated with it, so code should call cancel as soon as the operations
-running in this Context complete.&lt;/p&gt;
-
-&lt;h4 id=&#34;context-package-in-practice&#34;&gt;&lt;code&gt;Context&lt;/code&gt; package in practice&lt;/h4&gt;
-
-&lt;p&gt;Lets have an application that process a payment transactions like that:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;type Payment struct {
-	Payee  string
-	Amount float64
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The program is asking the user to &lt;code&gt;[C]onfirm&lt;/code&gt; or &lt;code&gt;[A]bort&lt;/code&gt; his payment transaction
-within a 1 minute. If he does not anything, it will be terminated automacitally.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;ProcessPayment&lt;/code&gt; function is started as go routine that is waiting for user
-input.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;go ProcessPayment(ctx, &amp;amp;Payment{
-	Payee:  &amp;quot;John Doe&amp;quot;,
-	Amount: 128.54})
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The function is observing the context state to terminate, cancel or proceed the
-payment:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;func ProcessPayment(ctx context.Context, payment *Payment) {
-	confirmed := ctx.Value(&amp;quot;confirmed&amp;quot;).(chan struct{})
-
-	for {
-		select {
-		case &amp;lt;-confirmed:
-			fmt.Printf(&amp;quot;Your payment of %f GBP has been completed succefully.\n&amp;quot;, payment.Amount)
-			return
-		case &amp;lt;-ctx.Done():
-			if ctx.Err() == context.Canceled {
-				fmt.Printf(&amp;quot;Your payment transaction is canceled. The amount of %f GBP has been refunded.\n&amp;quot;, payment.Amount)
-				return
-			} else if ctx.Err() == context.DeadlineExceeded {
-				fmt.Println(&amp;quot;Your payment transaction expired. You can complete it later.&amp;quot;)
-				os.Exit(0)
-			}
-		default:
-			time.Sleep(1 * time.Second)
-		}
-	}
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The confirmation channel is used to notify the function that the payment should
-be processed. If the &lt;code&gt;Done&lt;/code&gt; channel returns a value before that the operation
-is aborted due to canceleation or exceeded deadline.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;ctx&lt;/code&gt; variable is a background context that has a deadline of 1 minute:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;var (
-	ctx    context.Context
-	cancel context.CancelFunc
-)
-
-confirmed := make(chan struct{})
-ctx = context.WithValue(context.Background(), &amp;quot;confirmed&amp;quot;, confirmed)
-ctx, cancel = context.WithTimeout(ctx, 1*time.Minute)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The full implementation of the example could be downloaded from &lt;a href=&#34;http://bit.ly/1Mrqkeo&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h4 id=&#34;recommended-usage&#34;&gt;Recommended usage&lt;/h4&gt;
-
-&lt;p&gt;Usually the incomming request should create a &lt;code&gt;context.Context&lt;/code&gt; object that underlying
-algorithm comply with.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Do not store Contexts inside a struct type; instead, pass a &lt;code&gt;Context&lt;/code&gt; explicitly to each function that needs it.&lt;/li&gt;
-&lt;li&gt;Do not pass a nil Context, even if a function permits it. Pass context.TODO if you are unsure about which Context to use.&lt;/li&gt;
-&lt;li&gt;Do not use &lt;code&gt;context.WithValue&lt;/code&gt; for passing optional parameters to functions. Use it for request data only.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;working-with-http-request&#34;&gt;Working with HTTP Request&lt;/h4&gt;
-
-&lt;p&gt;On top of &lt;code&gt;Context&lt;/code&gt; API there is a &lt;a href=&#34;https://godoc.org/golang.org/x/net/context/ctxhttp&#34;&gt;ctxhttp&lt;/a&gt; package that
-provides helper functions for performing context-aware HTTP requests. All of them are calling internally
-the &lt;code&gt;Do&lt;/code&gt; function that is performing an http request that could be canceled or expired via the provided context.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;func Do(ctx context.Context, client *http.Client, req *http.Request)
-func Get(ctx context.Context, client *http.Client, url string)
-func Head(ctx context.Context, client *http.Client, url string)
-func PostForm(ctx context.Context, client *http.Client, url string, data url.Values)
-&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     

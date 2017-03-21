@@ -125,7 +125,7 @@ a go application. Before that you should make the application capable for debugg
 <p>You should compile the application by emitting the debug information and disable inlining.
 The <code>-N</code> flag enables debug information emitting and <code>-l</code> disables compiler inlining:</p>
 
-<pre><code>go build -gcflag '-N -l' &lt;file_or_package&gt;
+<pre><code>go build -gcflags '-N -l' &lt;file_or_package&gt;
 </code></pre>
 
 <p>The compiled binary supports <a href="https://en.wikipedia.org/wiki/DWARF">DWARF</a> debugging
@@ -201,7 +201,7 @@ func FormatMessage(user User, message string) string {
 <ol>
 <li>Compile the application:
 <code>
-$ go build -gcflag '-N -l' -o app main.go
+$ go build -gcflags '-N -l' -o app main.go
 </code></li>
 <li>Open the source code:
 <code>

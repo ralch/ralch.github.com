@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/reflect/index.xml</link>
+    <language>en-us</language>
+    <author>Svetlin Ralchev</author>
+    
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Golang: Extending reflect.StructTag to support duplicates</title>
+      <link>http://blog.ralch.com/tutorial/golang-reflect-struct-tag/</link>
+      <pubDate>Tue, 21 Mar 2017 12:33:56 &#43;0100</pubDate>
+      <author>Svetlin Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-reflect-struct-tag/</guid>
+      <description>&lt;p&gt;Presently, &lt;a href=&#34;www.golang.org&#34;&gt;Golang&lt;/a&gt; has limited support of
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Reflection_(computer_programming)&#34;&gt;reflection&lt;/a&gt;
+comparing to the mainstream languages like C# and JAVA. It&amp;rsquo;s not intended to
+match or beat that languages.&lt;/p&gt;
+
+&lt;p&gt;In practice, we are using
+&lt;a href=&#34;https://golang.org/pkg/reflect/#StructTag&#34;&gt;StructTag&lt;/a&gt; to add some metadata for
+the defined struct fields. Such an example is
+&lt;a href=&#34;https://golang.org/pkg/encoding/json/#Marshal&#34;&gt;json&lt;/a&gt; package, where you can
+customize the field marshaling.&lt;/p&gt;
+
+&lt;p&gt;In example below, we customize the json representation of &lt;code&gt;User&lt;/code&gt; struct
+fields:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type User struct {
+  ID         string    `json:&amp;quot;id&amp;quot;`
+  Name       string    `json:&amp;quot;name&amp;quot;`
+  CreatedAt  time.Time `json:&amp;quot;created_at&amp;quot;`
+  UpdatedAt  time.Time `json:&amp;quot;updated_at&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The struct above is marshalled to the following &lt;code&gt;JSON&lt;/code&gt; object:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;data, err := json.Marshal(&amp;amp;User{
+	ID:        &amp;quot;root&amp;quot;,
+	Name:      &amp;quot;Phogo Robot&amp;quot;,
+	UpdatedAt: time.Now(),
+	CreatedAt: time.Now(),
+})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-JSON&#34;&gt;{
+  &amp;quot;id&amp;quot;: &amp;quot;root&amp;quot;,
+  &amp;quot;name&amp;quot;: &amp;quot;Phogo Robot&amp;quot;,
+  &amp;quot;created_at&amp;quot;: &amp;quot;2009-11-10T23:00:00Z&amp;quot;,
+  &amp;quot;updated_at&amp;quot;: &amp;quot;2009-11-10T23:00:00Z&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Internally, the JSON package uses
+&lt;a href=&#34;https://golang.org/pkg/reflect/#StructTag&#34;&gt;StructTag&lt;/a&gt; to read the json metadata
+and marshal fields based on that. However, presently the tags cannot be
+declared more than once per field. They are unique, which make sense in most cases.&lt;/p&gt;
+
+&lt;p&gt;At &lt;a href=&#34;www.phogolabs.com&#34;&gt;Phogo Labs&lt;/a&gt;, we faced that limitation when in development of
+&lt;a href=&#34;https://github.com/phogolabs/sqlutil&#34;&gt;sqlutil&lt;/a&gt; package for which we we will
+talk about in some of the next articles.&lt;/p&gt;
+
+&lt;p&gt;Briefly, &lt;a href=&#34;https://github.com/phogolabs/sqlutil&#34;&gt;sqlutil&lt;/a&gt; is lightweight
+minimalistic ORM package that allows CRUD operations and creation of tables
+(including constraints and indexes).&lt;/p&gt;
+
+&lt;p&gt;So we thought that will be much friendly if we allow the package user to define
+multiple SQL indexes by using tags. However, one column can be in more than one index.&lt;/p&gt;
+
+&lt;p&gt;So we wanted this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type User struct {
+  ID         string    `sqlindex:&amp;quot;search_idx&amp;quot;`
+  Name       string    `sqlindex:&amp;quot;name&amp;quot; sqlindex:&amp;quot;search_indx&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Fortunately, Golang is completely open source and didn&amp;rsquo;t have to reinvent the wheel
+to accomplish that. By changing the original implementation we accomplished the
+following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;package sqlutil
+
+import (
+	&amp;quot;reflect&amp;quot;
+	&amp;quot;strconv&amp;quot;
+)
+
+type Tag reflect.StructTag
+
+func (tag Tag) Get(key string) []string {
+	v, _ := tag.Lookup(key)
+	return v
+}
+
+func (tag Tag) Lookup(key string) ([]string, bool) {
+	// When modifying this code, also update the validateStructTag code
+	// in cmd/vet/structtag.go.
+
+	exist := false
+	values := []string{}
+
+	for tag != &amp;quot;&amp;quot; {
+		// Skip leading space.
+		i := 0
+		for i &amp;lt; len(tag) &amp;amp;&amp;amp; tag[i] == &#39; &#39; {
+			i++
+		}
+		tag = tag[i:]
+		if tag == &amp;quot;&amp;quot; {
+			break
+		}
+
+		i = 0
+		for i &amp;lt; len(tag) &amp;amp;&amp;amp; tag[i] &amp;gt; &#39; &#39; &amp;amp;&amp;amp; tag[i] != &#39;:&#39; &amp;amp;&amp;amp; tag[i] != &#39;&amp;quot;&#39; &amp;amp;&amp;amp; tag[i] != 0x7f {
+			i++
+		}
+		if i == 0 || i+1 &amp;gt;= len(tag) || tag[i] != &#39;:&#39; || tag[i+1] != &#39;&amp;quot;&#39; {
+			break
+		}
+		name := string(tag[:i])
+		tag = tag[i+1:]
+
+		// Scan quoted string to find value.
+		i = 1
+		for i &amp;lt; len(tag) &amp;amp;&amp;amp; tag[i] != &#39;&amp;quot;&#39; {
+			if tag[i] == &#39;\\&#39; {
+				i++
+			}
+			i++
+		}
+		if i &amp;gt;= len(tag) {
+			break
+		}
+		qvalue := string(tag[:i+1])
+		tag = tag[i+1:]
+
+		if key == name {
+			exist = true
+			value, err := strconv.Unquote(qvalue)
+			if err != nil {
+				break
+			}
+
+			values = append(values, value)
+		}
+	}
+
+	return values, exist
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The code can be found
+&lt;a href=&#34;https://github.com/phogolabs/sqlutil/blob/master/metadata_tag.go&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The LICENSE is removed in the code snippet above in order to lower its size.&lt;/p&gt;
+
+&lt;p&gt;So how to use it? Well, in the same way as the original implementation:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type User struct {
+	ID string `sqlindex:&amp;quot;gopher&amp;quot; sqlindex:&amp;quot;blue&amp;quot;`
+}
+
+u := User{}
+typ := reflect.TypeOf(u)
+field := typ.Field(0)
+tags:= field.Tag.Get(&amp;quot;sqlindex&amp;quot;)
+
+fmt.Println(tags[0])
+fmt.Println(tags[1])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We are looking for any other crazy ideas. &lt;a href=&#34;https://www.phogolabs.com/#contact&#34;&gt;Say
+HI&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
