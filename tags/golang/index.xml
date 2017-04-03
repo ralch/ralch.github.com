@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software adventures and thoughts</title>
+    <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.ralch.com/tags/golang/index.xml</link>
+    <language>en-us</language>
+    <author>Svetlin Ralchev</author>
+    
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Working with FTP protocol in Golang</title>
+      <link>http://blog.ralch.com/tutorial/golang-ftp/</link>
+      <pubDate>Mon, 03 Apr 2017 14:10:06 &#43;0100</pubDate>
+      <author>Svetlin Ralchev</author>
+      <guid>http://blog.ralch.com/tutorial/golang-ftp/</guid>
+      <description>
+
+&lt;p&gt;One of the benefits of using &lt;a href=&#34;www.golang.org&#34;&gt;Golang&lt;/a&gt; is its
+&lt;a href=&#34;https://golang.org/pkg/net/http/&#34;&gt;http&lt;/a&gt; package that provides an easy way to
+build robust REST APIs.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, it does not provide out of the box away to build FTP server or
+connect to FTP server.&lt;/p&gt;
+
+&lt;p&gt;In this article, we will explore that by demonstrating the usage of two third
+party packages that allow that.&lt;/p&gt;
+
+&lt;h3 id=&#34;connecting-to-ftp-server&#34;&gt;Connecting to FTP server&lt;/h3&gt;
+
+&lt;p&gt;The most robust and broadly used package that provides an FTP client build by
+&lt;a href=&#34;https://github.com/jlaffaye&#34;&gt;Julien&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h5 id=&#34;installation&#34;&gt;Installation&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;go get -u github.com/jlaffaye/ftp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;usage&#34;&gt;Usage&lt;/h5&gt;
+
+&lt;p&gt;You can connect the targeted FTP server as it&amp;rsquo;s shown in the following code
+snippet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;client, err := fto.Dial(&amp;quot;localhost:21&amp;quot;)
+if err != nil {
+  return err
+}
+
+if err := client.Login(&amp;quot;root&amp;quot;, &amp;quot;password&amp;quot;); err != nil {
+  return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The following code snippet lists, download and delete all files that matches
+the wild card.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;entries, _ := client.List(wildcard)
+
+for _, entry := range entries {
+  name := entry.Name
+  reader, err := client.Retr(name)
+  if err != nil {
+    panic(err)
+  }
+  client.Delete(name)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For more advanced use cases, you can read the
+&lt;a href=&#34;https://godoc.org/github.com/jlaffaye/ftp&#34;&gt;documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;building-an-ftp-server&#34;&gt;Building an FTP Server&lt;/h3&gt;
+
+&lt;p&gt;It&amp;rsquo;s very easy to build an FTP Server by using
+&lt;a href=&#34;https://github.com/goftp/server&#34;&gt;goftp/server&lt;/a&gt; package that provides a
+framework for building FTP server with any kind of data
+store (file system, AWS3 and so on).&lt;/p&gt;
+
+&lt;h5 id=&#34;installation-1&#34;&gt;Installation&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;go get github.com/goftp/server
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;usage-1&#34;&gt;Usage&lt;/h5&gt;
+
+&lt;p&gt;In order to run the server, you have to develop or use a driver that implements
+an interface that acts as bridge between the FTP protocol and your desired
+backing store:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Driver interface {
+    Init(*Conn)
+    Stat(string) (FileInfo, error)
+    ChangeDir(string) error
+    ListDir(string, func(FileInfo) error) error
+    DeleteDir(string) error
+    DeleteFile(string) error
+    Rename(string, string) error
+    MakeDir(string) error
+    GetFile(string, int64) (int64, io.ReadCloser, error)
+    PutFile(string, io.Reader, bool) (int64, error)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Presently, the following drivers are available:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/goftp/file-driver&#34;&gt;FileSystem&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/goftp/posixfs-driver&#34;&gt;Postfix FileSystem&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let&amp;rsquo;s see how we can use the file system driver to build our own ftp server. We
+should install the package:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;go get github.com/goftp/file-driver
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we have to initialise and start the ftp server with the following code
+snippet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;factory := &amp;amp;filedriver.FileDriverFactory{
+  RootPath: &amp;quot;path_to_directory_that_will_store_all_files&amp;quot;,
+  Perm: server.NewSimplePerm(&amp;quot;root&amp;quot;, &amp;quot;root&amp;quot;)
+}
+
+opts := &amp;amp;server.ServerOpts{
+  Factory: factory,
+  Port: 2001,
+  Hostname: &amp;quot;127.0.0.1&amp;quot;,
+}
+server  := server.NewServer(opts)
+server.ListenAndServe()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;RootPath&lt;/code&gt; defines where the files will be stored, while the &lt;code&gt;Perm&lt;/code&gt; field
+defines how the user are going to be authenticated. Presently, the package
+support single user authentication by using &lt;code&gt;SimplePerm&lt;/code&gt; or you can use more
+advanced &lt;a href=&#34;https://github.com/goftp/leveldb-perm&#34;&gt;LevelDB&lt;/a&gt; authentication.&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s so easy, right?&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
