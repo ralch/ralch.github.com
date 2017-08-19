@@ -6,20 +6,10 @@
     <description>Recent content on Software adventures and thoughts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 11 Apr 2015 17:53:10 +0100</lastBuildDate>
+    <lastBuildDate>Mon, 03 Apr 2017 14:10:06 +0100</lastBuildDate>
     
 	<atom:link href="http://blog.ralch.com/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>About</title>
-      <link>http://blog.ralch.com/about/</link>
-      <pubDate>Sat, 11 Apr 2015 17:53:10 +0100</pubDate>
-      
-      <guid>http://blog.ralch.com/about/</guid>
-      <description>Svetlin is an accomplished full-stack software engineer, open source contributor and project leader. He has hands on experience in building everything from the ground to the clouds. For the last 10+ years, he is heavy weight champion in design, development and delivering a low level critical systems, scalable platforms as service, reliable infrastructure, front-end desktop, web and mobile applications.
-He enjoys coding in Go, Ruby, Swift, Objective-C, C# both at work and in his spare time.</description>
-    </item>
     
     <item>
       <title>Working with FTP protocol in Golang</title>
@@ -452,6 +442,15 @@ package main import &amp;quot;flag&amp;quot; import &amp;quot;fmt&amp;quot; func
 My website is using Google recaptcha to handle spam requests on its contact form. However, the website throws the following exception when recaptch API is requested:
 x509: failed to load system roots and no roots provided
 First approach would be to use COPY command to load the certificate store bundle in to the image.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>http://blog.ralch.com/about/</link>
+      <pubDate>Sat, 11 Apr 2015 17:53:10 +0100</pubDate>
+      
+      <guid>http://blog.ralch.com/about/</guid>
+      <description>Svetlin is an accomplished full-stack software engineer, open source contributor and project leader. He has hands on experience in building everything from the ground to the clouds. For the last 12+ years, he is heavy weight champion in design, development and delivering a low level critical systems, scalable platforms as service, reliable infrastructure, front-end desktop, web and mobile applications. His knowledge is built in the UK, USA, UAE, Denmark and Bulgaria.</description>
     </item>
     
   </channel>
