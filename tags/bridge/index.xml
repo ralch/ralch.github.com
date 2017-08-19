@@ -1,154 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Software adventures and thoughts</title>
-    <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.ralch.com/tags/bridge/index.xml</link>
+    <title>Bridge on Software adventures and thoughts</title>
+    <link>http://blog.ralch.com/tags/bridge/</link>
+    <description>Recent content in Bridge on Software adventures and thoughts</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <author>Svetlin Ralchev</author>
+    <lastBuildDate>Thu, 17 Mar 2016 17:26:46 +0000</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://blog.ralch.com/tags/bridge/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Desing Patterns in Golang: Bridge</title>
-      <link>http://blog.ralch.com/tutorial/design-patterns/golang-bridge/</link>
-      <pubDate>Thu, 17 Mar 2016 17:26:46 UTC</pubDate>
-      <author>Svetlin Ralchev</author>
-      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-bridge/</guid>
-      <description>
-
-&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
-
-&lt;p&gt;The Bridge Pattern is a creational design pattern used to decouple an
-abstraction from its implementation. The bridge uses encapsulation,
-aggregation, and can use inheritance to separate responsibilities into
-different classes.&lt;/p&gt;
-
-&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Decouple an abstraction from its implementation that allows both to vary independently.&lt;/li&gt;
-&lt;li&gt;Publish interface in an inheritance hierarchy, and bury implementation in its own inheritance hierarchy.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
-
-&lt;p&gt;The objects participating in this pattern are presented on the following diagram:&lt;/p&gt;
-
-
-&lt;figure &gt;
-    
-        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/bridge.gif&#34; alt=&#34;Bridge Class Diagram&#34; /&gt;
-    
-    
-&lt;/figure&gt;
-
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Abstraction&lt;/code&gt; defines the abstraction&amp;rsquo;s interface and maintains a reference to an object of type &lt;code&gt;Implementor&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;RefinedAbstraction&lt;/code&gt; extends the interface defined by &lt;code&gt;Abstraction&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Implementor&lt;/code&gt; defines the interface for implementation objects&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ConcreteImplementor&lt;/code&gt; implements the &lt;code&gt;Implementor&lt;/code&gt; interface and defines its concrete implementation&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
-
-&lt;p&gt;Consider building an UI package that supports drawing different shapes on the
-screen by supporting &lt;code&gt;OpenGL&lt;/code&gt; and &lt;code&gt;Direct2D&lt;/code&gt; rendering technologies. In our
-particular example should be able to draw a circle by supporting both rendering
-systems.&lt;/p&gt;
-
-&lt;p&gt;In order to do that we should separate the &lt;code&gt;Circle&lt;/code&gt; struct from its drawing
-implementation:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Circle represents a circle shape
-type Circle struct {
-	// DrawingContext for this circle
-	DrawingContext Drawer
-	// Center of the circle
-	Center Point
-	// Radius of the circle
-	Radius float64
-}
-
-// Draw draws a circle
-func (circle *Circle) Draw() error {
-	rect := Rect{
-		Location: Point{
-			X: circle.Center.X - circle.Radius,
-			Y: circle.Center.Y - circle.Radius,
-		},
-		Size: Size{
-			Width:  2 * circle.Radius,
-			Height: 2 * circle.Radius,
-		},
-	}
-
-	return circle.DrawingContext.DrawEllipseInRect(rect)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;Drawer&lt;/code&gt; defines the contract between the &lt;code&gt;Circle&lt;/code&gt; abstraction and its
-implementation:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Drawer draws on the underlying graphics device
-type Drawer interface {
-	// DrawEllipseInRect draws an ellipse in rectanlge
-	DrawEllipseInRect(Rect) error
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;For every of the supported rendering technologies we should implement a struct
-that obeys the &lt;code&gt;Drawer&lt;/code&gt; interface:&lt;/p&gt;
-
-&lt;p&gt;This is a sample implementation of &lt;code&gt;OpenGL&lt;/code&gt; drawer:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// OpenGL drawer
-type OpenGL struct{}
-
-// DrawEllipseInRect draws an ellipse in rectangle
-func (gl *OpenGL) DrawEllipseInRect(r Rect) error {
-	fmt.Printf(&amp;quot;OpenGL is drawing ellipse in rect %v&amp;quot;, r)
-	return nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This is a sample implementation of &lt;code&gt;Direct2D&lt;/code&gt; drawer:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Direct2D drawer
-type Direct2D struct{}
-
-// DrawEllipseInRect draws an ellipse in rectangle
-func (d2d *Direct2D) DrawEllipseInRect(r Rect) error {
-	fmt.Printf(&amp;quot;Direct2D is drawing ellipse in rect %v&amp;quot;, r)
-	return nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then we can easily render a circle by using the desired drawing system. We should
-just change the implementation by setting &lt;code&gt;DrawingContext&lt;/code&gt; field:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;openGL := &amp;amp;uikit.OpenGL{}
-direct2D := &amp;amp;uikit.Direct2D{}
-
-circle := &amp;amp;uikit.Circle{
-	Center: uikit.Point{X: 100, Y: 100},
-	Radius: 50,
-}
-
-circle.DrawingContext = openGL
-circle.Draw()
-
-circle.DrawingContext = direct2D
-circle.Draw()
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
-
-&lt;p&gt;The Bridge Pattern is designed up-front to let the abstraction and the
-implementation vary independently. That allows us to independently change the
-implementation from its abstraction.&lt;/p&gt;
-</description>
+      <link>http://blog.ralch.com/articles/design-patterns/golang-bridge/</link>
+      <pubDate>Thu, 17 Mar 2016 17:26:46 +0000</pubDate>
+      
+      <guid>http://blog.ralch.com/articles/design-patterns/golang-bridge/</guid>
+      <description>Introduction The Bridge Pattern is a creational design pattern used to decouple an abstraction from its implementation. The bridge uses encapsulation, aggregation, and can use inheritance to separate responsibilities into different classes.
+Purpose  Decouple an abstraction from its implementation that allows both to vary independently. Publish interface in an inheritance hierarchy, and bury implementation in its own inheritance hierarchy.  Design Pattern Diagram The objects participating in this pattern are presented on the following diagram:</description>
     </item>
     
   </channel>

@@ -1,166 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Software adventures and thoughts</title>
-    <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.ralch.com/tags/decorator/index.xml</link>
+    <title>Decorator on Software adventures and thoughts</title>
+    <link>http://blog.ralch.com/tags/decorator/</link>
+    <description>Recent content in Decorator on Software adventures and thoughts</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <author>Svetlin Ralchev</author>
+    <lastBuildDate>Sun, 17 Apr 2016 18:33:52 +0100</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://blog.ralch.com/tags/decorator/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Design Patterns in Golang: Decorator</title>
-      <link>http://blog.ralch.com/tutorial/design-patterns/golang-decorator/</link>
-      <pubDate>Sun, 17 Apr 2016 18:33:52 &#43;0100</pubDate>
-      <author>Svetlin Ralchev</author>
-      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-decorator/</guid>
-      <description>
-
-&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
-
-&lt;p&gt;The Decorator pattern adds new functionality to an existing object
-without altering its structure. It is a structural pattern as this pattern acts
-as a wrapper to existing class.&lt;/p&gt;
-
-&lt;p&gt;The instanciate a decorator struct which decorates (wraps) the original object
-and provides additional functionality keeping its methods signature intact.&lt;/p&gt;
-
-&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Attach additional responsibilities to an object dynamically.&lt;/li&gt;
-&lt;li&gt;Decorators provide a flexible alternative to inheritance for extending
-functionality.&lt;/li&gt;
-&lt;li&gt;Wrapping a present, putting it in a box, and wrapping the box.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
-
-&lt;p&gt;The Decorator Pattern has the following entities:&lt;/p&gt;
-
-
-&lt;figure &gt;
-    
-        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/decorator.gif&#34; alt=&#34;Decorator Class Diagram&#34; /&gt;
-    
-    
-&lt;/figure&gt;
-
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Component&lt;/code&gt; defines the interface for objects that can have responsibilities added to them dynamically.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ConcreteComponent&lt;/code&gt; defines an object to which additional responsibilities can be attached.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Decorator&lt;/code&gt; maintains a reference to a Component object and defines an interface that conforms to Component&amp;rsquo;s interface.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ConcreteDecorator&lt;/code&gt; adds responsibilities to the component.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
-
-&lt;p&gt;We are explore the use of decorator pattern via following example in
-which we will extend an existing object that fetches a data from web service.
-We will decorate it by adding circuit breaker capabilities without changing the
-struct interface.&lt;/p&gt;
-
-&lt;p&gt;Lets have a &lt;code&gt;Fetcher&lt;/code&gt; interface that defines a contract for fetching some data
-from different sources.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Args of fetching function
-type Args map[string]string
-
-// Data returned by fetch
-type Data map[string]string
-
-// Fetcher fetches a data from remote endpoint
-type Fetcher interface {
-	// Fetch fetches the data
-	Fetch(args Args) (Data, error)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;A concrete implementation of the &lt;code&gt;Fetcher&lt;/code&gt; interface is the &lt;code&gt;Repository&lt;/code&gt; struct
-which provides some dummy data if the provided arguments are not empty, otherwise
-returns an error. The &lt;code&gt;Repository&lt;/code&gt; struct is a concrete component in the context
-of The Decorator Pattern.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Repository of data
-type Repository struct{}
-
-// Fetch fetches data
-func (r *Repository) Fetch(args Args) (Data, error) {
-	if len(args) == 0 {
-		return Data{}, fmt.Errorf(&amp;quot;No arguments are provided&amp;quot;)
-	}
-
-	data := Data{
-		&amp;quot;user&amp;quot;:     &amp;quot;root&amp;quot;,
-		&amp;quot;password&amp;quot;: &amp;quot;swordfish&amp;quot;,
-	}
-	fmt.Printf(&amp;quot;Repository fetched data successfully: %v\n&amp;quot;, data)
-	return data, nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;A &lt;code&gt;Retrier&lt;/code&gt; struct is the decorator that adds circuit breaker capabilities to
-any component that implements the &lt;code&gt;Fetcher&lt;/code&gt; interface. The &lt;code&gt;Retrier&lt;/code&gt; has a few
-properties that allow that. The &lt;code&gt;RetryCount&lt;/code&gt; property defines the number of times
-that the retrier should try to fetch if there is an error. The &lt;code&gt;WaitInterval&lt;/code&gt;
-property defines the interval between every retry. The &lt;code&gt;Fetcher&lt;/code&gt; property is
-points to the object that is decorated. The &lt;code&gt;Retrier&lt;/code&gt; calls the &lt;code&gt;Fetch&lt;/code&gt;
-function of the decorated object until it succeeds or exceed the retry policy.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Retrier retries multiple times
-type Retrier struct {
-	RetryCount   int
-	WaitInterval time.Duration
-	Fetcher      Fetcher
-}
-
-// Fetch fetches data
-func (r *Retrier) Fetch(args Args) (Data, error) {
-	for retry := 1; retry &amp;lt;= r.RetryCount; retry++ {
-		fmt.Printf(&amp;quot;Retrier retries to fetch for %d\n&amp;quot;, retry)
-		if data, err := r.Fetcher.Fetch(args); err == nil {
-			fmt.Printf(&amp;quot;Retrier fetched for %d\n&amp;quot;, retry)
-			return data, nil
-		} else if retry == r.RetryCount {
-			fmt.Printf(&amp;quot;Retrier failed to fetch for %d times\n&amp;quot;, retry)
-			return Data{}, err
-		}
-		fmt.Printf(&amp;quot;Retrier is waiting after error fetch for %v\n&amp;quot;, r.WaitInterval)
-		time.Sleep(r.WaitInterval)
-	}
-
-	return Data{}, nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then we can add the new retry capabilities by wrapping the &lt;code&gt;Repository&lt;/code&gt; instance
-with the &lt;code&gt;Retrier&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;repository := &amp;amp;cbreaker.Repository{}
-retrier := &amp;amp;cbreaker.Retrier{
-	RetryCount:   5,
-	WaitInterval: time.Second,
-	Fetcher:      repository,
-}
-
-data, err := repository.Fetch(cbreaker.Args{&amp;quot;id&amp;quot;: &amp;quot;1&amp;quot;})
-fmt.Printf(&amp;quot;#1 repository.Fetch: %v\n&amp;quot;, data)
-
-data, err = retrier.Fetch(cbreaker.Args{})
-fmt.Printf(&amp;quot;#2 retrier.Fetch error: %v\n&amp;quot;, err)
-
-data, err = retrier.Fetch(cbreaker.Args{&amp;quot;id&amp;quot;: &amp;quot;1&amp;quot;})
-fmt.Printf(&amp;quot;#3 retrier.Fetch: %v\n&amp;quot;, data)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
-
-&lt;p&gt;The Decorator Pattern is more convenient for adding functionalities to objects
-instead of entire structs at runtime. With decoration it is also possible to
-remove the added functionalities dynamically.&lt;/p&gt;
-</description>
+      <link>http://blog.ralch.com/articles/design-patterns/golang-decorator/</link>
+      <pubDate>Sun, 17 Apr 2016 18:33:52 +0100</pubDate>
+      
+      <guid>http://blog.ralch.com/articles/design-patterns/golang-decorator/</guid>
+      <description>Introduction The Decorator pattern adds new functionality to an existing object without altering its structure. It is a structural pattern as this pattern acts as a wrapper to existing class.
+The instanciate a decorator struct which decorates (wraps) the original object and provides additional functionality keeping its methods signature intact.
+Purpose  Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to inheritance for extending functionality. Wrapping a present, putting it in a box, and wrapping the box.</description>
     </item>
     
   </channel>

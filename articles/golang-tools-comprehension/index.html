@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta name="generator" content="Hugo 0.26" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Golang code comprehension tools </title>
+
+    
+    
+    
+    
+    
+    
+
+    
+  <meta name="author" content="Svetlin Ralchev">
+
+
+    <meta property="og:title" content="Golang code comprehension tools" />
+<meta property="og:description" content="Software engineers spend a greater part of time reading and understanding programs. Indeed, most of the time it takes to develop a program is spent reading it and making logical conclusion about what it does.
+Go programmers are no exception. Thanks to gofmt they should not worry about source code formatting. The machines are better suited to analyse source code and accomplish comprehension tasks than us.
+In this article we will explore several of Go comprehension tools that are responsible for locating definitions, ascertaining types of expressions, deducing implementation relation, computing method sets, finding callers/callees, jumping through channels, understanding aliasing." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.ralch.com/articles/golang-tools-comprehension/" />
+
+
+
+<meta property="article:published_time" content="2015-09-06T08:52:51&#43;01:00"/>
+<meta property="article:modified_time" content="2015-09-06T08:52:51&#43;01:00"/>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    
+    
+    
+    
+    
+    <link rel="canonical" href="http://blog.ralch.com/articles/golang-tools-comprehension/" /> 
+     
+    
+
+    <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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RvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3Eld+D/AfhEhmLqHBsfAAAAAElFTkSuQmCC">
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css" rel="stylesheet">
+    <link href="/css/font.css" rel="stylesheet" type="text/css">
+    <link href="/css/kube.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/kube.legenda.css" rel="stylesheet" type="text/css">
+    <link href="/css/master.css" rel="stylesheet" type="text/css">
+    <link href="/css/theme.css" rel="stylesheet" type="text/css">
+    <link href="/css/social.css" rel="stylesheet" type="text/css">
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="/js/jquery.ajaxchimp.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+
+  <body class="page-kube">
+    <header> <div class="show-sm">
+  <div id="nav-toggle-box">
+    <div id="nav-toggle-brand">
+      <a href="/">Svetlin Ralchev</a>
+    </div>
+    <a data-component="toggleme" data-target="#top" href="#" id="nav-toggle"><i class="kube-menu"></i></a>
+  </div>
+</div>
+<div class="hide-sm" id="top">
+  <div id="top-brand">
+    <a href="/" title="home">Svetlin Ralchev</a>
+  </div>
+  <nav id="top-nav-main">
+    <ul>
+      
+      
+      <li><a href="/about/" >About</a></li>
+      
+      <li><a href="/articles/" >Articles</a></li>
+      
+    </ul>
+  </nav>
+  <nav id="top-nav-extra">
+  </nav>
+</div>
+ </header>
+    <main>
+<div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+  
+<meta itemprop="name" content="Golang code comprehension tools">
+<meta itemprop="description" content="Software engineers spend a greater part of time reading and understanding programs. Indeed, most of the time it takes to develop a program is spent reading it and making logical conclusion about what it does.
+Go programmers are no exception. Thanks to gofmt they should not worry about source code formatting. The machines are better suited to analyse source code and accomplish comprehension tasks than us.
+In this article we will explore several of Go comprehension tools that are responsible for locating definitions, ascertaining types of expressions, deducing implementation relation, computing method sets, finding callers/callees, jumping through channels, understanding aliasing.">
+
+
+<meta itemprop="dateModified" content="2015-09-06T08:52:51&#43;01:00" />
+<meta itemprop="wordCount" content="577">
+
+
+
+<meta itemprop="keywords" content="go," />
+
+  <div id="hero">
+    <h1 itemprop="headline">Golang code comprehension tools</h1>
+    
+    <time class="post-time"><span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>3 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2015-09-06T08:52:51&#43;01:00">6 Sep, 2015</time>
+
+
+</time>
+  </div>
+  <div id="post-box">
+    <div id="post" itemprop="articleBody">
+      
+
+<p>Software engineers spend a greater part of time reading and understanding programs.
+Indeed, most of the time it takes to develop a program is spent reading it and
+making logical conclusion about what it does.</p>
+
+<p><code>Go</code> programmers are no exception. Thanks to <a href="http://blog.ralch.com/tutorial/golang-tools-refactoring/">gofmt</a>
+they should not worry about source code formatting. The machines are
+better suited to analyse source code and accomplish comprehension tasks than us.</p>
+
+<p>In this article we will explore several of <code>Go</code> comprehension tools that are
+responsible for locating definitions, ascertaining types of expressions, deducing implementation
+relation, computing method sets, finding callers/callees, jumping through channels,
+understanding aliasing.</p>
+
+<h2 id="oracle">Oracle</h2>
+
+<p>The <code>oralce</code> is a source analysis tool that answers question about your Go source code.
+It is installed by executing this command:</p>
+
+<pre><code>$ go get golang.org/x/tools/cmd/oracle
+</code></pre>
+
+<p>A <code>-pos</code> flag is always required. It defines the current cursor position that
+should be analysed. The expected value is a bytes offset from the beginning of
+the file.</p>
+
+<p>These are the subcommands that determines the query to perform:</p>
+
+<ul>
+<li><code>callees</code> show possible targets of selected function call</li>
+<li><code>callers</code> show possible callers of selected function</li>
+<li><code>callstack</code> show path from callgraph root to selected function</li>
+<li><code>definition</code> show declaration of selected identifier</li>
+<li><code>describe</code> describe selected syntax: definition, methods, etc</li>
+<li><code>freevars</code> show free variables of selection</li>
+<li><code>implements</code> show relation for selected type or method</li>
+<li><code>peers</code> show send/receive corresponding to selected channel op</li>
+<li><code>referrers</code> show all refs to entity denoted by selected identifier</li>
+<li><code>what</code> show basic information about the selected syntax node</li>
+</ul>
+
+<p>The <code>-format</code> flag set the output format to:</p>
+
+<ul>
+<li><code>plain</code> an editor-friendly format in which every line of output</li>
+<li><code>json</code> structured data in JSON syntax.</li>
+<li><code>xml</code> structured data in XML syntax.</li>
+</ul>
+
+<p>Overall, the tools provides an friendly interface for adopting it in different
+development editor: <a href="https://github.com/fatih/vim-go">Vim</a>, <a href="https://www.gnu.org/software/emacs/">Emacs</a>,
+<a href="https://atom.io">Atom</a>, IntelliJ and etc.</p>
+
+<p>Let see <code>oracle</code> in action:</p>
+
+
+<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/F0ZLIxKWSYo" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0"></iframe>
+ </div>
+
+
+<h2 id="pythia">Pythia</h2>
+
+<p><code>Pythia</code> is a browser based user interface for oracle. It is based on
+the following packages:</p>
+
+<ul>
+<li><a href="https://godoc.org/golang.org/x/tools/oracle">oracle</a></li>
+<li><a href="https://godoc.org/golang.org/x/tools/godoc/static">godoc</a></li>
+</ul>
+
+<p><code>Pythia</code> is installed with the following command:</p>
+
+<pre><code>$ go get github.com/fzipp/pythia
+</code></pre>
+
+<p>The <code>pythia</code> command tool now can be found in <code>$GOPATH/bin/pythia</code>. A specific
+package can be opened with the following command:</p>
+
+<pre><code>$ pythia net/http 
+</code></pre>
+
+<p>By default the command opens your default browser:</p>
+
+
+<figure >
+    
+        <img src="/media/golang/golang-pythia-in-action.png" alt="Pythia in Action" />
+    
+    
+</figure>
+
+
+<p>This can be disabled with <code>-open</code> flag:</p>
+
+<pre><code>$ pythia -open=false net/http
+</code></pre>
+
+<p>The default listening port is <code>:8080</code>. It can be changed via <code>-http</code> flag:</p>
+
+<pre><code>$ pythia -http :9876 net/http
+</code></pre>
+
+<p>The packages can be filtered out on their <a href="http://blog.ralch.com/tutorial/golang-conditional-compilation/">build tags</a>:</p>
+
+<pre><code>$ pythia -tags=unix net/http
+</code></pre>
+
+<h2 id="godepgraph">Godepgraph</h2>
+
+<p><code>Godepgraph</code> is a program for generating a dependency graph of Go packages.
+Use <code>go get</code> command to install it:</p>
+
+<pre><code>$ go get github.com/kisielk/godepgraph
+</code></pre>
+
+<p>Usually the tool is combined with <code>dot</code> command (graphviz CLI):</p>
+
+<pre><code>// this command will generate dependency graph as svg image
+// -s ingores the builtin packages
+// -horizontal layout the graphics horizontally
+$ godepgraph -s -horizontal github.com/codegangsta/gin | dot -Tsvg -o gin-godepgraph.svg
+</code></pre>
+
+<p>The command above will produce the following graphics:</p>
+
+
+<figure >
+    
+        <img src="/media/golang/golang-godepgraph.svg" alt="Godepgraph in Action" />
+    
+    
+</figure>
+
+
+<p>The <code>godepgraph</code> tools can be controlled with these flags:</p>
+
+<ul>
+<li><code>-d</code> show dependencies of packages in the Go standard library</li>
+<li><code>-horizontal</code> lay out the dependency graph horizontally instead of vertically</li>
+<li><code>-i</code> string a comma-separated list of packages to ignore</li>
+<li><code>-p</code> string a comma-separated list of prefixes to ignore</li>
+<li><code>-s</code> ignore packages in the Go standard library</li>
+<li><code>-t</code> include test packages</li>
+<li><code>-tags</code> string a comma-separated list of build tags to consider satisfied during the build</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Even though Golang does not have dedicated development environment, software engineers
+can be very product by adopting some of the comprehensive tools mentioned in this article.</p>
+
+    </div>
+    <div class="form-subscribe">
+  <div id="form-subscribe-box">
+    <h4>All about Golang, Distributed Systems and Backend development.</h4>
+    <p>Sign up to receive the latest articles and updates</p>
+    <form id="mc-embedded-subscribe-form" method="post" class="form">
+      <div class="form-item">
+        <label><span id="form-subscribe-info"></span></label>
+        <div class="append">
+          <input type="email" name="EMAIL" id="mc-email" placeholder="Email">
+          <button class="button">Subscribe</button>
+        </div>
+      </div>
+      
+      <div style="position: absolute; left: -5000px;" aria-hidden="true">
+        <input type="text" name="" tabindex="-1" value="">
+      </div>
+    </form>
+    <h4>Follow me on</h4>
+<ul class="social-icons">
+    <li><a href="https://twitter.com/ralch" class="social-icon"> <i class="fa fa-twitter"></i></a></li>
+    <li><a href="https://github.com/svett" class="social-icon"> <i class="fa fa-github"></i></a></li>
+    <li><a href="http://uk.linkedin.com/in/ralchev" class="social-icon"> <i class="fa fa-linkedin"></i></a></li>
+    <li><a href="http://blog.ralch.com/index.xml" class="social-icon"> <i class="fa fa-rss"></i></a></li>
+</ul>
+
+  </div>
+</div>
+
+    <div class="">
+      <p>
+  Published
+  
+    
+      by <span itemprop="author">Svetlin Ralchev</span>
+    
+  
+  <time datetime="2015-09-06T08:52:51&#43;01:00">
+    6 Sep, 2015
+  </time>
+  
+    in <span itemprop="articleSection"><a href="/categories/programming-languages/">programming languages</a>, <a href="/categories/tools/">tools</a> and <a href="/categories/tutorial/">tutorial</a></span>
+  
+  
+    and tagged <a href="/tags/go/">#go</a>
+  
+  using <span itemprop="wordCount">577</span> words.
+</p>
+
+      
+  
+
+
+
+  <aside>
+    <heade><strong>Related Content</strong></header>
+    <hr>
+    <ul>
+      
+      
+        <li><a href="/articles/golang-reflect-struct-tag/">Golang: Extending reflect.StructTag to support duplicates</a> &ndash; 3 minutes
+      
+        <li><a href="/articles/design-patterns/golang-decorator/">Design Patterns in Golang: Decorator</a> &ndash; 3 minutes
+      
+        <li><a href="/articles/design-patterns/golang-composite/">Design Patterns in Golang: Composite</a> &ndash; 3 minutes
+      
+        <li><a href="/articles/design-patterns/golang-bridge/">Desing Patterns in Golang: Bridge</a> &ndash; 3 minutes
+      
+        <li><a href="/articles/golang-handling-errors/">Errors handling in Golang</a> &ndash; 3 minutes
+      
+        <li><a href="/articles/design-patterns/golang-adapter/">Design Patterns in Golang: Adapter</a> &ndash; 5 minutes
+      
+        <li><a href="/articles/design-patterns/golang-prototype/">Design Patterns in Golang: Prototype</a> &ndash; 5 minutes
+      
+    </ul>
+  </aside>
+
+
+    </div>
+    <article>
+      
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost") 
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+    </article>
+  </div>
+</div>
+</main>
+    <footer> <footer id="footer">
+  <nav>
+    <ul>
+      <li><span>Svetlin Ralchev</span></li>
+      <li>
+        <a href="https://www.phogolabs.com">Company</a>
+      </li>
+      <li>
+        <a href="/articles/">Articles</a>
+      </li>
+      <li>
+        <a href="https://twitter.com/ralch">Twitter</a>
+      </li>
+      <li>
+        <a href="https://github.com/svett">Github</a>
+      </li>
+    </ul>
+  </nav>
+  <p>
+    powered by <a href="http://www.gohugo.io">Hugo</a>
+    based on <a href="https://github.com/jeblister/kube">Kube</a> theme
+    &copy; 2017 Licence MIT modified by Svetlin Ralchev
+  </p>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62134307-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</footer>
+ </footer>
+    <script src="/js/kube.js" type="text/javascript"></script>
+    <script src="/js/kube.legenda.js" type="text/javascript"></script>
+    <script src="/js/master.js" type="text/javascript"></script>
+  </body>
+</html>

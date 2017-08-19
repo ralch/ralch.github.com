@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta name="generator" content="Hugo 0.26" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Object relation mapping with GORM </title>
+
+    
+    
+    
+    
+    
+    
+
+    
+  <meta name="author" content="Svetlin Ralchev">
+
+
+    <meta property="og:title" content="Object relation mapping with GORM" />
+<meta property="og:description" content="What is object-relation mapping (ORM, O/RM, and O/R mapping)?  Object-relational mapping in computer science is a programming technique for converting data between incompatible type systems in object-oriented programming languages. This creates, in effect, a &ldquo;virtual object database&rdquo; that can be used from within the programming language.
+ source: Wikipedia
+What is GORM? GORM is object-relation package for Go. It supports the following databases:
+ FoundationDB PostgreSQL MySQL SQLite  Installation It is easy to install by invoking go get command:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.ralch.com/articles/golang-object-relation-mapping-with-gorm/" />
+
+
+
+<meta property="article:published_time" content="2015-11-15T08:54:02&#43;00:00"/>
+<meta property="article:modified_time" content="2015-11-15T08:54:02&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    
+    
+    
+    
+    
+    <link rel="canonical" href="http://blog.ralch.com/articles/golang-object-relation-mapping-with-gorm/" /> 
+     
+    
+
+    <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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RvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3Eld+D/AfhEhmLqHBsfAAAAAElFTkSuQmCC">
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css" rel="stylesheet">
+    <link href="/css/font.css" rel="stylesheet" type="text/css">
+    <link href="/css/kube.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/kube.legenda.css" rel="stylesheet" type="text/css">
+    <link href="/css/master.css" rel="stylesheet" type="text/css">
+    <link href="/css/theme.css" rel="stylesheet" type="text/css">
+    <link href="/css/social.css" rel="stylesheet" type="text/css">
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="/js/jquery.ajaxchimp.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+
+  <body class="page-kube">
+    <header> <div class="show-sm">
+  <div id="nav-toggle-box">
+    <div id="nav-toggle-brand">
+      <a href="/">Svetlin Ralchev</a>
+    </div>
+    <a data-component="toggleme" data-target="#top" href="#" id="nav-toggle"><i class="kube-menu"></i></a>
+  </div>
+</div>
+<div class="hide-sm" id="top">
+  <div id="top-brand">
+    <a href="/" title="home">Svetlin Ralchev</a>
+  </div>
+  <nav id="top-nav-main">
+    <ul>
+      
+      
+      <li><a href="/about/" >About</a></li>
+      
+      <li><a href="/articles/" >Articles</a></li>
+      
+    </ul>
+  </nav>
+  <nav id="top-nav-extra">
+  </nav>
+</div>
+ </header>
+    <main>
+<div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+  
+<meta itemprop="name" content="Object relation mapping with GORM">
+<meta itemprop="description" content="What is object-relation mapping (ORM, O/RM, and O/R mapping)?  Object-relational mapping in computer science is a programming technique for converting data between incompatible type systems in object-oriented programming languages. This creates, in effect, a &ldquo;virtual object database&rdquo; that can be used from within the programming language.
+ source: Wikipedia
+What is GORM? GORM is object-relation package for Go. It supports the following databases:
+ FoundationDB PostgreSQL MySQL SQLite  Installation It is easy to install by invoking go get command:">
+
+
+<meta itemprop="dateModified" content="2015-11-15T08:54:02&#43;00:00" />
+<meta itemprop="wordCount" content="1055">
+
+
+
+<meta itemprop="keywords" content="" />
+
+  <div id="hero">
+    <h1 itemprop="headline">Object relation mapping with GORM</h1>
+    
+    <time class="post-time"><span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>5 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2015-11-15T08:54:02&#43;00:00">15 Nov, 2015</time>
+
+
+</time>
+  </div>
+  <div id="post-box">
+    <div id="post" itemprop="articleBody">
+      
+
+<h3 id="what-is-object-relation-mapping-orm-o-rm-and-o-r-mapping">What is object-relation mapping (ORM, O/RM, and O/R mapping)?</h3>
+
+<blockquote>
+<p>Object-relational mapping in computer science is a programming technique for
+converting data between incompatible type systems in object-oriented
+programming languages. This creates, in effect, a &ldquo;virtual object database&rdquo;
+that can be used from within the programming language.</p>
+</blockquote>
+
+<p><em>source: <a href="https://en.wikipedia.org/wiki/Object-relational_mapping">Wikipedia</a></em></p>
+
+<h3 id="what-is-gorm">What is GORM?</h3>
+
+<p><a href="https://github.com/jinzhu/gorm">GORM</a> is object-relation package for <code>Go</code>. It
+supports the following databases:</p>
+
+<ul>
+<li><a href="http://www.foundationdb.com">FoundationDB</a></li>
+<li><a href="http://www.postgresql.org">PostgreSQL</a></li>
+<li><a href="http://dev.mysql.com">MySQL</a></li>
+<li><a href="https://www.sqlite.org">SQLite</a></li>
+</ul>
+
+<h4 id="installation">Installation</h4>
+
+<p>It is easy to install by invoking <code>go get</code> command:</p>
+
+<pre><code>$ go get -u github.com/jinzhu/gorm
+</code></pre>
+
+<h4 id="model-declaration">Model declaration</h4>
+
+<p>Models in <code>GORM</code> are a simple <code>Go</code> structs that declare a set of public fields.
+Every model is representent as table and every field is column in this table.</p>
+
+<p>In this blog we will define all models illustrated on the following diagram:</p>
+
+
+<figure >
+    
+        <img src="/media/golang/gorm-diagram.png" alt="ORM Diagram" />
+    
+    
+</figure>
+
+
+<p>The actual representation of the diagram are three structs. Each of them has
+different fields that define a database column mapping via <code>sql</code> and <code>gorm</code>
+<a href="https://golang.org/pkg/reflect/#example_StructTag">tags</a>. In this examples, we
+will explore some of them.</p>
+
+<pre><code>type Company struct {
+	ID        int        `sql:&quot;AUTO_INCREMENT&quot; gorm:&quot;primary_key&quot;`
+	Name      string     `sql:&quot;size:255;unique;index&quot;`
+	Employees []Employee // one-to-many relationship
+	Address   Address    // one-to-one relationship
+}
+</code></pre>
+
+<p>The <code>Company</code> struct has an auto incremental primary key defined by
+<code>sql:&quot;AUTO_INCREMENT&quot; gorm:&quot;primary_key&quot;</code>.</p>
+
+<p>Its string <code>Name</code> field should contain a value that is unique for all rows in
+the <code>Company</code> table. The column is indexed, which improves the performance on
+any queries that uses it in their <code>where</code> clause.</p>
+
+<p><code>GORM</code> automatically creates for the rest of the fields:</p>
+
+<ul>
+<li>one-to-many relationship between <code>Company</code> and <code>Employee</code></li>
+<li>one to one relationship between <code>Company</code> and <code>Address</code> tables</li>
+</ul>
+
+<pre><code>type Employee struct {
+	FirstName        string    `sql:&quot;size:255;index:name_idx&quot;`
+	LastName         string    `sql:&quot;size:255;index:name_idx&quot;`
+	SocialSecurityNo string    `sql:&quot;type:varchar(100);unique&quot; gorm:&quot;column:ssn&quot;`
+	DateOfBirth      time.Time `sql:&quot;DEFAULT:current_timestamp&quot;`
+	Address          *Address  // one-to-one relationship
+	Deleted          bool      `sql:&quot;DEFAULT:false&quot;`
+}
+</code></pre>
+
+<p>The <code>Employee</code> struct is defined in similar to way.</p>
+
+<p>The <code>FirstName</code> and <code>LastName</code> field have maximum length 255. In additionl a
+<code>name_idx</code> index is created for both fields.</p>
+
+<p>The <code>SocialSecurityNo</code> field is
+renamed to <code>ssn</code> column (by declaring <code>gorm:&quot;column:ssn</code> tag) that has values
+that should be unique and do not exceed 100 characters.</p>
+
+<p>The <code>Employee</code> struct has one-to-one relationship with the <code>Address</code> struct.</p>
+
+<p>The fields <code>DateOfBirth</code> and <code>Deleted</code> has default values declared by
+<code>sql:&quot;DEFAULT:&lt;default_value&gt;&quot;</code> tag. For the <code>DateOfBirth</code> column we are using
+the postgres function <code>current_timestamp</code> to set the default value.</p>
+
+<pre><code>type Address struct {
+	Country  string `gorm:&quot;primary_key&quot;`
+	City     string `gorm:&quot;primary_key&quot;`
+	PostCode string `gorm:&quot;primary_key&quot;`
+	Line1    sql.NullString
+	Line2    sql.NullString
+}
+</code></pre>
+
+<p>The <code>Address</code> struct has a primary key that consists three fields <code>Country</code>, <code>City</code>
+and <code>PostCode</code>. In fact it has two columns <code>Line1</code> and <code>Line2</code> that are using
+<code>sql.NullString</code> type to allow null values.</p>
+
+<p>In order to access your database you should open a new connection to it. In this
+article I am using <code>PostgreSQL</code>. Therefore, any thoughts will be related to
+<code>PostgreSQL</code> and relational databases.</p>
+
+<p>You should install its driver for <code>GO</code> with the following command:</p>
+
+<h3 id="establishing-connection">Establishing connection</h3>
+
+<pre><code>$ go get &quot;github.com/lib/pq&quot;
+</code></pre>
+
+<p>The driver should be registered to make it available for <code>GORM</code>:</p>
+
+<pre><code>import _ &quot;github.com/lib/pq&quot;
+</code></pre>
+
+<p>Then we should establish the connection:</p>
+
+<pre><code>db, err := gorm.Open(&quot;postgres&quot;, &quot;postgresql://myapp:dbpass@localhost:15432/myapp&quot;)
+if err != nil {
+	panic(err)
+}
+
+// Ping function checks the database connectivity
+err = db.DB().Ping()
+if err != nil {
+	panic(err)
+}
+</code></pre>
+
+<h4 id="creating-tables">Creating tables</h4>
+
+<p>Every struct type is presented as a table in the underlying database. Respectively
+every property is represented as a column in the database table.</p>
+
+<p>Lets create the declared models by invoking <code>db.CreateTable</code> function:</p>
+
+<pre><code>db.CreateTable(&amp;company.Address{})
+db.CreateTable(&amp;company.Company{})
+db.CreateTable(&amp;company.Employee{})
+</code></pre>
+
+<p>The function will create underlying tables if they do not exists. They have a schema
+based on the property definitions. A properties that contain <code>int</code>sql:&ldquo;-&rdquo;` tag
+are not emitted as a table columns.</p>
+
+<p>By default the created table names are in plural. If you want to disable that
+you should use the following code snippet before any table create and table
+migrate task.</p>
+
+<pre><code>db.SingularTable(true)
+</code></pre>
+
+<h4 id="migrating-tables">Migrating tables</h4>
+
+<p>If you want to change an existing table schema for your models, <code>GORM</code> provides
+a set of features. You could automatically use the <code>AutoMigrate</code> function to
+migrate the existing database schema to the new model changes.</p>
+
+<pre><code>db.AutoMigrate(&amp;company.Address{})
+db.AutoMigrate(&amp;company.Company{})
+db.AutoMigrate(&amp;company.Employee{})
+</code></pre>
+
+<p>Unfortunately, the migration adds only a new columns and new indexes, but does
+not alter existing columns and existing indexes.</p>
+
+<p>If you want to do that you should use the functions provided by <code>gorm.Model</code>
+object.</p>
+
+<ul>
+<li><code>ModifyColumn</code> change columns type</li>
+<li><code>DropColumn</code> drops an existing column</li>
+<li><code>AddIndex</code> creates an index</li>
+<li><code>AddUniqueIndex</code> creates a unique index</li>
+<li><code>RemoveIndex</code> removes an existings index</li>
+</ul>
+
+<p>Lets change the <code>Name</code> columns type of <code>Company</code> table to a <code>text</code>:</p>
+
+<pre><code>db.Model(&amp;company.Company{}).ModifyColumn(&quot;name&quot;, &quot;text&quot;)
+</code></pre>
+
+<h4 id="dropping-tables">Dropping tables</h4>
+
+<p>Tables could be dropped by using <code>db.DropTable</code> function:</p>
+
+<pre><code>db.DropTable(&amp;company.Address{})
+db.DropTable(&amp;company.Company{})
+db.DropTable(&amp;company.Employee{})
+</code></pre>
+
+<p>The operation destroys the tables schema and all records.</p>
+
+<h4 id="create-update-and-delete-records">Create, Update and Delete records</h4>
+
+<p>In this section we will explore the <code>CRUD</code> operations for this company:</p>
+
+<pre><code>sampleCompany := company.Company{
+	Name: &quot;Google&quot;,
+	Address: company.Address{
+		Country:  &quot;USA&quot;,
+		City:     &quot;Moutain View&quot;,
+		PostCode: &quot;1600&quot;,
+	},
+	Employees: []company.Employee{
+		company.Employee{
+			FirstName:        &quot;John&quot;,
+			LastName:         &quot;Doe&quot;,
+			SocialSecurityNo: &quot;00-000-0000&quot;,
+		},
+	},
+}
+</code></pre>
+
+<h5 id="create">Create</h5>
+
+<p>Lets create an new company by executing the <code>db.Create</code> function:</p>
+
+<pre><code>// It creates a single Company record and all associations (Address and Employees)
+db.Create(&amp;sampleCompany)
+</code></pre>
+
+<h5 id="delete">Delete</h5>
+
+<p>To delete the created company, you should use <code>db.Delete</code> function:</p>
+
+<pre><code>db.Delete(&amp;sampleCompany)
+</code></pre>
+
+<p>You could do a batch delete. In the following example we are deleting all companies
+that contains letter <code>G</code> in their name:</p>
+
+<pre><code>db.Where(&quot;Name LIKE ?&quot;, &quot;%G%&quot;).Delete(company.Company{})
+</code></pre>
+
+<h5 id="update">Update</h5>
+
+<p>To update an existing record you should simple change its property and use
+<code>db.Save</code> command to persist the change:</p>
+
+<pre><code>model.Country = &quot;USA&quot;
+db.Save(&amp;sampleCompany)
+</code></pre>
+
+<p>For batch updates we should use simiplar to <code>Delete</code> operation approach, but this
+time we should use <code>Updates</code> function instead. Lets update all <code>USA</code> addresses:</p>
+
+<pre><code>db.Table(&quot;addresses&quot;).Where(&quot;Country = ?&quot;, &quot;USA&quot;).Updates(map[string]interface{}{&quot;Country&quot;: &quot;North America&quot;})
+</code></pre>
+
+<h4 id="query-data-records">Query data records</h4>
+
+<p><code>GORM</code> provides a very intuitive way to query your data. It brings all power of
+underlying database by providing the following functions:</p>
+
+<pre><code>var firstComp company.Company
+
+// fetch a company by primary key
+db.First(&amp;firstComp, 1)
+
+// fetch a company by name
+db.Find(&amp;firstComp, &quot;name = ?&quot;, &quot;Google&quot;)
+
+// fetch all companies
+var comapnies []company.Company
+db.Find(&amp;companies)
+
+// fetch all companies that starts with G
+db.Where(&quot;name = ?&quot;, &quot;%G%&quot;).Find(&amp;companies)
+</code></pre>
+
+<p>I cannot manage to cover in a single post. You can read more about them in the
+<a href="https://github.com/jinzhu/gorm">official documentation</a>.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p><code>GORM</code> is great object relation mapping package that unifies the access to
+different data base. The provides all query capabilities that we are familiar
+with in <code>SQL</code> like languages. I would like to see a code generation package
+that generates a models from existing data base.</p>
+
+    </div>
+    <div class="form-subscribe">
+  <div id="form-subscribe-box">
+    <h4>All about Golang, Distributed Systems and Backend development.</h4>
+    <p>Sign up to receive the latest articles and updates</p>
+    <form id="mc-embedded-subscribe-form" method="post" class="form">
+      <div class="form-item">
+        <label><span id="form-subscribe-info"></span></label>
+        <div class="append">
+          <input type="email" name="EMAIL" id="mc-email" placeholder="Email">
+          <button class="button">Subscribe</button>
+        </div>
+      </div>
+      
+      <div style="position: absolute; left: -5000px;" aria-hidden="true">
+        <input type="text" name="" tabindex="-1" value="">
+      </div>
+    </form>
+    <h4>Follow me on</h4>
+<ul class="social-icons">
+    <li><a href="https://twitter.com/ralch" class="social-icon"> <i class="fa fa-twitter"></i></a></li>
+    <li><a href="https://github.com/svett" class="social-icon"> <i class="fa fa-github"></i></a></li>
+    <li><a href="http://uk.linkedin.com/in/ralchev" class="social-icon"> <i class="fa fa-linkedin"></i></a></li>
+    <li><a href="http://blog.ralch.com/index.xml" class="social-icon"> <i class="fa fa-rss"></i></a></li>
+</ul>
+
+  </div>
+</div>
+
+    <div class="">
+      <p>
+  Published
+  
+    
+      by <span itemprop="author">Svetlin Ralchev</span>
+    
+  
+  <time datetime="2015-11-15T08:54:02&#43;00:00">
+    15 Nov, 2015
+  </time>
+  
+    in <span itemprop="articleSection"><a href="/categories/database/">database</a>, <a href="/categories/object-relation-mapping/">object relation mapping</a> and <a href="/categories/programming-languages/">programming languages</a></span>
+  
+  
+  using <span itemprop="wordCount">1055</span> words.
+</p>
+
+      
+
+
+
+    </div>
+    <article>
+      
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost") 
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'ralch';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+
+
+    </article>
+  </div>
+</div>
+</main>
+    <footer> <footer id="footer">
+  <nav>
+    <ul>
+      <li><span>Svetlin Ralchev</span></li>
+      <li>
+        <a href="https://www.phogolabs.com">Company</a>
+      </li>
+      <li>
+        <a href="/articles/">Articles</a>
+      </li>
+      <li>
+        <a href="https://twitter.com/ralch">Twitter</a>
+      </li>
+      <li>
+        <a href="https://github.com/svett">Github</a>
+      </li>
+    </ul>
+  </nav>
+  <p>
+    powered by <a href="http://www.gohugo.io">Hugo</a>
+    based on <a href="https://github.com/jeblister/kube">Kube</a> theme
+    &copy; 2017 Licence MIT modified by Svetlin Ralchev
+  </p>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62134307-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</footer>
+ </footer>
+    <script src="/js/kube.js" type="text/javascript"></script>
+    <script src="/js/kube.legenda.js" type="text/javascript"></script>
+    <script src="/js/master.js" type="text/javascript"></script>
+  </body>
+</html>

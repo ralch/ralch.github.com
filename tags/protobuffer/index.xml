@@ -1,232 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Software adventures and thoughts</title>
-    <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.ralch.com/tags/protobuffer/index.xml</link>
+    <title>Protobuffer on Software adventures and thoughts</title>
+    <link>http://blog.ralch.com/tags/protobuffer/</link>
+    <description>Recent content in Protobuffer on Software adventures and thoughts</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <author>Svetlin Ralchev</author>
+    <lastBuildDate>Tue, 12 Jan 2016 08:02:19 +0000</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://blog.ralch.com/tags/protobuffer/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Serialization objects with protocol buffers in Golang</title>
-      <link>http://blog.ralch.com/tutorial/golang-proto-buffer/</link>
-      <pubDate>Tue, 12 Jan 2016 08:02:19 UTC</pubDate>
-      <author>Svetlin Ralchev</author>
-      <guid>http://blog.ralch.com/tutorial/golang-proto-buffer/</guid>
-      <description>
-
-&lt;h4 id=&#34;what-is-protocol-buffers&#34;&gt;What is protocol buffers?&lt;/h4&gt;
-
-&lt;p&gt;Protocol Buffers is a method of serializing structured data. It is useful in
-developing programs to communicate with each other over a wire or for storing
-data. The method involves an interface description language that describes the
-structure of some data and a program that generates source code from that
-description for generating or parsing a stream of bytes that represents the
-structured data.&lt;/p&gt;
-
-&lt;p&gt;Google developed Protocol Buffers for use internally and has made protocol
-compilers for C++, Java and Python available to the public under a free
-software, open source license. Various other language implementations are also
-available, including C#, JavaScript, Go, Perl, PHP, Ruby, Scala and Julia.&lt;/p&gt;
-
-&lt;p&gt;The design goals for Protocol Buffers emphasized simplicity and performance. In
-particular, it was designed to be smaller and faster than XML.&lt;/p&gt;
-
-&lt;p&gt;Protocol Buffers is widely used at Google for storing and interchanging all
-kinds of structured information. The method serves as a basis for a custom
-remote procedure call (RPC) system that is used for nearly all inter-machine
-communication at Google.&lt;/p&gt;
-
-&lt;p&gt;A software developer defines data structures (called messages) and services in
-a proto definition file (.proto) and compiles it with protoc. This compilation
-generates code that can be invoked by a sender or recipient of these data
-structures.&lt;/p&gt;
-
-&lt;p&gt;The messages are serialized into a binary wire format which is
-compact, forward- and backward-compatible, but not self-describing (that is,
-there is no way to tell the names, meaning, or full datatypes of fields without
-an external specification).&lt;/p&gt;
-
-&lt;p&gt;Though the primary purpose of Protocol Buffers is to facilitate network
-communication.&lt;/p&gt;
-
-&lt;h4 id=&#34;installation&#34;&gt;Installation&lt;/h4&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Install the C++ implementation of protocol buffers from
-&lt;a href=&#34;https://github.com/google/protobuf&#34;&gt;here&lt;/a&gt;:&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git clone https://github.com/google/protobuf
-$ cd protobuf
-$ ./autogen.sh
-$ ./configure
-$ make
-$ make check
-$ make install
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Install the Golang packages to work with protocol buffers. I recommend using
-the &lt;code&gt;gogo&lt;/code&gt; protocol buffers &lt;a href=&#34;https://github.com/gogo/protobuf&#34;&gt;fork&lt;/a&gt; that is
-performance optimized. Like most of the go package, we should install it by
-executing the following commands:&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go get github.com/gogo/protobuf/proto
-$ go get github.com/gogo/protobuf/protoc-gen-gogo
-$ go get github.com/gogo/protobuf/gogoproto
-$ go get github.com/gogo/protobuf/protoc-gen-gofast
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;creating-a-protocol-buffer-data-structure&#34;&gt;Creating a protocol buffer data structure&lt;/h4&gt;
-
-&lt;p&gt;Lets create a &lt;code&gt;Company&lt;/code&gt; structure that has &lt;code&gt;Name&lt;/code&gt;, &lt;code&gt;Address&lt;/code&gt; and &lt;code&gt;Employees&lt;/code&gt;
-fields. Also, we should create the corresponding objects as well.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;syntax = &#39;proto2&#39;;
-
-package example;
-
-enum CompanyType {
-  Private = 17;
-  Public = 18;
-  NonProfit = 19;
-};
-
-message Company {
-  required string Name = 1;
-  repeated Employee Employees = 2;
-  required CompanyType Type = 3;
-  optional group Address = 4 {
-    required string Country = 5;
-    required string City = 6;
-    optional string Street = 7;
-  }
-}
-
-message Employee {
-  required string Name = 1;
-  optional string SSN = 2;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Lets keep the declaration in
-&lt;a href=&#34;https://gist.github.com/svett/acdbc1b1429d97371609&#34;&gt;spec.proto&lt;/a&gt; file.&lt;/p&gt;
-
-&lt;p&gt;In order to use protocol buffers, you should define a protocol buffer file that
-declare the messages that are going to be serialized. The protocol buffers
-provide a syntax for doing that. You can specify whether a field should be optional
-or required as well. Enumeration types can be defined as well. If you have a message
-that is used only as property of another message, you can inline the define it
-by using &lt;code&gt;group&lt;/code&gt; declaration.&lt;/p&gt;
-
-&lt;p&gt;The protocol buffers supports the common scalar types, strings, enums and slices.
-Slice fields can be defined as &lt;code&gt;repeated&lt;/code&gt; fields.&lt;/p&gt;
-
-&lt;p&gt;You can read more about the supported types and syntax in &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto&#34;&gt;the official
-documentation&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;After we define our messages in &lt;code&gt;spec.proto&lt;/code&gt; file, we should generate their
-&lt;code&gt;Golang&lt;/code&gt; representation by executing the following command:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ protoc --go_out=. spec.proto
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The command will generate a &lt;code&gt;spec.pb.go&lt;/code&gt; that implements all messages as &lt;code&gt;Golang&lt;/code&gt;
-structs and types:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;type CompanyType int32
-
-const (
-	CompanyType_Private   CompanyType = 17
-	CompanyType_Public    CompanyType = 18
-	CompanyType_NonProfit CompanyType = 19
-)
-
-type Company struct {
-	Name             *string          `protobuf:&amp;quot;bytes,1,req,name=Name&amp;quot; json:&amp;quot;Name,omitempty&amp;quot;`
-	Employees        []*Employee      `protobuf:&amp;quot;bytes,2,rep,name=Employees&amp;quot; json:&amp;quot;Employees,omitempty&amp;quot;`
-	Type             *CompanyType     `protobuf:&amp;quot;varint,3,req,name=Type,enum=example.CompanyType&amp;quot; json:&amp;quot;Type,omitempty&amp;quot;`
-	Address          *Company_Address `protobuf:&amp;quot;group,4,opt,name=Address&amp;quot; json:&amp;quot;address,omitempty&amp;quot;`
-	XXX_unrecognized []byte           `json:&amp;quot;-&amp;quot;`
-}
-
-func (m *Company) Reset()                    { *m = Company{} }
-func (m *Company) String() string            { return proto.CompactTextString(m) }
-func (*Company) ProtoMessage()               {}
-func (*Company) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
-
-func (m *Company) GetName() string {
-	if m != nil &amp;amp;&amp;amp; m.Name != nil {
-		return *m.Name
-	}
-	return &amp;quot;&amp;quot;
-}
-
-func (m *Company) GetEmployees() []*Employee {
-	if m != nil {
-		return m.Employees
-	}
-	return nil
-}
-
-func (m *Company) GetType() CompanyType {
-	if m != nil &amp;amp;&amp;amp; m.Type != nil {
-		return *m.Type
-	}
-	return CompanyType_Private
-}
-
-func (m *Company) GetAddress() *Company_Address {
-	if m != nil {
-		return m.Address
-	}
-	return nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;You can download the full implementation from
-&lt;a href=&#34;https://gist.github.com/svett/7632c3628ded96a1fc60&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h4 id=&#34;serialization-objects&#34;&gt;Serialization objects&lt;/h4&gt;
-
-&lt;p&gt;The serialization and deserialization is processed by the &lt;code&gt;proto&lt;/code&gt; package,
-which provides &lt;code&gt;Marshal&lt;/code&gt; and &lt;code&gt;Unmarshal&lt;/code&gt; functions:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golanog&#34;&gt;comp := &amp;amp;example.Company{
-  Name: proto.String(&amp;quot;Example Corp&amp;quot;),
-  Address: &amp;amp;example.Company_Address{
-    City:    proto.String(&amp;quot;London&amp;quot;),
-    Country: proto.String(&amp;quot;UK&amp;quot;),
-  },
-  Type: example.CompanyType_Public.Enum(),
-  Employees: []*example.Employee{
-    &amp;amp;example.Employee{
-      Name: proto.String(&amp;quot;John&amp;quot;),
-    },
-  },
-}
-
-data, err := proto.Marshal(comp)
-if err != nil {
-  log.Fatal(&amp;quot;marshaling error: &amp;quot;, err)
-}
-serialized := &amp;amp;example.Company{}
-err = proto.Unmarshal(data, serialized)
-if err != nil {
-  log.Fatal(&amp;quot;unmarshaling error: &amp;quot;, err)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h4&gt;
-
-&lt;p&gt;The advantage of using protocol buffers is that you can develop heterogeneous
-system in multiple languages and technologies which are communicating via known
-protocol. It has better performance than standar serialization like JSON.&lt;/p&gt;
-</description>
+      <link>http://blog.ralch.com/articles/golang-proto-buffer/</link>
+      <pubDate>Tue, 12 Jan 2016 08:02:19 +0000</pubDate>
+      
+      <guid>http://blog.ralch.com/articles/golang-proto-buffer/</guid>
+      <description>What is protocol buffers? Protocol Buffers is a method of serializing structured data. It is useful in developing programs to communicate with each other over a wire or for storing data. The method involves an interface description language that describes the structure of some data and a program that generates source code from that description for generating or parsing a stream of bytes that represents the structured data.
+Google developed Protocol Buffers for use internally and has made protocol compilers for C++, Java and Python available to the public under a free software, open source license.</description>
     </item>
     
   </channel>

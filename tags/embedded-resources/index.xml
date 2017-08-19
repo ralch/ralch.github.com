@@ -1,199 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Software adventures and thoughts</title>
-    <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.ralch.com/tags/embedded-resources/index.xml</link>
+    <title>Embedded Resources on Software adventures and thoughts</title>
+    <link>http://blog.ralch.com/tags/embedded-resources/</link>
+    <description>Recent content in Embedded Resources on Software adventures and thoughts</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <author>Svetlin Ralchev</author>
+    <lastBuildDate>Sun, 08 Nov 2015 08:35:11 +0000</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://blog.ralch.com/tags/embedded-resources/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Embedded resources in Golang</title>
-      <link>http://blog.ralch.com/tutorial/golang-embedded-resources/</link>
-      <pubDate>Sun, 08 Nov 2015 08:35:11 UTC</pubDate>
-      <author>Svetlin Ralchev</author>
-      <guid>http://blog.ralch.com/tutorial/golang-embedded-resources/</guid>
-      <description>
-
-&lt;h3 id=&#34;what-s-an-embedded-resource&#34;&gt;What&amp;rsquo;s an Embedded Resource?&lt;/h3&gt;
-
-&lt;p&gt;An embedded resource in a application is a file that is included as part of
-the application. The file is not compiled, but is accessable from the code at
-run-time. Embedded resources can be any file type.&lt;/p&gt;
-
-&lt;p&gt;Languages as &lt;a href=&#34;https://www.java.com&#34;&gt;JAVA&lt;/a&gt; and
-&lt;a href=&#34;https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx&#34;&gt;C#&lt;/a&gt; support resources
-out of box. However, this is not the case for &lt;a href=&#34;http://golang.org/&#34;&gt;Golang&lt;/a&gt;. In
-order to emebed resource, we need to develop our own solution. Thankfully,
-there are couple of tools that are doing this for us.&lt;/p&gt;
-
-&lt;h3 id=&#34;bindata&#34;&gt;Bindata&lt;/h3&gt;
-
-&lt;p&gt;This &lt;a href=&#34;https://github.com/jteeuwen/go-bindata&#34;&gt;package&lt;/a&gt; converts any file into
-embedding binary data for a go program. The file data is optionally gzip
-compressed before being converted to a raw byte slice.&lt;/p&gt;
-
-&lt;p&gt;It provides a command line tool &lt;code&gt;go-bindata&lt;/code&gt; that offers a set of command line options, used
-to customize the output being generated:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;ignore&lt;/code&gt; value Regex pattern to ignore&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;mode&lt;/code&gt; uint Optional file mode override for all files.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;modtime&lt;/code&gt; int Optional modification unix timestamp override for all files.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;nocompress&lt;/code&gt; Assets will &lt;em&gt;not&lt;/em&gt; be GZIP compressed when this flag is specified.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;nomemcopy&lt;/code&gt; Use a .rodata hack to get rid of unnecessary memcopies. Refer to the documentation to see what implications this carries.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;nometadata&lt;/code&gt; Assets will not preserve size, mode, and modtime info.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;o&lt;/code&gt; string Optional name of the output file to be generated. (default &amp;ldquo;./bindata.go&amp;rdquo;)&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;pkg&lt;/code&gt; string Package name to use in the generated code. (default &amp;ldquo;main&amp;rdquo;)&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;prefix&lt;/code&gt; string Optional path prefix to strip off asset names.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;tags&lt;/code&gt; string Optional set of build tags to include.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;installation&#34;&gt;Installation&lt;/h4&gt;
-
-&lt;p&gt;To install the package and command line tool, use the following:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ go get -u github.com/jteeuwen/go-bindata/...
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;getting-started&#34;&gt;Getting started&lt;/h4&gt;
-
-&lt;p&gt;The simplest execution generates a &lt;code&gt;bindata.go&lt;/code&gt; file in the current working
-directory. It includes all assets from the data directory:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ go-bindata data/
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The operation is done on one or more sets of files. All of them are embedded in
-a the Go source file, along with a table of contents and an &lt;code&gt;Asset(string)
-([]byte, error)&lt;/code&gt; function, which allows quick access to the assets. It should
-be used in the following way:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;resource, err := Asset(&amp;quot;path/to/the/resource/file.txt&amp;quot;)
-if err != nil {
-    // Asset was not found.
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Note that the generated code lives in the &lt;code&gt;main&lt;/code&gt; package. However, this can be
-changed with &lt;code&gt;pkg&lt;/code&gt; flag.&lt;/p&gt;
-
-&lt;p&gt;By default all embedded resources are compressed. If your resource is already
-optmized you can disable the compression by providing &lt;code&gt;nocompress&lt;/code&gt; flag.&lt;/p&gt;
-
-&lt;p&gt;Another handy flag is &lt;code&gt;debug&lt;/code&gt; argument, which causes the command line tool to not
-actually include the asset data as embedded resources. Instead of that it generates
-a &lt;code&gt;Asset&lt;/code&gt; function implementation that loads the data from the original file on
-disk. This is very useful during development, when the assets are changed very
-often.&lt;/p&gt;
-
-&lt;h3 id=&#34;go-rice&#34;&gt;Go.rice&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/GeertJohan/go.rice&#34;&gt;Go.rice&lt;/a&gt; takes similar to &lt;code&gt;gobindata&lt;/code&gt;.
-It provides even more advanced features to handle your embeded resources.
-During the development phase it loads required assets directly from disk.
-Afterwards upon deployment the resource files could be included to a executable
-using the rice command line tool, without changing the source code for your
-package.&lt;/p&gt;
-
-&lt;h4 id=&#34;installation-1&#34;&gt;Installation&lt;/h4&gt;
-
-&lt;p&gt;To install the package and the command line tool use &lt;code&gt;go get&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ go get github.com/GeertJohan/go.rice
-$ go get github.com/GeertJohan/go.rice/rice
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;getting-started-1&#34;&gt;Getting started&lt;/h4&gt;
-
-&lt;p&gt;Prior using &lt;code&gt;rice&lt;/code&gt; you should import the package:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;import &amp;quot;github.com/GeertJohan/go.rice&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then you can use &lt;code&gt;FindBox&lt;/code&gt; funcation to access a particular resource bundler
-(directory). The function is finding the correct absolute path
-for your resource files.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;// find a rice.Box
-templateBox, err := rice.FindBox(&amp;quot;your-resource-directory&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-// get file contents as string
-tmpl, err := templateBox.String(&amp;quot;your_asset.tmpl&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If you are executing go binary in your home directory, but your resource
-directory is located rice will lookup the correct path for that directory
-(relative to the location of yourApplication). This only works when the source
-is available to the machine executing the binary and was installed with &lt;code&gt;go get&lt;/code&gt;
-or &lt;code&gt;go install&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;You can add assets by generating go source code, or append the resources to the
-executable as zip file:&lt;/p&gt;
-
-&lt;p&gt;Both methods require execution of &lt;code&gt;rice&lt;/code&gt; command line tool before building the
-actual application.&lt;/p&gt;
-
-&lt;h5 id=&#34;embedded-resource-as-source-code&#34;&gt;Embedded resource as source code&lt;/h5&gt;
-
-&lt;p&gt;It generates a source code that contains the embedded resources.
-Note that the generate files could be very large. The following commands are doing
-this for us:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ rice embed-go
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The invocation scans the current directory files for &lt;code&gt;rice.FindBox&lt;/code&gt; call and
-identifies the directories that should be included as embedded resources in the
-generate files. The command generates a files per directory. They are named in the
-following format:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;directory-name&amp;gt;.rice-box.go
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h5 id=&#34;embedded-resource-as-an-archive&#34;&gt;Embedded resource as an archive&lt;/h5&gt;
-
-&lt;p&gt;The method appends a resource as a zip file to already built executable:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ go build -o &amp;lt;program&amp;gt;
-$ rice append --exec &amp;lt;program&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It makes compilation a lot faster and can be used with large resource files.&lt;/p&gt;
-
-&lt;h5 id=&#34;embedded-resource-as-an-syso-resource&#34;&gt;Embedded resource as an syso resource&lt;/h5&gt;
-
-&lt;p&gt;This is experimental method that generates &lt;code&gt;.syso&lt;/code&gt; file that is compiled by &lt;code&gt;Go&lt;/code&gt;
-compiler. The following command generates the &lt;code&gt;coff syso&lt;/code&gt; resource files per directory:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ rice embed-syso
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h5 id=&#34;appending-resource&#34;&gt;Appending resource&lt;/h5&gt;
-
-&lt;p&gt;In a case when you provide a binary, without source. The rice tool analyses
-source code and finds call&amp;rsquo;s to &lt;code&gt;rice.FindBox&lt;/code&gt; and adds the required
-directories to the executable binary.&lt;/p&gt;
-
-&lt;p&gt;You can serve a static resources over &lt;code&gt;HTTP&lt;/code&gt; with the following code snippet:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;http.Handle(&amp;quot;/&amp;quot;, http.FileServer(rice.MustFindBox(&amp;quot;http-files&amp;quot;).HTTPBox()))
-http.ListenAndServe(&amp;quot;:8080&amp;quot;, nil)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h3&gt;
-
-&lt;p&gt;I am glad to find out two friendly packages that manage embedded resources in
-&lt;code&gt;Go&lt;/code&gt; applications. This gives a hudge advantage to use the approach that fits
-our product requirements.&lt;/p&gt;
-</description>
+      <link>http://blog.ralch.com/articles/golang-embedded-resources/</link>
+      <pubDate>Sun, 08 Nov 2015 08:35:11 +0000</pubDate>
+      
+      <guid>http://blog.ralch.com/articles/golang-embedded-resources/</guid>
+      <description>What&amp;rsquo;s an Embedded Resource? An embedded resource in a application is a file that is included as part of the application. The file is not compiled, but is accessable from the code at run-time. Embedded resources can be any file type.
+Languages as JAVA and C# support resources out of box. However, this is not the case for Golang. In order to emebed resource, we need to develop our own solution.</description>
     </item>
     
   </channel>

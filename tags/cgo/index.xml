@@ -1,236 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Software adventures and thoughts</title>
-    <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.ralch.com/tags/cgo/index.xml</link>
+    <title>Cgo on Software adventures and thoughts</title>
+    <link>http://blog.ralch.com/tags/cgo/</link>
+    <description>Recent content in Cgo on Software adventures and thoughts</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <author>Svetlin Ralchev</author>
+    <lastBuildDate>Sun, 23 Aug 2015 11:04:50 +0100</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://blog.ralch.com/tags/cgo/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Sharing Golang packages to C and Go</title>
-      <link>http://blog.ralch.com/tutorial/golang-sharing-libraries/</link>
-      <pubDate>Sun, 23 Aug 2015 11:04:50 &#43;0100</pubDate>
-      <author>Svetlin Ralchev</author>
-      <guid>http://blog.ralch.com/tutorial/golang-sharing-libraries/</guid>
-      <description>
-
-&lt;p&gt;The latest &lt;a href=&#34;https://blog.golang.org/go1.5&#34;&gt;Go 1.5&lt;/a&gt; version is out. As part of
-the &lt;a href=&#34;https://golang.org/doc/go1.5&#34;&gt;new features&lt;/a&gt;, &lt;code&gt;Go compiler&lt;/code&gt; can compile
-packages as a shared libraries.&lt;/p&gt;
-
-&lt;p&gt;It accepts &lt;code&gt;-buildmode&lt;/code&gt; argument that determines how a package is compiled.
-These are the following options:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;archive&lt;/code&gt;: Build the listed non-main packages into .a files. Packages named
-main are ignored.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;c-archive&lt;/code&gt;: Build the listed main package, plus all packages it imports,
-into a C archive file.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;c-shared&lt;/code&gt;: Build the listed main packages, plus all packages that they import,
-into C shared libraries.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;shared&lt;/code&gt;: Combine all the listed non-main packages into a single shared library.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;exe&lt;/code&gt;: Build the listed main packages and everything they import into executables.
-Packages not named main are ignored.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;By default, listed main packages are built into executables
-and listed non-main packages are built into .a files.&lt;/p&gt;
-
-&lt;p&gt;In this article we will explore two major ways to share libraries between Go and C:&lt;/p&gt;
-
-&lt;h2 id=&#34;using-shared-library-in-go&#34;&gt;Using shared library in Go&lt;/h2&gt;
-
-&lt;p&gt;Assume that &lt;code&gt;GOPATH&lt;/code&gt; contains this structure:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;.
-├── calc
-│   └── calc.go
-└── cashier
-    └── main.go
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;calc&lt;/code&gt; package contains a set of functions that do arithmetic opertaions:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;// filename: calc.go
-package calc
-
-func Sum(x, y int) int {
-    return x + y
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Before compile any shared library, the standard builtin packages should be installed
-as shared library. This will allow any other shared library to link with them.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ go install -buildmode=shared -linkshared std
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then the &lt;code&gt;calc&lt;/code&gt; package can be compiled as shared library linked to &lt;code&gt;std&lt;/code&gt; libraries:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ go install -buildmode=shared -linkshared calc
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;em&gt;Due to a &lt;a href=&#34;https://github.com/golang/go/issues/12236&#34;&gt;issue&lt;/a&gt;, building and installing
-shared library should be from &lt;code&gt;$GOPATH/src&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;Lets use the shared library &lt;code&gt;calc&lt;/code&gt; in the &lt;code&gt;cashier&lt;/code&gt; application:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;// package: cashier
-// filename: main.go
-package main
-
-import &amp;quot;calc&amp;quot;
-import &amp;quot;fmt&amp;quot;
-
-func main() {
-  fmt.Println(&amp;quot;Cashier Application&amp;quot;)
-    fmt.Printf(&amp;quot;Result: %d\n&amp;quot;, calc.Sum(5, 10))
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The application should be compiled and linked with &lt;code&gt;calc&lt;/code&gt; library
-with the following command:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ go build -linkshared -o app cashier
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The output of executing the application is:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ ./app
-Cashier Application
-Result: 15
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;em&gt;Note that this feature is available on &lt;code&gt;linux/amd64&lt;/code&gt; platform or when &lt;code&gt;gccgo&lt;/code&gt;
-compiler is used.&lt;/em&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;using-shared-go-library-in-c&#34;&gt;Using shared Go library in C&lt;/h2&gt;
-
-&lt;p&gt;Go functions can be executed from C applications. They should be
-exported by using the following comment line:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//export &amp;lt;your_function_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In the code snippet below, the function &lt;code&gt;SayHello&lt;/code&gt; and &lt;code&gt;SayBye&lt;/code&gt; are exported:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;// package name: nautilus
-package main
-
-import &amp;quot;C&amp;quot;
-import &amp;quot;fmt&amp;quot;
-
-//export SayHello
-func SayHello(name string) {
-	fmt.Printf(&amp;quot;Nautilus says: Hello, %s!\n&amp;quot;, name)
-}
-
-//export SayBye
-func SayBye() {
-	fmt.Println(&amp;quot;Nautilus says: Bye!&amp;quot;)
-}
-
-func main() {
-	// We need the main function to make possible
-	// CGO compiler to compile the package as C shared library
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The packaged should be compiled with &lt;code&gt;buildmode&lt;/code&gt; flags &lt;code&gt;c-shared&lt;/code&gt; or &lt;code&gt;c-archive&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;// as c-shared library
-$ go build -buildmode=c-shared -o nautilus.a nautilus.go
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;// as c-archive 
-$ go build -buildmode=c-archive -o nautilus.a nautilus.go
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As result the &lt;code&gt;GO&lt;/code&gt; compiler will produce a static/dynamic &lt;code&gt;C&lt;/code&gt; library &lt;code&gt;nautilus.a&lt;/code&gt; and
-header file &lt;code&gt;nautilus.h&lt;/code&gt;. The header file contains type definitions that marshall
-and unmarshall data between &lt;code&gt;Go&lt;/code&gt; and &lt;code&gt;C&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;typedef signed char GoInt8;
-typedef unsigned char GoUint8;
-typedef short GoInt16;
-typedef unsigned short GoUint16;
-typedef int GoInt32;
-typedef unsigned int GoUint32;
-typedef long long GoInt64;
-typedef unsigned long long GoUint64;
-typedef GoInt64 GoInt;
-typedef GoUint64 GoUint;
-typedef __SIZE_TYPE__ GoUintptr;
-typedef float GoFloat32;
-typedef double GoFloat64;
-typedef __complex float GoComplex64;
-typedef __complex double GoComplex128;
-typedef struct { char *p; GoInt n; } GoString;
-typedef void *GoMap;
-typedef void *GoChan;
-typedef struct { void *t; void *v; } GoInterface;
-typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
-
-#endif
-
-/* End of boilerplate cgo prologue.  */
-
-#ifdef __cplusplus
-extern &amp;quot;C&amp;quot; {
-#endif
-
-
-extern void SayHello(GoString p0);
-
-extern void SayBye();
-
-#ifdef __cplusplus
-}
-#endif
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The header file &lt;code&gt;nautilus.h&lt;/code&gt; shoulde be imported from every &lt;code&gt;C&lt;/code&gt; application
-that executed &lt;code&gt;SayHello&lt;/code&gt; and &lt;code&gt;SayBye&lt;/code&gt; functions.&lt;/p&gt;
-
-&lt;p&gt;In the example below, the &lt;code&gt;SayHello&lt;/code&gt; function is called with parameter of type
-&lt;code&gt;GoString&lt;/code&gt;. It includes &lt;code&gt;char*&lt;/code&gt; field and its length.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;// filename: _wale.c
-#include &amp;quot;nautilus.h&amp;quot;
-#include &amp;lt;stdio.h&amp;gt;
-
-int main() {
-  printf(&amp;quot;This is a C Application.\n&amp;quot;);
-  GoString name = {&amp;quot;Jack&amp;quot;, 4};
-  SayHello(name);
-  SayBye();
-  return 0;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;_wale.c&lt;/code&gt; file is compiled with the following command:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ gcc -o _wale _wale.c nautilus.a
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Execution produce the following output:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ ./wale
-This is a C Application.
-Nautilus says: Hello, Jack!
-Nautilus says: Bye!
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;Sharing libraries between &lt;code&gt;C&lt;/code&gt; and &lt;code&gt;Go&lt;/code&gt; gives opportunity to build greater and better
-application by using the best from both worlds. This provides to a legacy system
-a modern language that can improve their maintainance costs and business needs.
-It maximize code reusability in the &lt;code&gt;Go&lt;/code&gt; ecosystem.&lt;/p&gt;
-</description>
+      <link>http://blog.ralch.com/articles/golang-sharing-libraries/</link>
+      <pubDate>Sun, 23 Aug 2015 11:04:50 +0100</pubDate>
+      
+      <guid>http://blog.ralch.com/articles/golang-sharing-libraries/</guid>
+      <description>The latest Go 1.5 version is out. As part of the new features, Go compiler can compile packages as a shared libraries.
+It accepts -buildmode argument that determines how a package is compiled. These are the following options:
+ archive: Build the listed non-main packages into .a files. Packages named main are ignored. c-archive: Build the listed main package, plus all packages it imports, into a C archive file. c-shared: Build the listed main packages, plus all packages that they import, into C shared libraries.</description>
     </item>
     
   </channel>

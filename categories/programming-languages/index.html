@@ -1,1962 +1,390 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
-<head>
-  <link href="http://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<html lang="en-us">
+  <head>
+    <meta name="generator" content="Hugo 0.26" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Programming Languages </title>
 
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta name="description" content="">
-<meta name="HandheldFriendly" content="True">
-<meta name="MobileOptimized" content="320">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    
+    
+    
+    
+    
+    <meta name="robots" content="noindex">
+    
+
+    
+  <meta name="author" content="Svetlin Ralchev">
 
 
-<meta name="keywords" content="">
-
- 
-<meta property="og:type" content="article"/>
-<meta property="og:description" content=""/>
-<meta property="og:title" content="Programming Languages : blog.ralch.com"/>
-<meta property="og:site_name" content="Svetlin Ralchev"/>
-<meta property="og:image" content="" />
-<meta property="og:image:type" content="image/jpeg" />
-<meta property="og:image:width" content="" />
-<meta property="og:image:height" content="" />
-<meta property="og:url" content="http://blog.ralch.com/categories/programming-languages/">
-<meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2017-03-21"/>
-<meta property="article:modified_time" content="2017-03-21"/>
+    <meta property="og:title" content="Programming Languages" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="http://blog.ralch.com/categories/programming-languages/" />
 
 
 
-  <title> Programming Languages &middot; Software adventures and thoughts </title>
+<meta property="og:updated_time" content="2017-03-21T12:33:56&#43;01:00"/>
 
-  
-  <link rel="stylesheet" href="http://blog.ralch.com/css/poole.css">
-  <link rel="stylesheet" href="http://blog.ralch.com/css/syntax.css">
-  <link rel="stylesheet" href="http://blog.ralch.com/css/hyde.css">
-  <link rel="stylesheet" href="http://blog.ralch.com/css/categories.css">
-  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
 
-  
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
 
-  
-  <link href="http://blog.ralch.com/categories/programming-languages/index.xml" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" />
 
-  
-  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
-  
 
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
 
-</head>
 
-<body>
-  <div class="sidebar">
-  <div class="container sidebar-sticky">
-    <div class="sidebar-about">
-      <h1 class="brand"><a href="http://blog.ralch.com">Svetlin Ralchev</a></h1>
-      <p class="lead">
-       Software adventures and thoughts 
-      </p>
+
+
+    
+
+
+
+
+    
+    
+    
+    
+    
+    <link href="http://blog.ralch.com/categories/programming-languages/index.xml" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" /> 
+    
+    <link rel="canonical" href="http://blog.ralch.com/categories/programming-languages/" /> 
+     
+    
+
+    <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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RvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3EldwAAAAAAAJJjRvlaOwAAAAAAALXmk3Eld+D/AfhEhmLqHBsfAAAAAElFTkSuQmCC">
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css" rel="stylesheet">
+    <link href="/css/font.css" rel="stylesheet" type="text/css">
+    <link href="/css/kube.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/kube.legenda.css" rel="stylesheet" type="text/css">
+    <link href="/css/master.css" rel="stylesheet" type="text/css">
+    <link href="/css/theme.css" rel="stylesheet" type="text/css">
+    <link href="/css/social.css" rel="stylesheet" type="text/css">
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="/js/jquery.ajaxchimp.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+
+  <body class="page-kube">
+    <header> <div class="show-sm">
+  <div id="nav-toggle-box">
+    <div id="nav-toggle-brand">
+      <a href="/">Svetlin Ralchev</a>
     </div>
-
-    <ul class="sidebar-nav">
-      <li><a href="/">Home</a></li>
-      <li><a href="/tutorial">Tutorials</a></li>
+    <a data-component="toggleme" data-target="#top" href="#" id="nav-toggle"><i class="kube-menu"></i></a>
+  </div>
+</div>
+<div class="hide-sm" id="top">
+  <div id="top-brand">
+    <a href="/" title="home">Svetlin Ralchev</a>
+  </div>
+  <nav id="top-nav-main">
+    <ul>
       
-      <li><a href="/about/">About </a></li>
+      
+      <li><a href="/about/" >About</a></li>
+      
+      <li><a href="/articles/" >Articles</a></li>
       
     </ul>
-      <a href="http://uk.linkedin.com/in/ralchev"><i class="fa fa-linkedin"></i></a>&nbsp;&nbsp;
-      <a href="http://www.ralch.com"><i class="fa fa-link"></i></a>&nbsp;&nbsp;
-      <a href="https://twitter.com/ralch"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
-      
-      <a href="https://github.com/svett"><i class="fa fa-github"></i></a>&nbsp;&nbsp;
-      
-      <a href="http://blog.ralch.com/index.xml"><i class="fa fa-rss"></i></a>&nbsp;&nbsp;
-
-    <p class="footnote">powered by <a href="http://hugo.spf13.com">Hugo</a> <br/>
-      &copy; 2017 Svetlin Ralchev. All rights reserved.</p>
-    
-  </div>
+  </nav>
+  <nav id="top-nav-extra">
+  </nav>
 </div>
+ </header>
+    <main>
 
-  <div class="content container">
-    <h1>Programming Languages</h1>
-    <div class="posts">
-     
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-reflect-struct-tag/">
-            Golang: Extending reflect.StructTag to support duplicates
-          </a>
-        </h2>
-        <span class="post-date">Tue, Mar 21, 2017</span>
+<div id="hero" class="wrap">
+  <h1>Programming Languages by Svetlin Ralchev</h1>
+  <p>
+    Question everything. Learn something. Answer everything.
+  </p> 
+  <h4>Follow me on</h4>
+<ul class="social-icons">
+    <li><a href="https://twitter.com/ralch" class="social-icon"> <i class="fa fa-twitter"></i></a></li>
+    <li><a href="https://github.com/svett" class="social-icon"> <i class="fa fa-github"></i></a></li>
+    <li><a href="http://uk.linkedin.com/in/ralchev" class="social-icon"> <i class="fa fa-linkedin"></i></a></li>
+    <li><a href="http://blog.ralch.com/index.xml" class="social-icon"> <i class="fa fa-rss"></i></a></li>
+</ul>
+
+</div>
+<ul id="posts">
+   
+  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+    <h2 class="title">
+        <a href="http://blog.ralch.com/articles/golang-reflect-struct-tag/" itemprop="headline">Golang: Extending reflect.StructTag to support duplicates</a>
+    </h2>
+    <hr>
+    <time class="post-time">
+        <span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>3 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2017-03-21T12:33:56&#43;01:00">21 Mar, 2017</time>
+
+
+
         
 
-<div class="post-categories">
+<span class="icon">
+    <i class="fa fa-hashtag" aria-hidden="true"></i>
+</span>
+<span class="dark-red">Tagged:</span>
+
+<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+
+<span><a class="post-tag post-tag-reflect" href="http://blog.ralch.com/tags/reflect">reflect</a></span>
+
+<span><a class="post-tag post-tag-json" href="http://blog.ralch.com/tags/json">json</a></span>
+
+
+
+
+    </time>
     
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Presently, Golang has limited support of reflection comparing to the mainstream languages like C# and JAVA. It&rsquo;s not intended to match or beat that languages.
+    <p itemprop="about">Presently, Golang has limited support of reflection comparing to the mainstream languages like C# and JAVA. It&rsquo;s not intended to match or beat that languages.
 In practice, we are using StructTag to add some metadata for the defined struct fields. Such an example is json package, where you can customize the field marshaling.
 In example below, we customize the json representation of User struct fields:
-type User struct { ID string `json:&quot;id&quot;` Name string `json:&quot;name&quot;` CreatedAt time.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-reflect" href="http://blog.ralch.com/tags/reflect">reflect</a>,
-    
-    <a class="post-tag post-tag-json" href="http://blog.ralch.com/tags/json">json</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-reflect-struct-tag/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/design-patterns/golang-decorator/">
-            Design Patterns in Golang: Decorator
-          </a>
-        </h2>
-        <span class="post-date">Sun, Apr 17, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Introduction The Decorator pattern adds new functionality to an existing object without altering its structure. It is a structural pattern as this pattern acts as a wrapper to existing class.
-The instanciate a decorator struct which decorates (wraps) the original object and provides additional functionality keeping its methods signature intact.
-Purpose  Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to inheritance for extending functionality. Wrapping a present, putting it in a box, and wrapping the box.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-decorator" href="http://blog.ralch.com/tags/decorator">decorator</a>,
-    
-    <a class="post-tag post-tag-structural-design-patterns" href="http://blog.ralch.com/tags/structural-design-patterns">structural design patterns</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/design-patterns/golang-decorator/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/design-patterns/golang-composite/">
-            Design Patterns in Golang: Composite
-          </a>
-        </h2>
-        <span class="post-date">Thu, Mar 31, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Introduction A Composite Design Pattern is a structural pattern that uses to employ composition when implementing an interface rather than using multiple inheritance. It composes objects into tree structures and lets clients treat individual objects and compositions uniformly.
-There are situations when clients ignore the difference between compositions of objects and individual objects. If dealing with multiple objects in the same way as handle each of deam is identical, the Composite Design pattern is a good choice to decrease the complexity and treat them as homogeneous.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-composite" href="http://blog.ralch.com/tags/composite">composite</a>,
-    
-    <a class="post-tag post-tag-structural-design-patterns" href="http://blog.ralch.com/tags/structural-design-patterns">structural design patterns</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/design-patterns/golang-composite/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/design-patterns/golang-bridge/">
-            Desing Patterns in Golang: Bridge
-          </a>
-        </h2>
-        <span class="post-date">Thu, Mar 17, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Introduction The Bridge Pattern is a creational design pattern used to decouple an abstraction from its implementation. The bridge uses encapsulation, aggregation, and can use inheritance to separate responsibilities into different classes.
-Purpose  Decouple an abstraction from its implementation that allows both to vary independently. Publish interface in an inheritance hierarchy, and bury implementation in its own inheritance hierarchy.  Design Pattern Diagram The objects participating in this pattern are presented on the following diagram:
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-bridge" href="http://blog.ralch.com/tags/bridge">bridge</a>,
-    
-    <a class="post-tag post-tag-creational-design-patterns" href="http://blog.ralch.com/tags/creational-design-patterns">creational design patterns</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/design-patterns/golang-bridge/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-handling-errors/">
-            Errors handling in Golang
-          </a>
-        </h2>
-        <span class="post-date">Thu, Mar 10, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Go does not have an Exception handling model as most of the main stream languages. However, it uses the error interface type as the return type for any error that is going to be returned from a function or method:
-type error interface { Error() string }  It is an interface type. An error variable represents any value that can describe itself as a string. The most commonly-used error implementation is in the errors package.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-errors" href="http://blog.ralch.com/tags/errors">errors</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-handling-errors/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/design-patterns/golang-adapter/">
-            Design Patterns in Golang: Adapter
-          </a>
-        </h2>
-        <span class="post-date">Mon, Feb 22, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Introduction The Adapter Pattern is responsible for adaptation of two incompatible interfaces. It is a structural pattern that is responsible to join functionalities of independent or incompatible interfaces without modifing their implementation.
-Interfaces may be incompatible but the inner functionality should suit the need. It allows otherwise incompatible objects to work together by converting the interface of each struct into an interface expected by the clients.
-Purpose  Impedance match an old component to a new system Wrap the interface of a object into another interface clients expect.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-adapter" href="http://blog.ralch.com/tags/adapter">adapter</a>,
-    
-    <a class="post-tag post-tag-structural-design-patterns" href="http://blog.ralch.com/tags/structural-design-patterns">structural design patterns</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/design-patterns/golang-adapter/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/design-patterns/golang-prototype/">
-            Design Patterns in Golang: Prototype
-          </a>
-        </h2>
-        <span class="post-date">Sat, Feb 6, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Preface The Prototype Pattern creates duplicate objects while keeping performance in mind. It&rsquo;s a part of the creational patterns and provides one of the best ways to create an object.
-In the mainstream languages (like C# and JAVA), it requires implementing a prototype interface which tells to create a clone of the current object. It is used when creation of object directly is costly.
-For instance, an object is to be created after a costly database operation.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-prototype" href="http://blog.ralch.com/tags/prototype">prototype</a>,
-    
-    <a class="post-tag post-tag-creational-design-patterns" href="http://blog.ralch.com/tags/creational-design-patterns">creational design patterns</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/design-patterns/golang-prototype/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/design-patterns/golang-design-patterns/">
-            Design Patterns in Golang: The Good, the Bad and the Ugly
-          </a>
-        </h2>
-        <span class="post-date">Wed, Feb 3, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Recently I started a series of articles about Gang of Four Design Patterns and their adoption in Golang. They made a lot of noise in the community. I read a lot of contradictionary opionions whether should be used or not. I am publishing those articles as show case how the common design patterns can be adopted and implemented in Golang. I don&rsquo;t encourage or promote their usage. Every developer has own style of programming, architecture desing and problem solving solutions.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-opinion" href="http://blog.ralch.com/tags/opinion">opinion</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/design-patterns/golang-design-patterns/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/design-patterns/golang-factory-method/">
-            Desing Patterns in Golang: Factory Method
-          </a>
-        </h2>
-        <span class="post-date">Sun, Jan 31, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Introduction The Factory Method pattern is a design pattern used to define a runtime interface for creating an object. It’s called a factory because it creates various types of objects without necessarily knowing what kind of object it creates or how to create it.
-Purpose  Allows the sub-classes to choose the type of objects to create at runtime It provides a simple way of extending the family of objects with minor changes in application code.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-factory-method" href="http://blog.ralch.com/tags/factory-method">factory method</a>,
-    
-    <a class="post-tag post-tag-creational-design-patterns" href="http://blog.ralch.com/tags/creational-design-patterns">creational design patterns</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/design-patterns/golang-factory-method/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/design-patterns/golang-builder/">
-            Desing Patterns in Golang: Builder
-          </a>
-        </h2>
-        <span class="post-date">Sun, Jan 24, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Introduction The Builder Pattern is a creational design pattern that&rsquo;s used to encapsulate the construction logic for an object. It is often used when the construction process of an object is complex. The patterns is well suited for constructing different representations of the same class.
-Purpose  Separate the construction of a complex object from its representation so that the same construction process can create different representations. A common software creational design pattern that&rsquo;s used to encapsulate the construction logic for an object.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-builder" href="http://blog.ralch.com/tags/builder">builder</a>,
-    
-    <a class="post-tag post-tag-creational-design-patterns" href="http://blog.ralch.com/tags/creational-design-patterns">creational design patterns</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/design-patterns/golang-builder/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/design-patterns/golang-singleton/">
-            Design Patterns in Golang: Singleton
-          </a>
-        </h2>
-        <span class="post-date">Sun, Jan 17, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Introduction Sometimes it&rsquo;s important to have only one instance of an struct. This is useful when exactly one object is needed to coordinate actions across the system. Singletons provide a global point of access to themselves.
-The singleton pattern is one of the simplest design patterns. It requires only one type which is responsible to instantiate itself, to make sure it creates not more than one instance. The same instance can be used from everywhere.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-singleton" href="http://blog.ralch.com/tags/singleton">singleton</a>,
-    
-    <a class="post-tag post-tag-creational-design-patterns" href="http://blog.ralch.com/tags/creational-design-patterns">creational design patterns</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/design-patterns/golang-singleton/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-proto-buffer/">
-            Serialization objects with protocol buffers in Golang
-          </a>
-        </h2>
-        <span class="post-date">Tue, Jan 12, 2016</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          What is protocol buffers? Protocol Buffers is a method of serializing structured data. It is useful in developing programs to communicate with each other over a wire or for storing data. The method involves an interface description language that describes the structure of some data and a program that generates source code from that description for generating or parsing a stream of bytes that represents the structured data.
-Google developed Protocol Buffers for use internally and has made protocol compilers for C++, Java and Python available to the public under a free software, open source license.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-serialization" href="http://blog.ralch.com/tags/serialization">serialization</a>,
-    
-    <a class="post-tag post-tag-protobuffer" href="http://blog.ralch.com/tags/protobuffer">protobuffer</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-proto-buffer/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-reflection/">
-            Reflection in Golang
-          </a>
-        </h2>
-        <span class="post-date">Mon, Dec 21, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          What is reflection?  In computer science, reflection is the ability of a computer program to examine and modify its own structure and behavior (specifically the values, meta-data, properties and functions) at runtime.
- source: Wikipedia
-Reflection can be used for observing and modifying program execution at runtime. A reflection-oriented program component can monitor the execution of an enclosure of code and can modify itself according to a desired goal related to that enclosure.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-reflection" href="http://blog.ralch.com/tags/reflection">reflection</a>,
-    
-    <a class="post-tag post-tag-metadata" href="http://blog.ralch.com/tags/metadata">metadata</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-reflection/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-performance-and-memory-analysis/">
-            Performance and memory analysis of Golang programs
-          </a>
-        </h2>
-        <span class="post-date">Sun, Dec 13, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          As we continue looking at program metrics in Golang, it is time to look at performance matrics analysis.
-Instrumentation Instrumentation is the process of adding code to your application to generate events to allow you to monitor application health and performance. Instrumentation allows you to profile applications. Profiling enables you to identify how long a particular method or operation takes to run and how efficient it is in terms of CPU and memory resource usage.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-metrics" href="http://blog.ralch.com/tags/metrics">metrics</a>,
-    
-    <a class="post-tag post-tag-performance" href="http://blog.ralch.com/tags/performance">performance</a>,
-    
-    <a class="post-tag post-tag-analysis" href="http://blog.ralch.com/tags/analysis">analysis</a>,
-    
-    <a class="post-tag post-tag-pprof" href="http://blog.ralch.com/tags/pprof">pprof</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-performance-and-memory-analysis/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-metrics-with-expvar/">
-            Expose application metrics with expvar
-          </a>
-        </h2>
-        <span class="post-date">Sun, Dec 6, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          To determine whether your application meets its performance objectives and to help identify bottlenecks, you need to measure your program&rsquo;s performance and collect metrics. They tend to be response time, throughput, and resource utilization (how much CPU, memory, disk I/O, and network bandwidth your application consumes while performing its tasks).
-Metrics Metrics provide information about how close your program is to your performance goals. In addition, they also help you identify problem areas and bottlenecks within your application.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-metrics" href="http://blog.ralch.com/tags/metrics">metrics</a>,
-    
-    <a class="post-tag post-tag-expvar" href="http://blog.ralch.com/tags/expvar">expvar</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-metrics-with-expvar/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/">
-            Concurrent patterns in Golang: Context
-          </a>
-        </h2>
-        <span class="post-date">Sun, Nov 29, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-design-patterns" href="http://blog.ralch.com/categories/design-patterns">design patterns</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          What is concurrency? Concurrent applications have multiple computations executing during overlapping periods of time. Respectively sequential programs in which no computations can be executed in overlapping periods of time.
-Getting started with Context package The Context package is responsible for signal cancelation and operation deadlines for processes and server requests.
-The package has an context.Context interface:
-type Context interface { Deadline() (deadline time.Time, ok bool) Done() &lt;-chan struct{} Err() error Value(key interface{}) interface{} }  The interface provides four functions to observe the context state:
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-concurrency" href="http://blog.ralch.com/tags/concurrency">concurrency</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-concurrency-patterns-context/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-model-validation/">
-            Data validation in Golang
-          </a>
-        </h2>
-        <span class="post-date">Sun, Nov 22, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Almost every application requires high data integrirty and quality. Very likely is its algorithms to behave weird and produce unexpected results due to invalid input.
-An important aspect of software development is data validation. In this article we will explore govalidate package that helps us to validate and sanitize any string, struct and slice in Go.
-The package itself is very infulenced by its javascript predaccessor validator.js.
-Installation Like any other Go package we should install it first:
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-model" href="http://blog.ralch.com/tags/model">model</a>,
-    
-    <a class="post-tag post-tag-data" href="http://blog.ralch.com/tags/data">data</a>,
-    
-    <a class="post-tag post-tag-validation" href="http://blog.ralch.com/tags/validation">validation</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-model-validation/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-object-relation-mapping-with-gorm/">
-            Object relation mapping with GORM
-          </a>
-        </h2>
-        <span class="post-date">Sun, Nov 15, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-object-relation-mapping" href="http://blog.ralch.com/categories/object-relation-mapping">object relation mapping</a>
-    
-    <a class="post-category post-category-database" href="http://blog.ralch.com/categories/database">database</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          What is object-relation mapping (ORM, O/RM, and O/R mapping)?  Object-relational mapping in computer science is a programming technique for converting data between incompatible type systems in object-oriented programming languages. This creates, in effect, a &ldquo;virtual object database&rdquo; that can be used from within the programming language.
- source: Wikipedia
-What is GORM? GORM is object-relation package for Go. It supports the following databases:
- FoundationDB PostgreSQL MySQL SQLite  Installation It is easy to install by invoking go get command:
-        </article>
-        
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-object-relation-mapping-with-gorm/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-embedded-resources/">
-            Embedded resources in Golang
-          </a>
-        </h2>
-        <span class="post-date">Sun, Nov 8, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          What&rsquo;s an Embedded Resource? An embedded resource in a application is a file that is included as part of the application. The file is not compiled, but is accessable from the code at run-time. Embedded resources can be any file type.
-Languages as JAVA and C# support resources out of box. However, this is not the case for Golang. In order to emebed resource, we need to develop our own solution.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-embedded-resources" href="http://blog.ralch.com/tags/embedded-resources">embedded resources</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-embedded-resources/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-code-generation-tool-implementation/">
-            Develop code generation tool for Golang
-          </a>
-        </h2>
-        <span class="post-date">Sat, Oct 31, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-    <a class="post-category post-category-tools" href="http://blog.ralch.com/categories/tools">tools</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          In my previous blog post, we discussed one of my favourite code generation tools for Go. We found that they can be used to automate our trivial development tasks or even introduce features like generics and queries. Lets explore how to create our own tool.
-Introduction The Go generate subcommand is a program that scans for special comments in your Go source code. The comment declares a command that should be executed.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-code-generation" href="http://blog.ralch.com/tags/code-generation">code generation</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-code-generation-tool-implementation/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-query-data-with-linq/">
-            Query data with Golang and LINQ
-          </a>
-        </h2>
-        <span class="post-date">Sun, Oct 25, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Query langauges provide a set of features to querying, projecting and retrieving data (usually relational data). But how to introduces these standard, easily-learned patterns for querying data?
-In this article we will explore Go LINQ packages that bridges the gap between the world of objects and the world of data.
-LINQ For first time is introduced by Microsoft in their programming language C#. Its purpose is to bridge the gap between query languages such as SQL and programming languages.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-linq" href="http://blog.ralch.com/tags/linq">LINQ</a>,
-    
-    <a class="post-tag post-tag-query" href="http://blog.ralch.com/tags/query">query</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-query-data-with-linq/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-code-generation-and-generics/">
-            Generics in Golang
-          </a>
-        </h2>
-        <span class="post-date">Sun, Oct 18, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          In the article we will take the advantage of [generics] even that they are not first citizen in Go. We will explore gen and genny command line tools.
-Gen Gen is a code generation tool that brings some generic query functions. It uses annotations to add this functionality to any structure. The generated code is part of your package and does not have any external dependencies. This approach avoids any reflection and produces an efficient concrete implementation for any annotated type.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-generics" href="http://blog.ralch.com/tags/generics">generics</a>,
-    
-    <a class="post-tag post-tag-code-generation" href="http://blog.ralch.com/tags/code-generation">code generation</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-code-generation-and-generics/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-code-generation-with-gotemplates/">
-            Reusing source code with Go templates
-          </a>
-        </h2>
-        <span class="post-date">Sun, Oct 11, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          In one of my previous blog posts, we discovered go generate command line tool. Lets take the next step and evaluate its advanced benefits to generate a source code by using our own templates. We will explore gotemplate command line tool.
-Overview This command line tool manages package based Go templates using go generate. By default it provides a set of templates that can be used out of the box:
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-code-generation" href="http://blog.ralch.com/tags/code-generation">code generation</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-code-generation-with-gotemplates/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-code-generation/">
-            Golang code generation
-          </a>
-        </h2>
-        <span class="post-date">Sun, Oct 4, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Programs that produce source code are important elements in software engineering. Since Go 1.4, the language ecosystem includes a command line tool that makes it easier to run such tools.
-It&rsquo;s called go generate. It scans for special comments in Go source code that identify general commands to run:
-//go:generate &lt;subcommand&gt; &lt;arguments&gt;  Go generate is not part of go build. It does not do dependency analysis and must be run explicitly before running go build.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-code-generation" href="http://blog.ralch.com/tags/code-generation">code generation</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-code-generation/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-working-with-tar-and-gzip/">
-            Golang: Working with Gzip and Tar
-          </a>
-        </h2>
-        <span class="post-date">Sun, Sep 27, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Gzip Gzip is another file compression format that was created to replace the compress program used in early unix system. It is normally used to compress just single files. Compressed archives are created by packaging collections of files into a single tar archive, and then compressing that archive with gzip. The final .tar.gz or .tgz file is a tarball.
-Compressing a file Compressing operation is very simple to implement. The package exposes gzip.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-working-with-tar-and-gzip/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-working-with-zip/">
-            Golang: Working with ZIP archives
-          </a>
-        </h2>
-        <span class="post-date">Sun, Sep 20, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Golang has several packages that work with different type of archives. In this post I will show you how to use archive/zip package to compress and uncompress zip archives.
-Zip is one of the most common file formats. It supports lossless data compression of one ore more files and directories.
-Extracting You can read the content of zip package by using zip reader. Its File property exposes all files and directories of particular zip package.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-working-with-zip/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-tools-inspection/">
-            Golang code inspection tools
-          </a>
-        </h2>
-        <span class="post-date">Sun, Sep 13, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-    <a class="post-category post-category-tools" href="http://blog.ralch.com/categories/tools">tools</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          As a software engineer, you always try to improve the quality of your programs. We are looking for the best software development practices and TDD techniques.
-&quot;Have no fear of perfection - you'll never reach it.&quot; ― Salvador Dalí  In this article we will explore different code inspection tools in Go ecosystem. We will increase our code quality and engineering skills by running tools that will do analysis on our code base and report the suspicious parts of it.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-tools-inspection/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-tools-comprehension/">
-            Golang code comprehension tools
-          </a>
-        </h2>
-        <span class="post-date">Sun, Sep 6, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-    <a class="post-category post-category-tools" href="http://blog.ralch.com/categories/tools">tools</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Software engineers spend a greater part of time reading and understanding programs. Indeed, most of the time it takes to develop a program is spent reading it and making logical conclusion about what it does.
-Go programmers are no exception. Thanks to gofmt they should not worry about source code formatting. The machines are better suited to analyse source code and accomplish comprehension tasks than us.
-In this article we will explore several of Go comprehension tools that are responsible for locating definitions, ascertaining types of expressions, deducing implementation relation, computing method sets, finding callers/callees, jumping through channels, understanding aliasing.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-tools-comprehension/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-tools-refactoring/">
-            Golang refactoring tools
-          </a>
-        </h2>
-        <span class="post-date">Sun, Aug 30, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-    <a class="post-category post-category-tools" href="http://blog.ralch.com/categories/tools">tools</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Go language provides many useful tools as part of its development eco system. We will explore most of them in the upcoming blog posts. But in the article lets focus on refactoring tools.
-Gofmt In average programming languages developers can adapt to different formatting styles. Common problem is how to approach unknown code base without a long prescriptive style guide.
-Go takes an unusual approach and keep this responsibility to format the source code for you.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-tools-refactoring/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-sharing-libraries/">
-            Sharing Golang packages to C and Go
-          </a>
-        </h2>
-        <span class="post-date">Sun, Aug 23, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          The latest Go 1.5 version is out. As part of the new features, Go compiler can compile packages as a shared libraries.
-It accepts -buildmode argument that determines how a package is compiled. These are the following options:
- archive: Build the listed non-main packages into .a files. Packages named main are ignored. c-archive: Build the listed main package, plus all packages it imports, into a C archive file. c-shared: Build the listed main packages, plus all packages that they import, into C shared libraries.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-cgo" href="http://blog.ralch.com/tags/cgo">cgo</a>,
-    
-    <a class="post-tag post-tag-c" href="http://blog.ralch.com/tags/c">c</a>,
-    
-    <a class="post-tag post-tag-compilation" href="http://blog.ralch.com/tags/compilation">compilation</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-sharing-libraries/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-conditional-compilation/">
-            Conditional compilation in Golang
-          </a>
-        </h2>
-        <span class="post-date">Sun, Aug 16, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          When developing Go package or application that depends on specific features of the underlying platform or architecture it is often necessary to use a specialised implementation.
-There are two parts of Go conditional compilation system, which we will now explore in more detail.
-Build constraints A build constraints (known as build tags) is an optional top line comment that starts with
-// +build package api  Declaration of build constraints follows the following rules:
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-clang" href="http://blog.ralch.com/tags/clang">clang</a>,
-    
-    <a class="post-tag post-tag-preprocessor" href="http://blog.ralch.com/tags/preprocessor">preprocessor</a>,
-    
-    <a class="post-tag post-tag-compilation" href="http://blog.ralch.com/tags/compilation">compilation</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-conditional-compilation/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-debug-with-delve/">
-            Delve: Next generation debugger for Golang
-          </a>
-        </h2>
-        <span class="post-date">Sat, Aug 8, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          In my previous post I demonstrated how you can debug golang applications with LLDB. In this article I will illustrate the most recent debugger for Go: Delve
-The debugger is a community effort to bring a debugger in the toolchain of every Go developer.
-It&rsquo;s written in Go to debug Go code. It&rsquo;s still in active development, but we can still benefit from its basic features.
-Installation You should install Delve with the following command:
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-debug" href="http://blog.ralch.com/tags/debug">debug</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-debug-with-delve/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-debug-with-lldb/">
-            Debug Golang applications: LLDB
-          </a>
-        </h2>
-        <span class="post-date">Sat, Aug 1, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Even that ease and simplicity of using go are one of its main advanatages, there are difficulties in debugging applications written in go.
-The lack of mature tools (like supported vim plugin) push most of us to use logging techniques to inspect and track down issues.
-In this article, I will demonstrates how you can use vim and lldb to debug a go application. Before that you should make the application capable for debugging.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-debug" href="http://blog.ralch.com/tags/debug">debug</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-debug-with-lldb/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-ssh-tunneling/">
-            SSH tunneling in Golang
-          </a>
-        </h2>
-        <span class="post-date">Sun, Jul 26, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          In my previous post, I illustrated the basic usage of ssh package. In this article I will demonstrate how we should use it to implement SSH tunneling. We will forward connection to localhost:9000 through example.com:22 to localhost:8080.
-The tunneling protocol allows a network user to access or provide a network service that the underlying network does not support or provide directly.
-We have four actors in this scenario:
- client - the client that needs resource from remote server local server - a server accessible by the client intermediate server - a server accessible by the local server and remote/target server remote/target server - a server running behind the intermediate server network  Each of this server endpoints can be represented by the following struct:
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-    <a class="post-tag post-tag-ssh" href="http://blog.ralch.com/tags/ssh">ssh</a>,
-    
-    <a class="post-tag post-tag-devops" href="http://blog.ralch.com/tags/devops">devops</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-ssh-tunneling/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-ssh-connection/">
-            SSH Client connection in Golang
-          </a>
-        </h2>
-        <span class="post-date">Sat, Jul 18, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          SSH is a network protocol for establishing a secure shell session on distant servers. In Golang the package godoc.org/golang.org/x/crypto/ssh implements SSH client and SSH server.
-In this article, we are using SSH client to run a shell command on a remote machine. Every SSH connection requires an ssh.CleintConfig object that defines configuration options such as authentication.
-Authentication Options Depending on how the remote server is configure, there are two ways to authenticate:
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-ssh-connection/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-command-line-pipes/">
-            Golang: Pipes and redirection in command line applications
-          </a>
-        </h2>
-        <span class="post-date">Sat, Jul 11, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Powerful features of the Linux command line shell are redirection and pipes that allow the output and even input of a program to be sent to a file or another program.
-In this article, I will demonstrates how we can pipe a file into a go application.
-Pipes Pipes allow you to funnel the output from one command into another where it will be used as the input. We should use | symbol to redirect the output.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-command-line-pipes/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-custom-flags/">
-            Golang: Using user defined type as flag in terminal applications
-          </a>
-        </h2>
-        <span class="post-date">Mon, Jul 6, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          As we saw in the previous article the flag package gives us flexibility to develop command-line applications that suite our needs.
-In this post, I will show how you can develop a flag argument for user defined type.
-Lets develop application that should be executed in the following ways:
-healthcheck -url=http://www.example.com,http://mail.example.com/inbox healthcheck -url=http://www.example.com -url=http://mail.example.com/inbox  We can use the predefined url.URL struct in net/url package as type of the arguments that are expected.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-custom-flags/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/tutorial/golang-subcommands/">
-            Golang: Implementing subcommands for command line applications
-          </a>
-        </h2>
-        <span class="post-date">Sat, Jul 4, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-    <a class="post-category post-category-tutorial" href="http://blog.ralch.com/categories/tutorial">tutorial</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Golang flag package provides flag and subcommand parsing of command line arguments.
-Basic flags are available for most of the buildin data types (string, integer, boolean and time.Duration). To declare a string flag username with a default value root and short description, you should use the following code:
-package main import &quot;flag&quot; import &quot;fmt&quot; func main() { username := flag.String(&quot;user&quot;, &quot;root&quot;, &quot;Username for this server&quot;) flag.Parse() fmt.Printf(&quot;Your username is %q.&quot;, *username) }  Once all flags are declared, call flag.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/tutorial/golang-subcommands/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/2015/04/fast-run-time-emitting-with-dynamic-methods/">
-            Fast run time emitting with dynamic methods in .NET
-          </a>
-        </h2>
-        <span class="post-date">Sat, Apr 11, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-frameworks" href="http://blog.ralch.com/categories/frameworks">frameworks</a>
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          It was a long time since, I have blogged. Nevertheless, I did not loose the enthusiasm to share the interesting stuff that I face. As component software developer, you should know how to access the properties of data source, when you create bound able controls (such as list control, combo box control or even grid control). The performance has always been a issue due to the fact that the control should work with any type of data source (ex.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-msnet" href="http://blog.ralch.com/tags/msnet">msnet</a>,
-    
-    <a class="post-tag post-tag-csharp" href="http://blog.ralch.com/tags/csharp">csharp</a>,
-    
-    <a class="post-tag post-tag-reflection" href="http://blog.ralch.com/tags/reflection">reflection</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/2015/04/fast-run-time-emitting-with-dynamic-methods/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/2015/04/how-to-prevent-memory-leaks-when-we-are-using-events/">
-            How to prevent memory leaks when we are using events?
-          </a>
-        </h2>
-        <span class="post-date">Sat, Apr 11, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-frameworks" href="http://blog.ralch.com/categories/frameworks">frameworks</a>
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          In the average development lifecycle is possible that event handlers that are attached to events of sources to not be destroyed in coordination with the listener object that attached the handler to the source. This can lead to memory leaks. The developers to take care about memory management not only when they use unmanaged resources but also when they attach new event handlers to specified event.
-This problem was solved by Microsoft in Windows Presentation Foundation.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-msnet" href="http://blog.ralch.com/tags/msnet">msnet</a>,
-    
-    <a class="post-tag post-tag-wpf" href="http://blog.ralch.com/tags/wpf">wpf</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/2015/04/how-to-prevent-memory-leaks-when-we-are-using-events/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/2015/04/ado-net-xmlserialization-of-extended-datatable/">
-            ADO.NET XmlSerialization of extended DataTable
-          </a>
-        </h2>
-        <span class="post-date">Sat, Apr 11, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-frameworks" href="http://blog.ralch.com/categories/frameworks">frameworks</a>
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          We are migrating communication protocol from .NET Remoting to WCF. Due to legacy fo this project, domain object is a DataTable that has some additional fields. In .NET Remoting serialization of that kind of object works perfectly, but in WCF these additional fields are not serialized. Instead of binary serialization in .NET Remoting, XML serialization is used in WCF.
-Lets have a class that derives DataTable type:
-public class WcfDataTable : DataTable { private string _ServerName; public WcfDataTable() : base() { } public WcfDataTable(string tableName) : base(tableName) { } public string ServerName { get { return this.
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-msnet" href="http://blog.ralch.com/tags/msnet">msnet</a>,
-    
-    <a class="post-tag post-tag-csharp" href="http://blog.ralch.com/tags/csharp">csharp</a>,
-    
-    <a class="post-tag post-tag-soap" href="http://blog.ralch.com/tags/soap">soap</a>,
-    
-    <a class="post-tag post-tag-adonet" href="http://blog.ralch.com/tags/adonet">adonet</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/2015/04/ado-net-xmlserialization-of-extended-datatable/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
-      <div class="post">
-        <h2 class="post-title">
-          <a href="http://blog.ralch.com/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/">
-            LINQ to SQL: Create generic method to load entity by primary key
-          </a>
-        </h2>
-        <span class="post-date">Sat, Apr 11, 2015</span>
-        
-
-<div class="post-categories">
-    
-    <a class="post-category post-category-database" href="http://blog.ralch.com/categories/database">database</a>
-    
-    <a class="post-category post-category-orm" href="http://blog.ralch.com/categories/orm">orm</a>
-    
-    <a class="post-category post-category-programming-languages" href="http://blog.ralch.com/categories/programming-languages">programming languages</a>
-    
-</div>
-
-
-
-        <article class="post-summary">
-          Scenario We are implementing our data access layer based on LINQ TO SQL. In the specifications that were created by our software architect is required to have generic method that load from the data base any record into entity object by primary key.
-public class LINQGateway&lt;TEntity&gt; where TEntity : class { private IDbConnection _DbConnection; public LINQGateway(IDbConnection connection) { this._DbConnection = connection; } public TEntity GetEntityByPrimaryKey(object pkKey, params object[] pkKeys) { // TO DO } }  Problem Every table has different primary key (count, name and data type of the primary key columns).
-        </article>
-        
-
-<div class="tags-list">
-    <span class="dark-red">Tags</span><span class="decorative-marker">#</span>
-    
-    <a class="post-tag post-tag-csharp" href="http://blog.ralch.com/tags/csharp">CSharp</a>,
-    
-    <a class="post-tag post-tag-msnet" href="http://blog.ralch.com/tags/msnet">MSNET</a>,
-    
-    <a class="post-tag post-tag-linq" href="http://blog.ralch.com/tags/linq">LINQ</a>,
-    
-</div>
-
-
-
-        
-        <div class="read-more-link">
-          <a href="/2015/04/linq-to-sql-create-generic-method-to-load-entity-by-primary-key/"></span>Read More...</a>
-        </div>
-        
-      </div>
-      
+type User struct { ID string `json:&quot;id&quot;` Name string `json:&quot;name&quot;` CreatedAt time.</p>
     </div>
-  </div>
+</div>
+
+
+ 
+   
+  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+    <h2 class="title">
+        <a href="http://blog.ralch.com/articles/design-patterns/golang-decorator/" itemprop="headline">Design Patterns in Golang: Decorator</a>
+    </h2>
+    <hr>
+    <time class="post-time">
+        <span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>3 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2016-04-17T18:33:52&#43;01:00">17 Apr, 2016</time>
+
+
+
+        
+
+<span class="icon">
+    <i class="fa fa-hashtag" aria-hidden="true"></i>
+</span>
+<span class="dark-red">Tagged:</span>
+
+<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+
+<span><a class="post-tag post-tag-decorator" href="http://blog.ralch.com/tags/decorator">decorator</a></span>
+
+<span><a class="post-tag post-tag-structural-design-patterns" href="http://blog.ralch.com/tags/structural-design-patterns">structural design patterns</a></span>
+
+
+
+
+    </time>
+    
+    <p itemprop="about">Introduction The Decorator pattern adds new functionality to an existing object without altering its structure. It is a structural pattern as this pattern acts as a wrapper to existing class.
+The instanciate a decorator struct which decorates (wraps) the original object and provides additional functionality keeping its methods signature intact.
+Purpose  Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to inheritance for extending functionality. Wrapping a present, putting it in a box, and wrapping the box.</p>
+    </div>
+</div>
+
+
+ 
+   
+  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+    <h2 class="title">
+        <a href="http://blog.ralch.com/articles/design-patterns/golang-composite/" itemprop="headline">Design Patterns in Golang: Composite</a>
+    </h2>
+    <hr>
+    <time class="post-time">
+        <span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>3 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2016-03-31T09:00:27&#43;01:00">31 Mar, 2016</time>
+
+
+
+        
+
+<span class="icon">
+    <i class="fa fa-hashtag" aria-hidden="true"></i>
+</span>
+<span class="dark-red">Tagged:</span>
+
+<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+
+<span><a class="post-tag post-tag-composite" href="http://blog.ralch.com/tags/composite">composite</a></span>
+
+<span><a class="post-tag post-tag-structural-design-patterns" href="http://blog.ralch.com/tags/structural-design-patterns">structural design patterns</a></span>
+
+
+
+
+    </time>
+    
+    <p itemprop="about">Introduction A Composite Design Pattern is a structural pattern that uses to employ composition when implementing an interface rather than using multiple inheritance. It composes objects into tree structures and lets clients treat individual objects and compositions uniformly.
+There are situations when clients ignore the difference between compositions of objects and individual objects. If dealing with multiple objects in the same way as handle each of deam is identical, the Composite Design pattern is a good choice to decrease the complexity and treat them as homogeneous.</p>
+    </div>
+</div>
+
+
+ 
+   
+  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+    <h2 class="title">
+        <a href="http://blog.ralch.com/articles/design-patterns/golang-bridge/" itemprop="headline">Desing Patterns in Golang: Bridge</a>
+    </h2>
+    <hr>
+    <time class="post-time">
+        <span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>3 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2016-03-17T17:26:46&#43;00:00">17 Mar, 2016</time>
+
+
+
+        
+
+<span class="icon">
+    <i class="fa fa-hashtag" aria-hidden="true"></i>
+</span>
+<span class="dark-red">Tagged:</span>
+
+<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+
+<span><a class="post-tag post-tag-bridge" href="http://blog.ralch.com/tags/bridge">bridge</a></span>
+
+<span><a class="post-tag post-tag-creational-design-patterns" href="http://blog.ralch.com/tags/creational-design-patterns">creational design patterns</a></span>
+
+
+
+
+    </time>
+    
+    <p itemprop="about">Introduction The Bridge Pattern is a creational design pattern used to decouple an abstraction from its implementation. The bridge uses encapsulation, aggregation, and can use inheritance to separate responsibilities into different classes.
+Purpose  Decouple an abstraction from its implementation that allows both to vary independently. Publish interface in an inheritance hierarchy, and bury implementation in its own inheritance hierarchy.  Design Pattern Diagram The objects participating in this pattern are presented on the following diagram:</p>
+    </div>
+</div>
+
+
+ 
+   
+  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+    <h2 class="title">
+        <a href="http://blog.ralch.com/articles/golang-handling-errors/" itemprop="headline">Errors handling in Golang</a>
+    </h2>
+    <hr>
+    <time class="post-time">
+        <span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>3 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2016-03-10T08:52:29&#43;00:00">10 Mar, 2016</time>
+
+
+
+        
+
+<span class="icon">
+    <i class="fa fa-hashtag" aria-hidden="true"></i>
+</span>
+<span class="dark-red">Tagged:</span>
+
+<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+
+<span><a class="post-tag post-tag-errors" href="http://blog.ralch.com/tags/errors">errors</a></span>
+
+
+
+
+    </time>
+    
+    <p itemprop="about">Go does not have an Exception handling model as most of the main stream languages. However, it uses the error interface type as the return type for any error that is going to be returned from a function or method:
+type error interface { Error() string }  It is an interface type. An error variable represents any value that can describe itself as a string. The most commonly-used error implementation is in the errors package.</p>
+    </div>
+</div>
+
+
+ 
+  
+  <section><nav class="pagination align-center upper pager flat">
+  <ul>
+    <li class="prev">
+      
+      <span>&lt; Prev</span>
+      
+    </li>
+    <li class="w100">
+      <ul><li><a href="/categories/programming-languages/">Back to Catalog</a></li></ul>
+    </li>
+    <li class="next">
+      
+      <a href="/categories/programming-languages/page/2/">Next &gt;</a>
+      
+    </li>
+  </ul>
+</nav>
+</section>
+</ul>
+
+</main>
+    <footer> 
+<footer id="footer">
+  <nav>
+    <ul>
+      <li><span>Svetlin Ralchev</span></li>
+      <li>
+        <a href="https://www.phogolabs.com">Company</a>
+      </li>
+      <li>
+        <a href="/articles/">Articles</a>
+      </li>
+      <li>
+        <a href="https://twitter.com/ralch">Twitter</a>
+      </li>
+      <li>
+        <a href="https://github.com/svett">Github</a>
+      </li>
+    </ul>
+  </nav>
+  <p>
+    powered by <a href="http://www.gohugo.io">Hugo</a>
+    based on <a href="https://github.com/jeblister/kube">Kube</a> theme
+    &copy; 2017 Licence MIT modified by Svetlin Ralchev
+  </p>
   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -1967,6 +395,11 @@ public class LINQGateway&lt;TEntity&gt; where TEntity : class { private IDbConne
   ga('send', 'pageview');
 </script>
 
-
-</body>
+</footer>
+ 
+</footer>
+    <script src="/js/kube.js" type="text/javascript"></script>
+    <script src="/js/kube.legenda.js" type="text/javascript"></script>
+    <script src="/js/master.js" type="text/javascript"></script>
+  </body>
 </html>

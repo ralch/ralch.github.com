@@ -1,186 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Software adventures and thoughts</title>
-    <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.ralch.com/tags/composite/index.xml</link>
+    <title>Composite on Software adventures and thoughts</title>
+    <link>http://blog.ralch.com/tags/composite/</link>
+    <description>Recent content in Composite on Software adventures and thoughts</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <author>Svetlin Ralchev</author>
+    <lastBuildDate>Thu, 31 Mar 2016 09:00:27 +0100</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://blog.ralch.com/tags/composite/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Design Patterns in Golang: Composite</title>
-      <link>http://blog.ralch.com/tutorial/design-patterns/golang-composite/</link>
-      <pubDate>Thu, 31 Mar 2016 09:00:27 &#43;0100</pubDate>
-      <author>Svetlin Ralchev</author>
-      <guid>http://blog.ralch.com/tutorial/design-patterns/golang-composite/</guid>
-      <description>
-
-&lt;h4 id=&#34;introduction&#34;&gt;Introduction&lt;/h4&gt;
-
-&lt;p&gt;A Composite Design Pattern is a structural pattern that uses to employ
-composition when implementing an interface rather than using multiple
-inheritance. It composes objects into tree structures and lets
-clients treat individual objects and compositions uniformly.&lt;/p&gt;
-
-&lt;p&gt;There are situations when clients ignore the difference between
-compositions of objects and individual objects. If dealing with multiple
-objects in the same way as handle each of deam is identical, the Composite
-Design pattern is a good choice to decrease the complexity and treat them as
-homogeneous.&lt;/p&gt;
-
-&lt;h4 id=&#34;purpose&#34;&gt;Purpose&lt;/h4&gt;
-
-&lt;ul&gt;
-&lt;li&gt;The intent of this pattern is to compose objects into tree structures to
-represent part-whole hierarchies.&lt;/li&gt;
-&lt;li&gt;Composite lets clients treat individual objects and compositions of objects
-uniformly.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;design-pattern-diagram&#34;&gt;Design Pattern Diagram&lt;/h4&gt;
-
-&lt;p&gt;The Composite Pattern provides the following units: Component, Leaf and
-Composite.&lt;/p&gt;
-
-
-&lt;figure &gt;
-    
-        &lt;img src=&#34;http://blog.ralch.com/media/golang/design-patterns/composite.gif&#34; alt=&#34;Composite Class Diagram&#34; /&gt;
-    
-    
-&lt;/figure&gt;
-
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Component&lt;/code&gt; is an interface for all components, including composite ones. It declares the interface for objects in the composition&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Leaf&lt;/code&gt; represents leaf objects in the composition implements all &lt;code&gt;Component&lt;/code&gt; methods&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Composite&lt;/code&gt; represents a composite &lt;code&gt;Component&lt;/code&gt; that has children. Usually
-implements all Componenet methods and methods to manipulate children.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;implementation&#34;&gt;Implementation&lt;/h4&gt;
-
-&lt;p&gt;The Composite Design Pattern is very common approach for implementing a
-document object model hierarchy. Such an example are image editors, which
-compose different shapes and layers into hierarchy.&lt;/p&gt;
-
-&lt;p&gt;Lets implement a basic architecture of such an editor. Lets use the following
-interface:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// VisualElement that is drawn on the screen
-type VisualElement interface {
-	// Draw draws the visual element
-	Draw(drawer *Drawer) error
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The editor supports two kind of shapes (circle and square). Each of the structs
-that represents the coresponding shape obeys the &lt;code&gt;VisualElement&lt;/code&gt; interface by
-implementing a &lt;code&gt;Draw&lt;/code&gt; function that has exactly the same signiture exposed in
-the interface. The following code snippet illustrate the implementation of
-thoes components:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Square represents a square
-type Square struct {
-	// Location of the square
-	Location Point
-	// Side size
-	Side float64
-}
-
-// Draw draws a square
-func (square *Square) Draw(drawer *Drawer) error {
-	return drawer.DrawRect(Rect{
-		Location: square.Location,
-		Size: Size{
-			Height: square.Side,
-			Width:  square.Side,
-		},
-	})
-}
-
-// Circle represents a circle shape
-type Circle struct {
-	// Center of the circle
-	Center Point
-	// Radius of the circle
-	Radius float64
-}
-
-// Draw draws a circle
-func (circle *Circle) Draw(drawer *Drawer) error {
-	rect := Rect{
-		Location: Point{
-			X: circle.Center.X - circle.Radius,
-			Y: circle.Center.Y - circle.Radius,
-		},
-		Size: Size{
-			Width:  2 * circle.Radius,
-			Height: 2 * circle.Radius,
-		},
-	}
-
-	return drawer.DrawEllipseInRect(rect)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In order to allow composition and drawing of multiple shapes on the screen, a
-&lt;code&gt;Layer&lt;/code&gt; compose thoes object. It contains an array of &lt;code&gt;VisualElement&lt;/code&gt;. It is
-responsible to interate over the elements and draw each of them. As you can see
-the actual struct uses the &lt;code&gt;VisualElement&lt;/code&gt; interface as a contract to support
-different shapes no matter what is their type.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;// Layer contains composition of visual elements
-type Layer struct {
-	// Elements of visual elements
-	Elements []VisualElement
-}
-
-// Draw draws a layer
-func (layer *Layer) Draw(drawer *Drawer) error {
-	for _, element := range layer.Elements {
-		if err := element.Draw(drawer); err != nil {
-			return err
-		}
-		fmt.Println()
-	}
-
-	return nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The object can be composed as it is shown in the following code snippet:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Golang&#34;&gt;circle := &amp;amp;photoshop.Circle{
-	Center: photoshop.Point{X: 100, Y: 100},
-	Radius: 50,
-}
-
-square := &amp;amp;photoshop.Square{
-	Location: photoshop.Point{X: 50, Y: 50},
-	Side:     20,
-}
-
-layer := &amp;amp;photoshop.Layer{
-	Elements: []photoshop.VisualElement{
-		circle,
-		square,
-	},
-}
-
-layer.Draw(&amp;amp;photoshop.Drawer{})
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;verdict&#34;&gt;Verdict&lt;/h4&gt;
-
-&lt;p&gt;Dealing with Tree-structured data makes code more complex, and therefore,
-error prone. The Composite Design Patterns provides a solution that allows
-treating complex and primitive objects uniformly. The operations you can
-perform on all the composite objects often have a least common relationship
-that allows handling a set of object as a single unit.&lt;/p&gt;
-</description>
+      <link>http://blog.ralch.com/articles/design-patterns/golang-composite/</link>
+      <pubDate>Thu, 31 Mar 2016 09:00:27 +0100</pubDate>
+      
+      <guid>http://blog.ralch.com/articles/design-patterns/golang-composite/</guid>
+      <description>Introduction A Composite Design Pattern is a structural pattern that uses to employ composition when implementing an interface rather than using multiple inheritance. It composes objects into tree structures and lets clients treat individual objects and compositions uniformly.
+There are situations when clients ignore the difference between compositions of objects and individual objects. If dealing with multiple objects in the same way as handle each of deam is identical, the Composite Design pattern is a good choice to decrease the complexity and treat them as homogeneous.</description>
     </item>
     
   </channel>
