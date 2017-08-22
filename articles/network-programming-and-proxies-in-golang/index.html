@@ -5,9 +5,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> Golang: Pipes and redirection in command line applications </title>
+    <title> Network Programming and Proxies in Golang </title>
 
     
+    <meta name="description" content="Learn how to use Proxy to establish TCP connections in Golang"> 
     
     
     
@@ -18,21 +19,15 @@
   <meta name="author" content="Svetlin Ralchev">
 
 
-    <meta property="og:title" content="Golang: Pipes and redirection in command line applications" />
-<meta property="og:description" content="Powerful features of the Linux command line shell are redirection and pipes that allow the output and even input of a program to be sent to a file or another program.
-In this article, I will demonstrates how we can pipe a file into a go application.
-Pipes Pipes allow you to funnel the output from one command into another where it will be used as the input. We should use | symbol to redirect the output." />
+    <meta property="og:title" content="Network Programming and Proxies in Golang" />
+<meta property="og:description" content="Learn how to use Proxy to establish TCP connections in Golang" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.ralch.com/articles/golang-command-line-pipes/" />
+<meta property="og:url" content="http://blog.ralch.com/articles/network-programming-and-proxies-in-golang/" />
 
 
 
-<meta property="article:published_time" content="2015-07-11T11:58:15&#43;01:00"/>
-<meta property="article:modified_time" content="2015-07-11T11:58:15&#43;01:00"/>
-
-
-
-
+<meta property="article:published_time" content="2017-08-22T14:17:48&#43;01:00"/>
+<meta property="article:modified_time" content="2017-08-22T14:17:48&#43;01:00"/>
 
 
 
@@ -40,17 +35,21 @@ Pipes Pipes allow you to funnel the output from one command into another where i
 
 
 
-    
 
 
 
 
     
+
+
+
+
     
     
     
     
-    <link rel="canonical" href="http://blog.ralch.com/articles/golang-command-line-pipes/" /> 
+    
+    <link rel="canonical" href="http://blog.ralch.com/articles/network-programming-and-proxies-in-golang/" /> 
      
     
 
@@ -120,31 +119,31 @@ Pipes Pipes allow you to funnel the output from one command into another where i
     <main>
 <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
   
-<meta itemprop="name" content="Golang: Pipes and redirection in command line applications">
-<meta itemprop="description" content="Powerful features of the Linux command line shell are redirection and pipes that allow the output and even input of a program to be sent to a file or another program.
-In this article, I will demonstrates how we can pipe a file into a go application.
-Pipes Pipes allow you to funnel the output from one command into another where it will be used as the input. We should use | symbol to redirect the output.">
+<meta itemprop="name" content="Network Programming and Proxies in Golang">
+<meta itemprop="description" content="Learn how to use Proxy to establish TCP connections in Golang">
 
 
-<meta itemprop="dateModified" content="2015-07-11T11:58:15&#43;01:00" />
-<meta itemprop="wordCount" content="419">
+<meta itemprop="dateModified" content="2017-08-22T14:17:48&#43;01:00" />
+<meta itemprop="wordCount" content="572">
 
 
 
 <meta itemprop="keywords" content="go," />
 
   <div id="hero">
-    <h1 itemprop="headline">Golang: Pipes and redirection in command line applications</h1>
+    <h1 itemprop="headline">Network Programming and Proxies in Golang</h1>
+    
+    <blockquote itemprop="description">Learn how to use Proxy to establish TCP connections in Golang</blockquote>
     
     <time class="post-time"><span class="icon">
   <i class="fa fa-clock-o" aria-hidden="true"></i>
 </span>
-<span>2 minute read</span>
+<span>3 minute read</span>
 <span class="icon">
  <i class="fa fa-pencil" aria-hidden="true"></i>
 </span>
 
-  Published: <time datetime="2015-07-11T11:58:15&#43;01:00">11 Jul, 2015</time>
+  Published: <time datetime="2017-08-22T14:17:48&#43;01:00">22 Aug, 2017</time>
 
 
 </time>
@@ -153,94 +152,142 @@ Pipes Pipes allow you to funnel the output from one command into another where i
     <div id="post" itemprop="articleBody">
       
 
-<p>Powerful features of the Linux command line shell are redirection and
-pipes that allow the output and even input of a program to be sent to a file
-or another program.</p>
+<p>Have you used any proxy servers in your infrastructure? There are a lot of
+different scenarios in which you may use a proxy in order to control access to
+your machines and resources. I am not saying that it&rsquo;s the best approach but
+some companies use that.</p>
 
-<p>In this article, I will demonstrates how we can pipe a file into a <code>go</code> application.</p>
+<p>Recently, I have been working on a TCP service that has to connect via SOCK5
+proxy server. But before we dig into that, I would like to show what Golang
+offers for the regular HTTP user.</p>
 
-<h2 id="pipes">Pipes</h2>
+<p>By default http.Client checks the <code>HTTP_PROXY</code> and <code>HTTPS_PROXY</code> variables before
+processes any http.Request. Those variables affect any request made via
+<a href="https://golang.org/pkg/net/http/#Client">http.DefaultClient</a>.</p>
 
-<p>Pipes allow you to funnel the output from one command into another where it
-will be used as the input. We should use <code>|</code> symbol to redirect the output.</p>
+<p>If you want to customize that you have to create a new instance of http.Client
+that has pre-configured Transport property. The
+<a href="https://golang.org/pkg/net/http/#Transport">http.Transport</a> struct has a Proxy
+property that by default is set to
+<a href="https://golang.org/pkg/net/http/#ProxyFromEnvironment">http.ProxyFromEnvironment</a>
+function that reads the environment variable.</p>
 
-<p>A good way to see how many devices are available is the following command:</p>
+<p>We can change that by implementing our own function or using
+<a href="https://golang.org/pkg/net/http/#ProxyURL">http.ProxyURL</a> function that
+returns the provided proxy URL.</p>
 
-<pre><code>ls -l /dev | wc -l
+<pre><code class="language-golang">fixedURL, err:= url.Parse(&quot;https://user:pass@proxy.com&quot;)
+if err != nil {
+  panic(err)
+}
+tr := &amp;http.Transport{
+    Proxy: http.ProxyURL(fixedURL),
+}
+client := &amp;http.Client{Transport: tr}
+resp, err := client.Get(&quot;https://example.com&quot;)
 </code></pre>
 
-<p>We are counting the number of devices by sending the <code>ls</code> output to world count
-command <code>wc</code> input. The <code>-l</code> parameter display only the number of lines.</p>
+<p>That was easy. But how we should use a proxy for our own TCP server requests.
+Luckily there is an experimental package that enables us to do it very elegant
+without making so many changes in our codebase.</p>
 
-<h2 id="implementation">Implementation</h2>
+<p>Let&rsquo;s see how we can use it by installing it first.</p>
 
-<p>Every application in <code>unix</code> and <code>linux</code> has a three file descriptors associated
-to it: standard input <code>0</code>, standard output <code>1</code> and standard error <code>2</code>.</p>
-
-<p>In <code>go</code> you can access them by using the following fields:</p>
-
-<pre><code>os.Stdin
-os.Stdout
-os.Stderr
+<pre><code class="language-bash">$ go get -u http://golang.org/x/net/proxy
 </code></pre>
 
-<p>Lets develop an application <code>searchr</code> that is looking for a concrete <code>pattern</code>
-in a text. The application should highlight in <code>red</code> the lines that contains
-the specified pattern:</p>
+<p>The package is very small and it&rsquo;s compatible with the http package. It reads
+the <code>ALL_PROXY</code> and <code>NO_PROXY</code> environment variables to distinguish which hosts
+require a proxy.</p>
 
-<pre><code>cat yourfile.txt | searchr -pattern=&lt;your_pattern&gt;
-</code></pre>
+<p>Presently it provides <code>SOCKS5</code> support only. However, it&rsquo;s very extensible by
+allowing us to register new proxy dialers for particular schema. You have to
+implement the <a href="https://godoc.org/golang.org/x/net/proxy#Dialer">proxy.Dialer</a>
+interface:</p>
 
-<p>The following snippet implements this matching functionality:</p>
-
-<pre><code>func match(pattern string, reader *bufio.Reader) {
-	line := 1
-	for {
-		input, err := reader.ReadString('\n')
-		if err != nil &amp;&amp; err == io.EOF {
-			break
-		}
-
-		color := &quot;\x1b[39m&quot;
-		if strings.Contains(input, pattern) {
-			color = &quot;\x1b[31m&quot;
-		}
-
-		fmt.Printf(&quot;%s%2d: %s&quot;, color, line, input)
-		line++
-	}
+<pre><code class="language-golang">type Dialer interface {
+    // Dial connects to the given address via the proxy.
+    Dial(network, addr string) (c net.Conn, err error)
 }
 </code></pre>
 
-<p>We should be able to use this application with different text source. To do that
-we should make sure that <code>os.Stdin</code> file descriptor points to a pipe. For this
-purpose we should get <code>os.FileInfo</code> metadata for the standard input:</p>
+<p>and to register with [proxy.RegisterDialerType]().</p>
 
-<pre><code>info, _ := os.Stdin.Stat()
+<p>There are multiple ways to instantiated the dialer proxy.</p>
+
+<h4 id="environment-variables">Environment Variables</h4>
+
+<p>You can do it by setting the <code>ALL_PROXY</code> environment variable and use the
+<a href="https://godoc.org/golang.org/x/net/proxy#FromEnvironment">proxy.FromEnvironment</a>
+function.</p>
+
+<pre><code class="language-golang">dialer := proxy.FromEnvironment()
 </code></pre>
 
-<p>The <code>Stat</code> function returns a <code>os.FileInfo</code> object that keeps information about
-the file mode and file size. We should validate that the <code>os.Stdin</code> is not a
-character device.</p>
+<h4 id="url">URL</h4>
 
-<pre><code>if (info.Mode() &amp; os.ModeCharDevice) == os.ModeCharDevice {
-	fmt.Println(&quot;The command is intended to work with pipes.&quot;)
-	fmt.Println(&quot;Usage:&quot;)
-	fmt.Println(&quot;  cat yourfile.txt | searchr -pattern=&lt;your_pattern&gt;&quot;)
-} else if info.Size() &gt; 0 {
-	reader := bufio.NewReader(os.Stdin)
-	match(*pattern, reader)
+<p>If you want to use concrete URL in a specific case, you can use the
+<a href="https://godoc.org/golang.org/x/net/proxy#FromURL">proxy.FromURL</a> function:</p>
+
+<pre><code class="language-golang">uri, err := url.Parse(&quot;socks5://demo:demo@192.168.99.100:1080&quot;)
+if err != nil {
+    panic(err)
+}
+
+dialer, err := proxy.FromURL(uri, forwardDialer)
+if err != nil {
+    // handle error
+    panic(err)
 }
 </code></pre>
 
-<p>You can check whether there is a content to read from by comparing <code>info.Size()</code>.</p>
+<p>The <em>forwardDialer</em> is the dialer that will be used internally by the proxy to
+establish a connection to the remote host. In our case, we use a
+<a href="https://godoc.org/golang.org/x/net/proxy#Variables">proxy.Direct</a> dialer which
+establishes direct connections:</p>
 
-<p><em>Note: Character devices in Linux/Unix are unbuffered devices that have direct
-access to underlying hardware. They do not necessarily allow you to read or
-write single character at a time. Example: audio or graphics cards,
-or input devices like keyboard and mouse.</em></p>
+<pre><code class="language-golang">type direct struct{}
+ 
+// Direct is a direct proxy: one that makes network connections directly.
+var Direct = direct{}
+ 
+func (direct) Dial(network, addr string) (net.Conn, error) {
+     return net.Dial(network, addr)
+}
+</code></pre>
 
-<p>You can get the sample source code from <a href="https://gist.github.com/svett/a95595069e560173a3c8">here</a>.</p>
+<h4 id="advanced-usage">Advanced usage</h4>
+
+<p>If you need more control over the dialer, you can instantiate [proxy.PerHost]()
+struct that allows you to specify different rules. It requires a default dialer
+and bypass dialer. The default dialer is used when the request does not obey
+some of the specified rules, otherwise, the bypass dialer is used.</p>
+
+<pre><code class="language-golang">perHostDialer := proxy.NewPerHost(dialer, proxy.Direct)
+perHostDialer.AddFromString(&quot;192.168.99.100&quot;)
+perHostDialer.AddZone(&quot;*.example.com&quot;)
+perHostDialer.AddNetwork(your_network)
+
+dialer = perHostDialer
+</code></pre>
+
+<p>After we know how to instantiate the proxy dialer, we should use it in the same
+way as <a href="https://golang.org/pkg/net/#Dialer">net.Dialer</a>:</p>
+
+<pre><code class="language-golang">conn, err := dialer.Dial(&quot;tcp&quot;, &quot;golang.org:80&quot;)
+if err != nil {
+    // handle error
+    panic(err)
+}
+
+fmt.Fprintf(conn, &quot;GET / HTTP/1.0\r\n\r\n&quot;)
+status, err := bufio.NewReader(conn).ReadString('\n')
+if err != nil {
+    panic(err)
+}
+
+fmt.Println(status)
+</code></pre>
 
     </div>
     <div class="form-subscribe">
@@ -279,16 +326,16 @@ or input devices like keyboard and mouse.</em></p>
       by <span itemprop="author">Svetlin Ralchev</span>
     
   
-  <time datetime="2015-07-11T11:58:15&#43;01:00">
-    11 Jul, 2015
+  <time datetime="2017-08-22T14:17:48&#43;01:00">
+    22 Aug, 2017
   </time>
   
-    in <span itemprop="articleSection"><a href="/categories/programming-languages/">programming languages</a> and <a href="/categories/tutorial/">tutorial</a></span>
+    in <span itemprop="articleSection"><a href="/categories/network-programming/">network programming</a> and <a href="/categories/programming-languages/">programming languages</a></span>
   
   
     and tagged <a href="/tags/go/">#go</a>
   
-  using <span itemprop="wordCount">419</span> words.
+  using <span itemprop="wordCount">572</span> words.
 </p>
 
       
@@ -302,8 +349,6 @@ or input devices like keyboard and mouse.</em></p>
     <ul>
       
       
-        <li><a href="/articles/network-programming-and-proxies-in-golang/">Network Programming and Proxies in Golang</a> &ndash; 3 minutes
-      
         <li><a href="/articles/golang-reflect-struct-tag/">Golang: Extending reflect.StructTag to support duplicates</a> &ndash; 3 minutes
       
         <li><a href="/articles/design-patterns/golang-decorator/">Design Patterns in Golang: Decorator</a> &ndash; 3 minutes
@@ -315,6 +360,8 @@ or input devices like keyboard and mouse.</em></p>
         <li><a href="/articles/golang-handling-errors/">Errors handling in Golang</a> &ndash; 3 minutes
       
         <li><a href="/articles/design-patterns/golang-adapter/">Design Patterns in Golang: Adapter</a> &ndash; 5 minutes
+      
+        <li><a href="/articles/design-patterns/golang-prototype/">Design Patterns in Golang: Prototype</a> &ndash; 5 minutes
       
     </ul>
   </aside>

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> Articles </title>
+    <title> Network Programming </title>
 
     
     
@@ -20,10 +20,10 @@
   <meta name="author" content="Svetlin Ralchev">
 
 
-    <meta property="og:title" content="Articles" />
+    <meta property="og:title" content="Network Programming" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="http://blog.ralch.com/articles/" />
+<meta property="og:url" content="http://blog.ralch.com/categories/network-programming/" />
 
 
 
@@ -48,9 +48,9 @@
     
     
     
-    <link href="http://blog.ralch.com/articles/index.xml" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" /> 
+    <link href="http://blog.ralch.com/categories/network-programming/index.xml" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" /> 
     
-    <link rel="canonical" href="http://blog.ralch.com/articles/" /> 
+    <link rel="canonical" href="http://blog.ralch.com/categories/network-programming/" /> 
      
     
 
@@ -109,7 +109,7 @@
       
       <li><a href="/about/" >About</a></li>
       
-      <li><a href="/articles/"  class="active">Articles</a></li>
+      <li><a href="/articles/" >Articles</a></li>
       
     </ul>
   </nav>
@@ -120,7 +120,7 @@
     <main>
 
 <div id="hero" class="wrap">
-  <h1>Articles by Svetlin Ralchev</h1>
+  <h1>Network Programming by Svetlin Ralchev</h1>
   <p>
     Question everything. Learn something. Answer everything.
   </p> 
@@ -176,185 +176,6 @@ Recently, I have been working on a TCP service that has to connect via SOCK5 pro
 
 
  
-   
-  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
-    <h2 class="title">
-        <a href="http://blog.ralch.com/articles/golang-ftp/" itemprop="headline">Working with FTP protocol in Golang</a>
-    </h2>
-    <hr>
-    <time class="post-time">
-        <span class="icon">
-  <i class="fa fa-clock-o" aria-hidden="true"></i>
-</span>
-<span>2 minute read</span>
-<span class="icon">
- <i class="fa fa-pencil" aria-hidden="true"></i>
-</span>
-
-  Published: <time datetime="2017-04-03T14:10:06&#43;01:00">3 Apr, 2017</time>
-
-
-
-        
-
-<span class="icon">
-    <i class="fa fa-hashtag" aria-hidden="true"></i>
-</span>
-<span class="dark-red">Tagged:</span>
-
-<span><a class="post-tag post-tag-golang" href="http://blog.ralch.com/tags/golang">golang</a></span>
-
-<span><a class="post-tag post-tag-backend" href="http://blog.ralch.com/tags/backend">backend</a></span>
-
-
-
-
-    </time>
-    
-    <p itemprop="about">One of the benefits of using Golang is its http package that provides an easy way to build robust REST APIs.
-Unfortunately, it does not provide out of the box away to build FTP server or connect to FTP server.
-In this article, we will explore that by demonstrating the usage of two third party packages that allow that.
-Connecting to FTP server The most robust and broadly used package that provides an FTP client build by Julien.</p>
-    </div>
-</div>
-
-
- 
-   
-  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
-    <h2 class="title">
-        <a href="http://blog.ralch.com/articles/golang-reflect-struct-tag/" itemprop="headline">Golang: Extending reflect.StructTag to support duplicates</a>
-    </h2>
-    <hr>
-    <time class="post-time">
-        <span class="icon">
-  <i class="fa fa-clock-o" aria-hidden="true"></i>
-</span>
-<span>3 minute read</span>
-<span class="icon">
- <i class="fa fa-pencil" aria-hidden="true"></i>
-</span>
-
-  Published: <time datetime="2017-03-21T12:33:56&#43;01:00">21 Mar, 2017</time>
-
-
-
-        
-
-<span class="icon">
-    <i class="fa fa-hashtag" aria-hidden="true"></i>
-</span>
-<span class="dark-red">Tagged:</span>
-
-<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
-
-<span><a class="post-tag post-tag-reflect" href="http://blog.ralch.com/tags/reflect">reflect</a></span>
-
-<span><a class="post-tag post-tag-json" href="http://blog.ralch.com/tags/json">json</a></span>
-
-
-
-
-    </time>
-    
-    <p itemprop="about">Presently, Golang has limited support of reflection comparing to the mainstream languages like C# and JAVA. It&rsquo;s not intended to match or beat that languages.
-In practice, we are using StructTag to add some metadata for the defined struct fields. Such an example is json package, where you can customize the field marshaling.
-In example below, we customize the json representation of User struct fields:
-type User struct { ID string `json:&quot;id&quot;` Name string `json:&quot;name&quot;` CreatedAt time.</p>
-    </div>
-</div>
-
-
- 
-   
-  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
-    <h2 class="title">
-        <a href="http://blog.ralch.com/articles/design-patterns/golang-decorator/" itemprop="headline">Design Patterns in Golang: Decorator</a>
-    </h2>
-    <hr>
-    <time class="post-time">
-        <span class="icon">
-  <i class="fa fa-clock-o" aria-hidden="true"></i>
-</span>
-<span>3 minute read</span>
-<span class="icon">
- <i class="fa fa-pencil" aria-hidden="true"></i>
-</span>
-
-  Published: <time datetime="2016-04-17T18:33:52&#43;01:00">17 Apr, 2016</time>
-
-
-
-        
-
-<span class="icon">
-    <i class="fa fa-hashtag" aria-hidden="true"></i>
-</span>
-<span class="dark-red">Tagged:</span>
-
-<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
-
-<span><a class="post-tag post-tag-decorator" href="http://blog.ralch.com/tags/decorator">decorator</a></span>
-
-<span><a class="post-tag post-tag-structural-design-patterns" href="http://blog.ralch.com/tags/structural-design-patterns">structural design patterns</a></span>
-
-
-
-
-    </time>
-    
-    <p itemprop="about">Introduction The Decorator pattern adds new functionality to an existing object without altering its structure. It is a structural pattern as this pattern acts as a wrapper to existing class.
-The instanciate a decorator struct which decorates (wraps) the original object and provides additional functionality keeping its methods signature intact.
-Purpose  Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to inheritance for extending functionality. Wrapping a present, putting it in a box, and wrapping the box.</p>
-    </div>
-</div>
-
-
- 
-   
-  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
-    <h2 class="title">
-        <a href="http://blog.ralch.com/articles/design-patterns/golang-composite/" itemprop="headline">Design Patterns in Golang: Composite</a>
-    </h2>
-    <hr>
-    <time class="post-time">
-        <span class="icon">
-  <i class="fa fa-clock-o" aria-hidden="true"></i>
-</span>
-<span>3 minute read</span>
-<span class="icon">
- <i class="fa fa-pencil" aria-hidden="true"></i>
-</span>
-
-  Published: <time datetime="2016-03-31T09:00:27&#43;01:00">31 Mar, 2016</time>
-
-
-
-        
-
-<span class="icon">
-    <i class="fa fa-hashtag" aria-hidden="true"></i>
-</span>
-<span class="dark-red">Tagged:</span>
-
-<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
-
-<span><a class="post-tag post-tag-composite" href="http://blog.ralch.com/tags/composite">composite</a></span>
-
-<span><a class="post-tag post-tag-structural-design-patterns" href="http://blog.ralch.com/tags/structural-design-patterns">structural design patterns</a></span>
-
-
-
-
-    </time>
-    
-    <p itemprop="about">Introduction A Composite Design Pattern is a structural pattern that uses to employ composition when implementing an interface rather than using multiple inheritance. It composes objects into tree structures and lets clients treat individual objects and compositions uniformly.
-There are situations when clients ignore the difference between compositions of objects and individual objects. If dealing with multiple objects in the same way as handle each of deam is identical, the Composite Design pattern is a good choice to decrease the complexity and treat them as homogeneous.</p>
-    </div>
-</div>
-
-
- 
   
   <section><nav class="pagination align-center upper pager flat">
   <ul>
@@ -364,11 +185,11 @@ There are situations when clients ignore the difference between compositions of 
       
     </li>
     <li class="w100">
-      <ul><li><a href="/articles/">Back to Catalog</a></li></ul>
+      <ul><li><a href="/categories/network-programming/">Back to Catalog</a></li></ul>
     </li>
     <li class="next">
       
-      <a href="/articles/page/2/">Next &gt;</a>
+      <span>Next &gt;</span>
       
     </li>
   </ul>

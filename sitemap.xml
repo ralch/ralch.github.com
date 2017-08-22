@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://blog.ralch.com/articles/network-programming-and-proxies-in-golang/</loc>
+    <lastmod>2017-08-22T14:17:48+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.ralch.com/articles/golang-ftp/</loc>
     <lastmod>2017-04-03T14:10:06+01:00</lastmod>
   </url>
@@ -221,7 +226,7 @@
   
   <url>
     <loc>http://blog.ralch.com/articles/</loc>
-    <lastmod>2017-04-03T14:10:06+01:00</lastmod>
+    <lastmod>2017-08-22T14:17:48+01:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -382,7 +387,7 @@
   
   <url>
     <loc>http://blog.ralch.com/tags/go/</loc>
-    <lastmod>2017-03-21T12:33:56+01:00</lastmod>
+    <lastmod>2017-08-22T14:17:48+01:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -441,6 +446,12 @@
   </url>
   
   <url>
+    <loc>http://blog.ralch.com/categories/network-programming/</loc>
+    <lastmod>2017-08-22T14:17:48+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.ralch.com/categories/object-relation-mapping/</loc>
     <lastmod>2015-11-15T08:54:02+00:00</lastmod>
     <priority>0</priority>
@@ -478,7 +489,7 @@
   
   <url>
     <loc>http://blog.ralch.com/categories/programming-languages/</loc>
-    <lastmod>2017-03-21T12:33:56+01:00</lastmod>
+    <lastmod>2017-08-22T14:17:48+01:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -526,7 +537,7 @@
   
   <url>
     <loc>http://blog.ralch.com/</loc>
-    <lastmod>2017-04-03T14:10:06+01:00</lastmod>
+    <lastmod>2017-08-22T14:17:48+01:00</lastmod>
     <priority>0</priority>
   </url>
   

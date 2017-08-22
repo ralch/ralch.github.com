@@ -25,7 +25,7 @@
 
 
 
-<meta property="og:updated_time" content="2015-04-11T17:53:10&#43;01:00"/>
+<meta property="og:updated_time" content="2015-04-23T21:50:49&#43;01:00"/>
 
 
 
@@ -136,6 +136,50 @@
 
 </div>
 <ul id="posts">
+   
+  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+    <h2 class="title">
+        <a href="http://blog.ralch.com/articles/devop-busybox-ca-certificates/" itemprop="headline">SSL support for Busybox docker containers</a>
+    </h2>
+    <hr>
+    <time class="post-time">
+        <span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>1 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2015-04-23T21:50:49&#43;01:00">23 Apr, 2015</time>
+
+
+
+        
+
+<span class="icon">
+    <i class="fa fa-hashtag" aria-hidden="true"></i>
+</span>
+<span class="dark-red">Tagged:</span>
+
+<span><a class="post-tag post-tag-busybox" href="http://blog.ralch.com/tags/busybox">busybox</a></span>
+
+<span><a class="post-tag post-tag-ssl" href="http://blog.ralch.com/tags/ssl">ssl</a></span>
+
+
+
+
+    </time>
+    
+    <p itemprop="about">I am running my official website and this blog on busybox docker containers. I noticed today that this image does not support certificate trust stores and therefore cannot request an SSL-enabled web services.
+My website is using Google recaptcha to handle spam requests on its contact form. However, the website throws the following exception when recaptch API is requested:
+x509: failed to load system roots and no roots provided
+First approach would be to use COPY command to load the certificate store bundle in to the image.</p>
+    </div>
+</div>
+
+
+ 
    
   <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
     <h2 class="title">

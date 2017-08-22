@@ -25,7 +25,7 @@
 
 
 
-<meta property="og:updated_time" content="2015-08-23T11:04:50&#43;01:00"/>
+<meta property="og:updated_time" content="2015-08-30T12:41:34&#43;01:00"/>
 
 
 
@@ -136,6 +136,47 @@
 
 </div>
 <ul id="posts">
+   
+  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+    <h2 class="title">
+        <a href="http://blog.ralch.com/articles/golang-tools-refactoring/" itemprop="headline">Golang refactoring tools</a>
+    </h2>
+    <hr>
+    <time class="post-time">
+        <span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>6 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2015-08-30T12:41:34&#43;01:00">30 Aug, 2015</time>
+
+
+
+        
+
+<span class="icon">
+    <i class="fa fa-hashtag" aria-hidden="true"></i>
+</span>
+<span class="dark-red">Tagged:</span>
+
+<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+
+
+
+
+    </time>
+    
+    <p itemprop="about">Go language provides many useful tools as part of its development eco system. We will explore most of them in the upcoming blog posts. But in the article lets focus on refactoring tools.
+Gofmt In average programming languages developers can adapt to different formatting styles. Common problem is how to approach unknown code base without a long prescriptive style guide.
+Go takes an unusual approach and keep this responsibility to format the source code for you.</p>
+    </div>
+</div>
+
+
+ 
    
   <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
     <h2 class="title">
@@ -313,52 +354,6 @@ Installation You should install Delve with the following command:</p>
     <p itemprop="about">Even that ease and simplicity of using go are one of its main advanatages, there are difficulties in debugging applications written in go.
 The lack of mature tools (like supported vim plugin) push most of us to use logging techniques to inspect and track down issues.
 In this article, I will demonstrates how you can use vim and lldb to debug a go application. Before that you should make the application capable for debugging.</p>
-    </div>
-</div>
-
-
- 
-   
-  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
-    <h2 class="title">
-        <a href="http://blog.ralch.com/articles/golang-ssh-tunneling/" itemprop="headline">SSH tunneling in Golang</a>
-    </h2>
-    <hr>
-    <time class="post-time">
-        <span class="icon">
-  <i class="fa fa-clock-o" aria-hidden="true"></i>
-</span>
-<span>3 minute read</span>
-<span class="icon">
- <i class="fa fa-pencil" aria-hidden="true"></i>
-</span>
-
-  Published: <time datetime="2015-07-26T08:00:00&#43;01:00">26 Jul, 2015</time>
-
-
-
-        
-
-<span class="icon">
-    <i class="fa fa-hashtag" aria-hidden="true"></i>
-</span>
-<span class="dark-red">Tagged:</span>
-
-<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
-
-<span><a class="post-tag post-tag-ssh" href="http://blog.ralch.com/tags/ssh">ssh</a></span>
-
-<span><a class="post-tag post-tag-devops" href="http://blog.ralch.com/tags/devops">devops</a></span>
-
-
-
-
-    </time>
-    
-    <p itemprop="about">In my previous post, I illustrated the basic usage of ssh package. In this article I will demonstrate how we should use it to implement SSH tunneling. We will forward connection to localhost:9000 through example.com:22 to localhost:8080.
-The tunneling protocol allows a network user to access or provide a network service that the underlying network does not support or provide directly.
-We have four actors in this scenario:
- client - the client that needs resource from remote server local server - a server accessible by the client intermediate server - a server accessible by the local server and remote/target server remote/target server - a server running behind the intermediate server network  Each of this server endpoints can be represented by the following struct:</p>
     </div>
 </div>
 
