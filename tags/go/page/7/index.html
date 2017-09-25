@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <meta name="generator" content="Hugo 0.26" />
+    <meta name="generator" content="Hugo 0.27.1" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,34 +23,34 @@
     <meta property="og:title" content="Go" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="http://blog.ralch.com/tags/go/" />
+<meta property="og:url" content="https://blog.ralch.com/tags/go/" />
 
 
 
-<meta property="og:updated_time" content="2015-08-16T08:40:35&#43;01:00"/>
-
-
-
-
+<meta property="og:updated_time" content="2015-08-23T11:04:50&#43;01:00"/>
 
 
 
 
 
 
-    
 
 
 
 
     
+
+
+
+
     
     
     
     
-    <link href="http://blog.ralch.com/tags/go/index.xml" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" /> 
     
-    <link rel="canonical" href="http://blog.ralch.com/tags/go/" /> 
+    <link href="https://blog.ralch.com/tags/go/index.xml" rel="alternate" type="application/rss+xml" title="Software adventures and thoughts" /> 
+    
+    <link rel="canonical" href="https://blog.ralch.com/tags/go/" /> 
      
     
 
@@ -129,7 +129,7 @@
     <li><a href="https://twitter.com/ralch" class="social-icon"> <i class="fa fa-twitter"></i></a></li>
     <li><a href="https://github.com/svett" class="social-icon"> <i class="fa fa-github"></i></a></li>
     <li><a href="http://uk.linkedin.com/in/ralchev" class="social-icon"> <i class="fa fa-linkedin"></i></a></li>
-    <li><a href="http://blog.ralch.com/index.xml" class="social-icon"> <i class="fa fa-rss"></i></a></li>
+    <li><a href="https://blog.ralch.com/index.xml" class="social-icon"> <i class="fa fa-rss"></i></a></li>
 </ul>
 
 </div>
@@ -137,7 +137,54 @@
    
   <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
     <h2 class="title">
-        <a href="http://blog.ralch.com/articles/golang-conditional-compilation/" itemprop="headline">Conditional compilation in Golang</a>
+        <a href="https://blog.ralch.com/articles/golang-sharing-libraries/" itemprop="headline">Sharing Golang packages to C and Go</a>
+    </h2>
+    <hr>
+    <time class="post-time">
+        <span class="icon">
+  <i class="fa fa-clock-o" aria-hidden="true"></i>
+</span>
+<span>4 minute read</span>
+<span class="icon">
+ <i class="fa fa-pencil" aria-hidden="true"></i>
+</span>
+
+  Published: <time datetime="2015-08-23T11:04:50&#43;01:00">23 Aug, 2015</time>
+
+
+
+        
+
+<span class="icon">
+    <i class="fa fa-hashtag" aria-hidden="true"></i>
+</span>
+<span class="dark-red">Tagged:</span>
+
+<span><a class="post-tag post-tag-go" href="https://blog.ralch.com/tags/go">go</a></span>
+
+<span><a class="post-tag post-tag-cgo" href="https://blog.ralch.com/tags/cgo">cgo</a></span>
+
+<span><a class="post-tag post-tag-c" href="https://blog.ralch.com/tags/c">c</a></span>
+
+<span><a class="post-tag post-tag-compilation" href="https://blog.ralch.com/tags/compilation">compilation</a></span>
+
+
+
+
+    </time>
+    
+    <p itemprop="about">The latest Go 1.5 version is out. As part of the new features, Go compiler can compile packages as a shared libraries.
+It accepts -buildmode argument that determines how a package is compiled. These are the following options:
+ archive: Build the listed non-main packages into .a files. Packages named main are ignored. c-archive: Build the listed main package, plus all packages it imports, into a C archive file. c-shared: Build the listed main packages, plus all packages that they import, into C shared libraries.</p>
+    </div>
+</div>
+
+
+ 
+   
+  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
+    <h2 class="title">
+        <a href="https://blog.ralch.com/articles/golang-conditional-compilation/" itemprop="headline">Conditional compilation in Golang</a>
     </h2>
     <hr>
     <time class="post-time">
@@ -160,13 +207,13 @@
 </span>
 <span class="dark-red">Tagged:</span>
 
-<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+<span><a class="post-tag post-tag-go" href="https://blog.ralch.com/tags/go">go</a></span>
 
-<span><a class="post-tag post-tag-clang" href="http://blog.ralch.com/tags/clang">clang</a></span>
+<span><a class="post-tag post-tag-clang" href="https://blog.ralch.com/tags/clang">clang</a></span>
 
-<span><a class="post-tag post-tag-preprocessor" href="http://blog.ralch.com/tags/preprocessor">preprocessor</a></span>
+<span><a class="post-tag post-tag-preprocessor" href="https://blog.ralch.com/tags/preprocessor">preprocessor</a></span>
 
-<span><a class="post-tag post-tag-compilation" href="http://blog.ralch.com/tags/compilation">compilation</a></span>
+<span><a class="post-tag post-tag-compilation" href="https://blog.ralch.com/tags/compilation">compilation</a></span>
 
 
 
@@ -185,7 +232,7 @@ Build constraints A build constraints (known as build tags) is an optional top l
    
   <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
     <h2 class="title">
-        <a href="http://blog.ralch.com/articles/golang-debug-with-delve/" itemprop="headline">Delve: Next generation debugger for Golang</a>
+        <a href="https://blog.ralch.com/articles/golang-debug-with-delve/" itemprop="headline">Delve: Next generation debugger for Golang</a>
     </h2>
     <hr>
     <time class="post-time">
@@ -208,9 +255,9 @@ Build constraints A build constraints (known as build tags) is an optional top l
 </span>
 <span class="dark-red">Tagged:</span>
 
-<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+<span><a class="post-tag post-tag-go" href="https://blog.ralch.com/tags/go">go</a></span>
 
-<span><a class="post-tag post-tag-debug" href="http://blog.ralch.com/tags/debug">debug</a></span>
+<span><a class="post-tag post-tag-debug" href="https://blog.ralch.com/tags/debug">debug</a></span>
 
 
 
@@ -229,7 +276,7 @@ Installation You should install Delve with the following command:</p>
    
   <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
     <h2 class="title">
-        <a href="http://blog.ralch.com/articles/golang-debug-with-lldb/" itemprop="headline">Debug Golang applications: LLDB</a>
+        <a href="https://blog.ralch.com/articles/golang-debug-with-lldb/" itemprop="headline">Debug Golang applications: LLDB</a>
     </h2>
     <hr>
     <time class="post-time">
@@ -252,9 +299,9 @@ Installation You should install Delve with the following command:</p>
 </span>
 <span class="dark-red">Tagged:</span>
 
-<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+<span><a class="post-tag post-tag-go" href="https://blog.ralch.com/tags/go">go</a></span>
 
-<span><a class="post-tag post-tag-debug" href="http://blog.ralch.com/tags/debug">debug</a></span>
+<span><a class="post-tag post-tag-debug" href="https://blog.ralch.com/tags/debug">debug</a></span>
 
 
 
@@ -272,7 +319,7 @@ In this article, I will demonstrates how you can use vim and lldb to debug a go 
    
   <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
     <h2 class="title">
-        <a href="http://blog.ralch.com/articles/golang-ssh-tunneling/" itemprop="headline">SSH tunneling in Golang</a>
+        <a href="https://blog.ralch.com/articles/golang-ssh-tunneling/" itemprop="headline">SSH tunneling in Golang</a>
     </h2>
     <hr>
     <time class="post-time">
@@ -295,11 +342,11 @@ In this article, I will demonstrates how you can use vim and lldb to debug a go 
 </span>
 <span class="dark-red">Tagged:</span>
 
-<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
+<span><a class="post-tag post-tag-go" href="https://blog.ralch.com/tags/go">go</a></span>
 
-<span><a class="post-tag post-tag-ssh" href="http://blog.ralch.com/tags/ssh">ssh</a></span>
+<span><a class="post-tag post-tag-ssh" href="https://blog.ralch.com/tags/ssh">ssh</a></span>
 
-<span><a class="post-tag post-tag-devops" href="http://blog.ralch.com/tags/devops">devops</a></span>
+<span><a class="post-tag post-tag-devops" href="https://blog.ralch.com/tags/devops">devops</a></span>
 
 
 
@@ -310,47 +357,6 @@ In this article, I will demonstrates how you can use vim and lldb to debug a go 
 The tunneling protocol allows a network user to access or provide a network service that the underlying network does not support or provide directly.
 We have four actors in this scenario:
  client - the client that needs resource from remote server local server - a server accessible by the client intermediate server - a server accessible by the local server and remote/target server remote/target server - a server running behind the intermediate server network  Each of this server endpoints can be represented by the following struct:</p>
-    </div>
-</div>
-
-
- 
-   
-  <div class="push-center" itemscope itemtype="http://schema.org/BlogPosting">
-    <h2 class="title">
-        <a href="http://blog.ralch.com/articles/golang-ssh-connection/" itemprop="headline">SSH Client connection in Golang</a>
-    </h2>
-    <hr>
-    <time class="post-time">
-        <span class="icon">
-  <i class="fa fa-clock-o" aria-hidden="true"></i>
-</span>
-<span>4 minute read</span>
-<span class="icon">
- <i class="fa fa-pencil" aria-hidden="true"></i>
-</span>
-
-  Published: <time datetime="2015-07-18T11:26:07&#43;01:00">18 Jul, 2015</time>
-
-
-
-        
-
-<span class="icon">
-    <i class="fa fa-hashtag" aria-hidden="true"></i>
-</span>
-<span class="dark-red">Tagged:</span>
-
-<span><a class="post-tag post-tag-go" href="http://blog.ralch.com/tags/go">go</a></span>
-
-
-
-
-    </time>
-    
-    <p itemprop="about">SSH is a network protocol for establishing a secure shell session on distant servers. In Golang the package godoc.org/golang.org/x/crypto/ssh implements SSH client and SSH server.
-In this article, we are using SSH client to run a shell command on a remote machine. Every SSH connection requires an ssh.CleintConfig object that defines configuration options such as authentication.
-Authentication Options Depending on how the remote server is configure, there are two ways to authenticate:</p>
     </div>
 </div>
 

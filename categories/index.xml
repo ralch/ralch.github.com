@@ -2,110 +2,110 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on Software adventures and thoughts</title>
-    <link>http://blog.ralch.com/categories/</link>
+    <link>https://blog.ralch.com/categories/</link>
     <description>Recent content in Categories on Software adventures and thoughts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="http://blog.ralch.com/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.ralch.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Database</title>
-      <link>http://blog.ralch.com/categories/database/</link>
+      <link>https://blog.ralch.com/categories/database/</link>
       <pubDate>Sun, 15 Nov 2015 08:54:02 +0000</pubDate>
       
-      <guid>http://blog.ralch.com/categories/database/</guid>
+      <guid>https://blog.ralch.com/categories/database/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Design Patterns</title>
-      <link>http://blog.ralch.com/categories/design-patterns/</link>
+      <link>https://blog.ralch.com/categories/design-patterns/</link>
       <pubDate>Sun, 17 Apr 2016 18:33:52 +0100</pubDate>
       
-      <guid>http://blog.ralch.com/categories/design-patterns/</guid>
+      <guid>https://blog.ralch.com/categories/design-patterns/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Devop</title>
-      <link>http://blog.ralch.com/categories/devop/</link>
+      <link>https://blog.ralch.com/categories/devop/</link>
       <pubDate>Thu, 23 Apr 2015 21:50:49 +0100</pubDate>
       
-      <guid>http://blog.ralch.com/categories/devop/</guid>
+      <guid>https://blog.ralch.com/categories/devop/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Ftp</title>
-      <link>http://blog.ralch.com/categories/ftp/</link>
+      <link>https://blog.ralch.com/categories/ftp/</link>
       <pubDate>Mon, 03 Apr 2017 14:10:06 +0100</pubDate>
       
-      <guid>http://blog.ralch.com/categories/ftp/</guid>
+      <guid>https://blog.ralch.com/categories/ftp/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Golang</title>
-      <link>http://blog.ralch.com/categories/golang/</link>
+      <link>https://blog.ralch.com/categories/golang/</link>
       <pubDate>Mon, 03 Apr 2017 14:10:06 +0100</pubDate>
       
-      <guid>http://blog.ralch.com/categories/golang/</guid>
+      <guid>https://blog.ralch.com/categories/golang/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Network Programming</title>
-      <link>http://blog.ralch.com/categories/network-programming/</link>
+      <link>https://blog.ralch.com/categories/network-programming/</link>
       <pubDate>Tue, 22 Aug 2017 14:17:48 +0100</pubDate>
       
-      <guid>http://blog.ralch.com/categories/network-programming/</guid>
+      <guid>https://blog.ralch.com/categories/network-programming/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Object Relation Mapping</title>
-      <link>http://blog.ralch.com/categories/object-relation-mapping/</link>
+      <link>https://blog.ralch.com/categories/object-relation-mapping/</link>
       <pubDate>Sun, 15 Nov 2015 08:54:02 +0000</pubDate>
       
-      <guid>http://blog.ralch.com/categories/object-relation-mapping/</guid>
+      <guid>https://blog.ralch.com/categories/object-relation-mapping/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Package</title>
-      <link>http://blog.ralch.com/categories/package/</link>
+      <link>https://blog.ralch.com/categories/package/</link>
       <pubDate>Mon, 03 Apr 2017 14:10:06 +0100</pubDate>
       
-      <guid>http://blog.ralch.com/categories/package/</guid>
+      <guid>https://blog.ralch.com/categories/package/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Programming Languages</title>
-      <link>http://blog.ralch.com/categories/programming-languages/</link>
-      <pubDate>Tue, 22 Aug 2017 14:17:48 +0100</pubDate>
+      <link>https://blog.ralch.com/categories/programming-languages/</link>
+      <pubDate>Mon, 25 Sep 2017 16:28:10 +0100</pubDate>
       
-      <guid>http://blog.ralch.com/categories/programming-languages/</guid>
+      <guid>https://blog.ralch.com/categories/programming-languages/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Tools</title>
-      <link>http://blog.ralch.com/categories/tools/</link>
+      <link>https://blog.ralch.com/categories/tools/</link>
       <pubDate>Sat, 31 Oct 2015 08:41:39 +0100</pubDate>
       
-      <guid>http://blog.ralch.com/categories/tools/</guid>
+      <guid>https://blog.ralch.com/categories/tools/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Tutorial</title>
-      <link>http://blog.ralch.com/categories/tutorial/</link>
+      <link>https://blog.ralch.com/categories/tutorial/</link>
       <pubDate>Thu, 10 Mar 2016 08:52:29 +0000</pubDate>
       
-      <guid>http://blog.ralch.com/categories/tutorial/</guid>
+      <guid>https://blog.ralch.com/categories/tutorial/</guid>
       <description></description>
     </item>
     

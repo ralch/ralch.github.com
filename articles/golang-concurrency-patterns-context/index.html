@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <meta name="generator" content="Hugo 0.26" />
+    <meta name="generator" content="Hugo 0.27.1" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,7 +24,7 @@ Getting started with Context package The Context package is responsible for sign
 The package has an context.Context interface:
 type Context interface { Deadline() (deadline time.Time, ok bool) Done() &lt;-chan struct{} Err() error Value(key interface{}) interface{} }  The interface provides four functions to observe the context state:" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.ralch.com/articles/golang-concurrency-patterns-context/" />
+<meta property="og:url" content="https://blog.ralch.com/articles/golang-concurrency-patterns-context/" />
 
 
 
@@ -51,7 +51,7 @@ type Context interface { Deadline() (deadline time.Time, ok bool) Done() &lt;-ch
     
     
     
-    <link rel="canonical" href="http://blog.ralch.com/articles/golang-concurrency-patterns-context/" /> 
+    <link rel="canonical" href="https://blog.ralch.com/articles/golang-concurrency-patterns-context/" /> 
      
     
 
@@ -321,7 +321,7 @@ func PostForm(ctx context.Context, client *http.Client, url string, data url.Val
     <li><a href="https://twitter.com/ralch" class="social-icon"> <i class="fa fa-twitter"></i></a></li>
     <li><a href="https://github.com/svett" class="social-icon"> <i class="fa fa-github"></i></a></li>
     <li><a href="http://uk.linkedin.com/in/ralchev" class="social-icon"> <i class="fa fa-linkedin"></i></a></li>
-    <li><a href="http://blog.ralch.com/index.xml" class="social-icon"> <i class="fa fa-rss"></i></a></li>
+    <li><a href="https://blog.ralch.com/index.xml" class="social-icon"> <i class="fa fa-rss"></i></a></li>
 </ul>
 
   </div>
@@ -358,6 +358,8 @@ func PostForm(ctx context.Context, client *http.Client, url string, data url.Val
     <ul>
       
       
+        <li><a href="/articles/advanced-error-handling-in-golang/">Advanced Error Handling in Golang</a> &ndash; 2 minutes
+      
         <li><a href="/articles/network-programming-and-proxies-in-golang/">Network Programming and Proxies in Golang</a> &ndash; 3 minutes
       
         <li><a href="/articles/golang-reflect-struct-tag/">Golang: Extending reflect.StructTag to support duplicates</a> &ndash; 3 minutes
@@ -369,8 +371,6 @@ func PostForm(ctx context.Context, client *http.Client, url string, data url.Val
         <li><a href="/articles/design-patterns/golang-bridge/">Desing Patterns in Golang: Bridge</a> &ndash; 3 minutes
       
         <li><a href="/articles/golang-handling-errors/">Errors handling in Golang</a> &ndash; 3 minutes
-      
-        <li><a href="/articles/design-patterns/golang-adapter/">Design Patterns in Golang: Adapter</a> &ndash; 5 minutes
       
     </ul>
   </aside>
