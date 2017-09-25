@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Linq on Software adventures and thoughts</title>
-    <link>https://blog.ralch.com/tags/linq/</link>
+    <link>http://blog.ralch.com/tags/linq/</link>
     <description>Recent content in Linq on Software adventures and thoughts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 25 Oct 2015 07:35:49 +0100</lastBuildDate>
     
-	<atom:link href="https://blog.ralch.com/tags/linq/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://blog.ralch.com/tags/linq/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Query data with Golang and LINQ</title>
-      <link>https://blog.ralch.com/articles/golang-query-data-with-linq/</link>
+      <link>http://blog.ralch.com/articles/golang-query-data-with-linq/</link>
       <pubDate>Sun, 25 Oct 2015 07:35:49 +0100</pubDate>
       
-      <guid>https://blog.ralch.com/articles/golang-query-data-with-linq/</guid>
+      <guid>http://blog.ralch.com/articles/golang-query-data-with-linq/</guid>
       <description>Query langauges provide a set of features to querying, projecting and retrieving data (usually relational data). But how to introduces these standard, easily-learned patterns for querying data?
 In this article we will explore Go LINQ packages that bridges the gap between the world of objects and the world of data.
 LINQ For first time is introduced by Microsoft in their programming language C#. Its purpose is to bridge the gap between query languages such as SQL and programming languages.</description>

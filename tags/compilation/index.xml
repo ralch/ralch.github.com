@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Compilation on Software adventures and thoughts</title>
-    <link>https://blog.ralch.com/tags/compilation/</link>
+    <link>http://blog.ralch.com/tags/compilation/</link>
     <description>Recent content in Compilation on Software adventures and thoughts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 23 Aug 2015 11:04:50 +0100</lastBuildDate>
     
-	<atom:link href="https://blog.ralch.com/tags/compilation/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://blog.ralch.com/tags/compilation/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Sharing Golang packages to C and Go</title>
-      <link>https://blog.ralch.com/articles/golang-sharing-libraries/</link>
+      <link>http://blog.ralch.com/articles/golang-sharing-libraries/</link>
       <pubDate>Sun, 23 Aug 2015 11:04:50 +0100</pubDate>
       
-      <guid>https://blog.ralch.com/articles/golang-sharing-libraries/</guid>
+      <guid>http://blog.ralch.com/articles/golang-sharing-libraries/</guid>
       <description>The latest Go 1.5 version is out. As part of the new features, Go compiler can compile packages as a shared libraries.
 It accepts -buildmode argument that determines how a package is compiled. These are the following options:
  archive: Build the listed non-main packages into .a files. Packages named main are ignored. c-archive: Build the listed main package, plus all packages it imports, into a C archive file. c-shared: Build the listed main packages, plus all packages that they import, into C shared libraries.</description>
@@ -24,10 +24,10 @@ It accepts -buildmode argument that determines how a package is compiled. These 
     
     <item>
       <title>Conditional compilation in Golang</title>
-      <link>https://blog.ralch.com/articles/golang-conditional-compilation/</link>
+      <link>http://blog.ralch.com/articles/golang-conditional-compilation/</link>
       <pubDate>Sun, 16 Aug 2015 08:40:35 +0100</pubDate>
       
-      <guid>https://blog.ralch.com/articles/golang-conditional-compilation/</guid>
+      <guid>http://blog.ralch.com/articles/golang-conditional-compilation/</guid>
       <description>When developing Go package or application that depends on specific features of the underlying platform or architecture it is often necessary to use a specialised implementation.
 There are two parts of Go conditional compilation system, which we will now explore in more detail.
 Build constraints A build constraints (known as build tags) is an optional top line comment that starts with

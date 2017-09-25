@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Metadata on Software adventures and thoughts</title>
-    <link>https://blog.ralch.com/tags/metadata/</link>
+    <link>http://blog.ralch.com/tags/metadata/</link>
     <description>Recent content in Metadata on Software adventures and thoughts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 21 Dec 2015 08:15:16 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.ralch.com/tags/metadata/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://blog.ralch.com/tags/metadata/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Reflection in Golang</title>
-      <link>https://blog.ralch.com/articles/golang-reflection/</link>
+      <link>http://blog.ralch.com/articles/golang-reflection/</link>
       <pubDate>Mon, 21 Dec 2015 08:15:16 +0000</pubDate>
       
-      <guid>https://blog.ralch.com/articles/golang-reflection/</guid>
+      <guid>http://blog.ralch.com/articles/golang-reflection/</guid>
       <description>What is reflection?  In computer science, reflection is the ability of a computer program to examine and modify its own structure and behavior (specifically the values, meta-data, properties and functions) at runtime.
  source: Wikipedia
 Reflection can be used for observing and modifying program execution at runtime. A reflection-oriented program component can monitor the execution of an enclosure of code and can modify itself according to a desired goal related to that enclosure.</description>
